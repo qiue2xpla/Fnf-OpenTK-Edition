@@ -9,8 +9,8 @@ namespace Fnf.Framework
     {
         public static Point Position
         {
-            get => new Point(CurrentWindow.Location.X, CurrentWindow.Location.Y);
-            set => CurrentWindow.Location = new System.Drawing.Point(value.x, value.y);
+            get => new Point(_window.Location.X, _window.Location.Y);
+            set => _window.Location = new System.Drawing.Point(value.x, value.y);
         }
         public static bool IsGridFixed
         {
@@ -47,39 +47,18 @@ namespace Fnf.Framework
             set => _window.Title = value;
         }
 
-        internal static WindowObject _window;
-        private static bool _isGridFixed = false;
-        private static Size _gridSize = new Size(1366, 768);
-
-        public static void Initiate() { if (_window == null) _window = new WindowObject(); }
-        public static void Run()      { if (_window != null) _window.Run(); }
-        public static void Exit()     { if (_window != null) _window.Close(); }
-    }
-
-    // Inhirating is needed because it doesn't have event based calls
-    class WindowObject : GameWindow
-    {
-        #region Window Shit
-
-        
-
-        
-
-        public static bool isFullscreen
+        public static bool IsFullscreen
         {
-            get => CurrentWindow.WindowState == WindowState.Fullscreen;
+            get => _window.WindowState == WindowState.Fullscreen;
             set
             {
-                CurrentWindow.WindowBorder = value ? WindowBorder.Hidden : WindowBorder.Resizable;
-                CurrentWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
+                _window.WindowBorder = value ? WindowBorder.Hidden : WindowBorder.Resizable;
+                _window.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
             }
         }
 
-        #endregion
-
-        #region Viewport
-
         // Converts pixel space [-GridWidth/2, GridWidth/2] to viewport space [-1, 1] for opengl
+        // TODO: Make it a seperate class
         public static float PixelToViewportHorizontal(float x) => 2 * x / GridSize.width;
         public static float PixelToViewportVertical(float y) => 2 * y / GridSize.height;
         public static Vector2 PixelToViewport(Vector2 vector) => PixelToViewport(vector.x, vector.y);
@@ -88,10 +67,18 @@ namespace Fnf.Framework
                 PixelToViewportHorizontal(x),
                 PixelToViewportVertical(y));
 
-        #endregion
+        internal static WindowObject _window;
+        private static bool _isGridFixed = false;
+        private static Size _gridSize = new Size(1366, 768);
 
-        #region Events
+        public static void Initiate() { if (_window == null) _window = new WindowObject(); }
+        public static void Run()      { _window?.Run(); }
+        public static void Close()    { _window?.Close(); }
+    }
 
+    // Inhirating is needed because it doesn't have event based calls
+    class WindowObject : GameWindow
+    {
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -117,30 +104,28 @@ namespace Fnf.Framework
 
         public void ResizeBase()
         {
-            if (_isGridFixed)
+            if (Window.IsGridFixed)
             {
                 // Free screen aspect ratio is not supported because there is not need for it
-                if (WindowSize.slobe >= GridSize.slobe)
+                if (Window.WindowSize.slobe >= Window.GridSize.slobe)
                 {
-                    float GridWidthInPixels = Width * GridSize.slobe;
+                    float GridWidthInPixels = Width * Window.GridSize.slobe;
                     GL.Viewport(0, (int)(Height - GridWidthInPixels) / 2, Width, (int)GridWidthInPixels);
                 }
                 else
                 {
-                    float GridHeightInPixels = Height / GridSize.slobe;
+                    float GridHeightInPixels = Height / Window.GridSize.slobe;
                     GL.Viewport((int)(Width - GridHeightInPixels) / 2, 0, (int)GridHeightInPixels, Height);
                 }
             }
             else
             {
-                GridSize = WindowSize;
+                Window.GridSize = Window.WindowSize;
                 GL.Viewport(0, 0, Width, Height);
             }
 
             Script.ResizeScript();
         }
-
-
 
         protected override void OnKeyPress(KeyPressEventArgs e)
         {
@@ -163,15 +148,15 @@ namespace Fnf.Framework
 
             if (Input.GetKeyDown(Key.F11))
             {
-                isFullscreen = !isFullscreen;
+                Window.IsFullscreen = !Window.IsFullscreen;
             }
 
             if (Input.GetAnyKeys(Key.AltLeft, Key.AltRight) && Input.GetAnyKeysDown(Key.Enter, Key.KeypadEnter))
             {
-                isFullscreen = !isFullscreen;
+                Window.IsFullscreen = !Window.IsFullscreen;
             }
 
-            if (isFullscreen && Input.GetAnyKeysDown(Key.WinLeft, Key.WinRight))
+            if (Window.IsFullscreen && Input.GetAnyKeysDown(Key.WinLeft, Key.WinRight))
             {
                 WindowState = OpenTK.WindowState.Minimized;
             }
@@ -192,8 +177,5 @@ namespace Fnf.Framework
             Script.RenderScript();
             Context.SwapBuffers();
         }
-
-        #endregion
     }
-
 }
