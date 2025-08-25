@@ -13,16 +13,10 @@ namespace Fnf
             Window.Initiate();
 
             Window.IsGridFixed = true;
+            Window.WindowSize = Window.GridSize * 0.9f;
+            Window.Title = "Friday Night Funkin";
 
-
-            using (Window window = new Window())
-            {
-                // TODO: Make it make sense
-                Window.isGridFixed = true;
-                Window.WindowSize = Window.GridSize * 0.9f;
-                window.Title = "Friday Night Funkin";
-                window.Run();
-            }
+            Window.Run();
         }
     }
 }

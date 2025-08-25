@@ -28,7 +28,7 @@ namespace Fnf.Framework
             { 
                 if (value != null)
                 {
-                    FunctionInvoker.Invoke("Removed", _active);
+                    FunctionInvoker.Invoke("Replaced", _active);
                     _active = value;
                     FunctionInvoker.Invoke("Start", _active);
                 }

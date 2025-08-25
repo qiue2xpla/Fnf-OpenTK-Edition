@@ -7,26 +7,53 @@ namespace Fnf.Framework
 {
     public static class Window
     {
-        public static bool isGridFixed
+        public static Point Position
+        {
+            get => new Point(CurrentWindow.Location.X, CurrentWindow.Location.Y);
+            set => CurrentWindow.Location = new System.Drawing.Point(value.x, value.y);
+        }
+        public static bool IsGridFixed
         {
             get => _isGridFixed;
             set
             {
-                if (_isGridFixed != value)
-                {
-                    _isGridFixed = value;
-                    _window.OnResize(null);
-                }
+                if (_isGridFixed == value) return;
+                _isGridFixed = value;
+                _window.ResizeBase();
             }
         }
+        public static Size WindowSize
+        {
+            get => new Size(_window.Width, _window.Height);
+            set
+            {
+                _window.Width = value.width;
+                _window.Height = value.height;
+            }
+        }
+        public static Size GridSize
+        {
+            get => _gridSize;
+            set
+            {
+                if (_isGridFixed) _gridSize = value;
+            }
+        }
+        // TODO: This is broken on muliple displays
+        public static Size ScreenSize => new Size(DisplayDevice.Default.Width, DisplayDevice.Default.Height);
+        public static string Title
+        {
+            get => _window.Title;
+            set => _window.Title = value;
+        }
 
-        private static WindowObject _window;
+        internal static WindowObject _window;
         private static bool _isGridFixed = false;
         private static Size _gridSize = new Size(1366, 768);
 
         public static void Initiate() { if (_window == null) _window = new WindowObject(); }
-        public static void Run() { if (_window != null) _window.Run(); }
-        public static void Exit() { if (_window != null) _window.Close(); }
+        public static void Run()      { if (_window != null) _window.Run(); }
+        public static void Exit()     { if (_window != null) _window.Close(); }
     }
 
     // Inhirating is needed because it doesn't have event based calls
@@ -34,31 +61,7 @@ namespace Fnf.Framework
     {
         #region Window Shit
 
-        public static Size ScreenSize => new Size(DisplayDevice.Default.Width, DisplayDevice.Default.Height);
-        public static Size GridSize
-        {
-            get => _gridSize;
-            set
-            {
-                if (isGridFixed) return;
-                _gridSize = value;
-            }
-        }
-        public static Size WindowSize
-        {
-            get => new Size(CurrentWindow.Width, CurrentWindow.Height);
-            set
-            {
-                CurrentWindow.Width = value.width;
-                CurrentWindow.Height = value.height;
-            }
-        }
-
-        public static Point Position
-        {
-            get => new Point(CurrentWindow.Location.X, CurrentWindow.Location.Y);
-            set => CurrentWindow.Location = new System.Drawing.Point(value.x, value.y);
-        }
+        
 
         
 
@@ -109,6 +112,11 @@ namespace Fnf.Framework
         {
             base.OnResize(e);
 
+            ResizeBase();
+        }
+
+        public void ResizeBase()
+        {
             if (_isGridFixed)
             {
                 // Free screen aspect ratio is not supported because there is not need for it
@@ -131,6 +139,8 @@ namespace Fnf.Framework
 
             Script.ResizeScript();
         }
+
+
 
         protected override void OnKeyPress(KeyPressEventArgs e)
         {

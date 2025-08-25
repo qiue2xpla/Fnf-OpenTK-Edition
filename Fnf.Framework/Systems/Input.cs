@@ -14,8 +14,8 @@ namespace Fnf.Framework
         public static event Action<char> OnCharTyped;
         public static bool IsCursorVisible
         {
-            get => Window.CurrentWindow.CursorVisible;
-            set => Window.CurrentWindow.CursorVisible = value;
+            get => Window._window.CursorVisible;
+            set => Window._window.CursorVisible = value;
         }
 
         private static KeyboardState currentKeyboard;
@@ -203,7 +203,7 @@ namespace Fnf.Framework
         /// </summary>
         public static void SetWindowMousePosition(int x, int y)
         {
-            var desktop = Window.CurrentWindow.PointToScreen(
+            var desktop = Window._window.PointToScreen(
                 new System.Drawing.Point(x, Window.WindowSize.height - y - 1));
             Mouse.SetPosition(desktop.X, desktop.Y);
         }
@@ -235,7 +235,7 @@ namespace Fnf.Framework
                 outY = (float)y / Window.GridSize.height * Window.WindowSize.height;
             }
 
-            var desktop = Window.CurrentWindow.PointToScreen(new System.Drawing.Point((int)outX, (int)outY));
+            var desktop = Window._window.PointToScreen(new System.Drawing.Point((int)outX, (int)outY));
             Mouse.SetPosition(desktop.X, desktop.Y);
         }
 
@@ -244,7 +244,7 @@ namespace Fnf.Framework
         /// </summary>
         public static Point GetDesktopMouseDelta()
         {
-            if (!Window.CurrentWindow.Focused) return new Point(0, 0);
+            if (!Window._window.Focused) return new Point(0, 0);
             //if (isCursorLocked) return ToDesktop(currentMouse); 
             return ToDesktop(currentMouse) - ToDesktop(previousMouse);
         }
@@ -254,7 +254,7 @@ namespace Fnf.Framework
         /// </summary>
         public static Point GetWindowMouseDelta()
         {
-            if (!Window.CurrentWindow.Focused) return new Point(0, 0);
+            if (!Window._window.Focused) return new Point(0, 0);
             //if (isCursorLocked) return ToWindow(currentMouse);
             return ToWindow(currentMouse) - ToWindow(previousMouse);
         }
@@ -264,7 +264,7 @@ namespace Fnf.Framework
         /// </summary>
         public static Vector2 GetGridMouseDelta()
         {
-            if (!Window.CurrentWindow.Focused) return new Vector2(0, 0);
+            if (!Window._window.Focused) return new Vector2(0, 0);
             //if (isCursorLocked) return ToGrid(currentMouse);
             return ToGrid(currentMouse) - ToGrid(previousMouse);
         }
@@ -277,15 +277,15 @@ namespace Fnf.Framework
         private static Point ToWindow(MouseState mouse)
         {
             var desktop = new System.Drawing.Point(mouse.X, mouse.Y);
-            var window = Window.CurrentWindow.PointToClient(desktop);
-            window.Y = Window.CurrentWindow.Height - window.Y - 1;
+            var window = Window._window.PointToClient(desktop);
+            window.Y = Window._window.Height - window.Y - 1;
             return new Point(window.X, window.Y);
         }
 
         private static Vector2 ToGrid(MouseState mouse)
         {
             var desktop = new System.Drawing.Point(mouse.X, mouse.Y);
-            var window = Window.CurrentWindow.PointToClient(desktop);
+            var window = Window._window.PointToClient(desktop);
             float x = 0;
             float y = 0;
 
