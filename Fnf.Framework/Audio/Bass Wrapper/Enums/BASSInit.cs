@@ -1,0 +1,21 @@
+﻿namespace Fnf.Framework.Audio
+{
+    internal enum BASSInit
+    {
+        BASS_DEVICE_DEFAULT = 0,
+        BASS_DEVICE_MONO = 2,
+        BASS_DEVICE_16BITS = 8,
+        BASS_DEVICE_REINIT = 0x80,
+        BASS_DEVICE_LATENCY = 0x100,
+        BASS_DEVICE_CPSPEAKERS = 0x400,
+        BASS_DEVICE_SPEAKERS = 0x800,
+        BASS_DEVICE_NOSPEAKER = 0x1000,
+        BASS_DEVIDE_DMIX = 0x2000,
+        BASS_DEVICE_FREQ = 0x4000,
+        BASS_DEVICE_STEREO = 0x8000,
+        BASS_DEVICE_HOG = 0x10000,
+        BASS_DEVICE_AUDIOTRACK = 0x20000,
+        BASS_DEVICE_DSOUND = 0x40000,
+        BASS_DEVICE_SOFTWARE = 0x80000
+    }
+}
