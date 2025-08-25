@@ -1,9 +1,7 @@
 /.vs
 /Fnf.Framework/.vs
 /Fnf.Framework/bin
-/Fnf.Framework/obj/Debug
-/Fnf.Framework/obj/Release
-/Fnf.Game/bin/Debug
+/Fnf.Framework/obj
 /Fnf.Game/bin
 /Fnf/obj
 /Fnf.Game/obj
