@@ -1,6 +1,8 @@
 ﻿using Fnf.Framework;
+using Fnf.Framework.Graphics;
 using Fnf.Framework.TrueType;
 using Fnf.Framework.TrueType.Rasterization;
+using System.Collections.Generic;
 
 namespace Fnf
 {
@@ -9,13 +11,18 @@ namespace Fnf
         Text weekScore;
         Text weekName;
 
+        Dictionary<string, int> bgs = new();
+
+        int currentBg;
+
         void Start()
         {
             Font font = new("Assets/Fonts/vcr");
-            FontAtlas atlas = new FontAtlas(font, 100, 3, 2, 0, 
-                FontAtlas.UpperCase + FontAtlas.LowerCase + FontAtlas.Numbers + FontAtlas.Ponctuals + FontAtlas.Space);
+            FontAtlas atlas = new(font, 100, 3, 2, 0, FontAtlas.UpperCase + FontAtlas.LowerCase + 
+                FontAtlas.Numbers + FontAtlas.Ponctuals + FontAtlas.Space);
 
-
+            bgs.Add("stage", Texture.GenerateFromPath("Assets/MenuBackgrounds/menu_stage.png", out _));
+            currentBg = bgs["stage"];
 
             weekScore = new Text(atlas);
             weekScore.text = "WEEK SCORE:0";
@@ -46,6 +53,23 @@ namespace Fnf
         {
             weekScore.Render();
             weekName.Render();
+
+            float top = Window.PixelToViewportVertical(Window.GridSize.height / 2f - 60);
+            float bottom = Window.PixelToViewportVertical(Window.GridSize.height / 2f - 60 - 412);
+
+            Texture.Use(currentBg);
+            OpenGL.BeginDrawing(DrawMode.Quads);
+            OpenGL.Color3(1, 1, 1);
+            OpenGL.TextureCoord(1, 0);
+            OpenGL.Vertex2( 1, top);
+            OpenGL.TextureCoord(0, 0);
+            OpenGL.Vertex2(-1, top);
+            OpenGL.TextureCoord(0, 1);
+            OpenGL.Vertex2(-1, bottom);
+            OpenGL.TextureCoord(1, 1);
+            OpenGL.Vertex2( 1, bottom);
+            OpenGL.EndDrawing();
+            Texture.Use(OpenGL.NULL);
         }
     }
 }
