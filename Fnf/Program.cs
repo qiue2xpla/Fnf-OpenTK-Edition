@@ -7,7 +7,7 @@ namespace Fnf
     {
         static void Main()
         {
-            Script.AssignStartupScript<StoryMenu>();
+            Script.AssignStartupScript<Intro>();
             ClipsManager.AppVolume = 0.1f;
 
             Window.Initiate();
