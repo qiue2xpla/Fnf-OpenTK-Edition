@@ -1,57 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using Fnf.Framework.Graphics;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Xml;
 using System.IO;
 using System;
-using Fnf.Framework.Graphics;
 
 namespace Fnf.Game
 {
     public static class TextureAtlas
     {
-        private struct Atlas
-        {
-            public SubTexture[] subTextures;
-            public Framework.Size textureSize;
-            public int texture;
-
-            public Atlas(string atlasName, bool loadTexture = true)
-            {
-                texture = OpenGL.NULL;
-
-                using (Bitmap bitmap = new Bitmap(atlasName + ".png"))
-                {
-                    textureSize = new Framework.Size(bitmap.Width, bitmap.Height);
-
-                    if (loadTexture)
-                    {
-                        texture = Texture.GenerateFromBitmap(bitmap);
-                    }
-                }
-
-                List<SubTexture> SubTexturesList = new List<SubTexture>(0);
-
-                using (var stringreader = new StringReader(File.ReadAllText(atlasName + ".xml")))
-                using (var xmlreader = new XmlTextReader(stringreader))
-                {
-                    while (xmlreader.Read())
-                    {
-                        if (xmlreader.Name != "SubTexture") continue;
-                        SubTexturesList.Add(new SubTexture(xmlreader));
-                    }
-
-                    subTextures = SubTexturesList.ToArray();
-                }
-            }
-        }
-
         private static Dictionary<string, Atlas> atlases = new Dictionary<string, Atlas>();
 
         public static void LoadAtlas(string name, string path)
         {
-            if (atlases.ContainsKey(name)) return;
             atlases.Add(name, new Atlas(path));
+        }
+
+        public static void UnloadAtlas(string name)
+        {
+            Atlas atlas = atlases[name];
+            Texture.Destroy(atlas.texture);
+            atlas.subTextures = null;
+
+            atlases.Remove(name);
         }
 
         public static string[] GetAnimationNames(string atlasName)
@@ -95,7 +67,7 @@ namespace Fnf.Game
         }*/
 
         private static Frame[] GetFramesByName(string atlasName, string name)
-       {
+        {
             Atlas atlas = atlases[atlasName];
 
             List<Frame> result = new List<Frame>();
@@ -140,6 +112,42 @@ namespace Fnf.Game
                 for (int i = 0; i < 4 - number.ToString().Length; i++)  text += "0";
                 text += number.ToString();
                 return text;
+            }
+        }
+    }
+
+    struct Atlas
+    {
+        public SubTexture[] subTextures;
+        public Framework.Size textureSize;
+        public int texture;
+
+        public Atlas(string atlasName, bool loadTexture = true)
+        {
+            texture = OpenGL.NULL;
+
+            using (Bitmap bitmap = new Bitmap(atlasName + ".png"))
+            {
+                textureSize = new Framework.Size(bitmap.Width, bitmap.Height);
+
+                if (loadTexture)
+                {
+                    texture = Texture.GenerateFromBitmap(bitmap);
+                }
+            }
+
+            List<SubTexture> SubTexturesList = new List<SubTexture>(0);
+
+            using (var stringreader = new StringReader(File.ReadAllText(atlasName + ".xml")))
+            using (var xmlreader = new XmlTextReader(stringreader))
+            {
+                while (xmlreader.Read())
+                {
+                    if (xmlreader.Name != "SubTexture") continue;
+                    SubTexturesList.Add(new SubTexture(xmlreader));
+                }
+
+                subTextures = SubTexturesList.ToArray();
             }
         }
     }

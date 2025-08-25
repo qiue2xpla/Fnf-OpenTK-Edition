@@ -1,39 +1,38 @@
 ﻿using Fnf.Framework.Audio;
 using Fnf.Framework;
 using Fnf.Game;
+using Microsoft.Win32;
 
 namespace Fnf
 {
     public class Intro : Script
     {
         // States
-        static bool introShown = false;
-        bool transitioning = false;
-        bool skippedIntro = false;
+        static bool introShown;
+        bool transitioning;
+        bool skippedIntro;
         bool danceLeft;
 
         Animator Logo, GF, PETB;
         EffectsLayer effectsLayer;
         IntroText introText;
 
-        public Intro()
+        void Start()
         {
-            #region Setup Animations
-
             // Load atlases
             TextureAtlas.LoadAtlas("logo", "Assets/Shared/Intro/logo");
             TextureAtlas.LoadAtlas("gf", "Assets/Shared/Intro/GfIntro");
             TextureAtlas.LoadAtlas("petb", "Assets/Shared/Intro/titleEnter");
 
             // Make the animators
-            GF = new Animator();
-            Logo = new Animator();
-            PETB = new Animator();
+            GF = new();
+            Logo = new();
+            PETB = new();
 
             // Position the animators
-            GF.globalPosition = new Vector2(318, -45);
-            Logo.globalPosition = new Vector2(-298, 119);
-            PETB.globalPosition = new Vector2(243, -303);
+            GF.globalPosition = new(318, -45);
+            Logo.globalPosition = new(-298, 119);
+            PETB.globalPosition = new(243, -303);
 
             // Some animations need to be looped
             Animation idle = TextureAtlas.GetAnimation("petb", "Press Enter to Begin"); idle.looped = true;
@@ -47,8 +46,6 @@ namespace Fnf
             PETB.add("idle", idle);
 
             PETB.play("idle");
-
-            #endregion
 
             ShowAnimators(false);
 
@@ -67,6 +64,21 @@ namespace Fnf
                 Music.Play();
                 Music.Instruments.slideVolume(0, 0.1f, 4);
             }
+        }
+
+        void Replaced()
+        {
+            Music.OnBeatHit -= OnBeatHit;
+
+            TextureAtlas.UnloadAtlas("logo");
+            TextureAtlas.UnloadAtlas("gf");
+            TextureAtlas.UnloadAtlas("petb");
+
+            GF = null;
+            PETB = null;
+            Logo = null;
+            effectsLayer = null;
+            introText = null;
         }
 
         void Update()
