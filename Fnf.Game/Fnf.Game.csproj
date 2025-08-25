@@ -55,8 +55,7 @@
     <Compile Include="Chart\Internal\SongJson.cs" />
     <Compile Include="Chart\Note.cs" />
     <Compile Include="Chart\NoteParser.cs" />
-    <Compile Include="Effects\Effect.cs" />
-    <Compile Include="Effects\EffectManager.cs" />
+    <Compile Include="Effects\EffectsLayer.cs" />
     <Compile Include="Effects\FlashEffect.cs" />
     <Compile Include="Effects\FlickerRenderEffect.cs" />
     <Compile Include="Effects\SlideValueEffect.cs" />

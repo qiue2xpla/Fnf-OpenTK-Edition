@@ -52,5 +52,10 @@ namespace Fnf.Game
         {
             return a + (b - a) * t;
         }
+
+        public override bool isFinished()
+        {
+            return remaining <= 0;
+        }
     }
 }

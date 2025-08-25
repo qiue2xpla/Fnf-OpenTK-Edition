@@ -53,5 +53,10 @@ namespace Fnf.Game
                 onEndCallback?.Invoke();
             }
         }
+
+        public override bool isFinished()
+        {
+            return remaining <= 0;
+        }
     }
 }

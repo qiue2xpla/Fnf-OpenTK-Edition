@@ -52,5 +52,10 @@ namespace Fnf.Game
 			OpenGL.Vertex2( 1, -1);
 			OpenGL.EndDrawing();
 		}
+
+        public override bool isFinished()
+        {
+			return remaining <= 0;
+        }
     }
 }

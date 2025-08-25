@@ -71,5 +71,10 @@ namespace Fnf.Game
 
             OpenGL.EndDrawing();
         }
+
+        public override bool isFinished()
+        {
+            return remaining <= 0;
+        }
     }
 }

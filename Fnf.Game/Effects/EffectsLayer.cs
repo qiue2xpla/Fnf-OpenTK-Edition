@@ -3,13 +3,18 @@ using System.Collections.Generic;
 
 namespace Fnf.Game
 {
-    public class Effects : IUpdatable, IRenderable
+    public class EffectsLayer : IUpdatable, IRenderable
     {
         public bool isUpdatable { get; set; } = true;
         public bool isRenderable { get; set; } = true;
         
         internal List<Effect> currentEffects = new List<Effect>();
         internal List<Effect> removalQueue = new List<Effect>();
+
+        public void Add(Effect effect)
+        {
+            currentEffects.Add(effect);
+        }
 
         public void Clear()
         {

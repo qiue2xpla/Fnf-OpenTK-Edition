@@ -8,6 +8,7 @@ namespace Fnf
     public class MainMenu : Script
     {
         Animator[] menuItems;
+        EffectsLayer effectsLayer;
 
         int bg = Texture.GenerateFromPath("Assets/Shared/menuBG.png", out _);
 
@@ -20,7 +21,7 @@ namespace Fnf
 
         void Start()
         {
-            EffectsManager.Clear();
+            effectsLayer = new EffectsLayer();
 
             if (Music.Instruments == null)
             {
@@ -50,7 +51,7 @@ namespace Fnf
 
             changeItem();
 
-            new TransitionOutEffect(0, 0.5f, Color.Black);
+            effectsLayer.Add(new TransitionOutEffect(0, 0.5f, Color.Black));
         }
 
         void Update()
@@ -64,13 +65,13 @@ namespace Fnf
 
             GlobalSystems.VolumeControl.Update();
 
-            EffectsManager.Update();
+            effectsLayer.Update();
 
             if (selectedSomethin) return;
 
             if (Input.GetKeyDown(Key.Escape))
             {
-                new TransitionInEffect(0, 0.5f, Color.Black);
+                effectsLayer.Add(new TransitionInEffect(0, 0.5f, Color.Black));
                 selectedSomethin = true;
                 return;
             }
@@ -95,7 +96,7 @@ namespace Fnf
 
                 //flickerRenderEffect.Start(0, 1.1f, 5, bg);
 
-                new SlideValueEffect(0, 0.4f, 255, 0, (a) =>
+                effectsLayer.Add(new SlideValueEffect(0, 0.4f, 255, 0, (a) =>
                 {
                     for (int i = 0; i < menuItems.Length; i++)
                     {
@@ -104,9 +105,9 @@ namespace Fnf
                             menuItems[i].color.a = (byte)a;
                         }
                     }
-                });
+                }));
 
-                new FlickerRenderEffect(0, 1, 16, menuItems[CurrentSelected]);
+                effectsLayer.Add(new FlickerRenderEffect(0, 1, 16, menuItems[CurrentSelected]));
 
                 for (int i = 0; i < menuItems.Length; i++)
                 {
@@ -117,15 +118,15 @@ namespace Fnf
                         switch (daChoice)
                         {
                             case "story mode":
-                                new TransitionInEffect(0.7f, 0.5f, Color.Black, delegate { Active = new StoryMenu(); });
+                                effectsLayer.Add(new TransitionInEffect(0.7f, 0.5f, Color.Black, delegate { Active = new StoryMenu(); }));
                                 break;
 
                             case "freeplay":
-                                new TransitionInEffect(0.7f, 0.5f, Color.Black, delegate { Active = new Freeplay(); });
+                                effectsLayer.Add(new TransitionInEffect(0.7f, 0.5f, Color.Black, delegate { Active = new Freeplay(); }));
                                 break;
 
                             case "options":
-                                new TransitionInEffect(0.7f, 0.5f, Color.Black, delegate { Active = new Test(); });
+                                effectsLayer.Add(new TransitionInEffect(0.7f, 0.5f, Color.Black, delegate { Active = new Test(); }));
                                 break;
                         }
                     }
@@ -158,7 +159,7 @@ namespace Fnf
             {
                 menuItems[i].Render();
             }
-            EffectsManager.Render();
+            effectsLayer.Render();
             GlobalSystems.VolumeControl.Render();
         }
 

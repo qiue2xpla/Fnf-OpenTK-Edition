@@ -13,6 +13,7 @@ namespace Fnf
         bool danceLeft;
 
         Animator Logo, GF, PETB;
+        EffectsLayer effectsLayer;
         IntroText introText;
 
         public Intro()
@@ -51,7 +52,8 @@ namespace Fnf
 
             ShowAnimators(false);
 
-            introText = new IntroText();
+            introText = new();
+            effectsLayer = new();
 
             // Setup beat system
             Music.BeatsPerMinute = 102;
@@ -75,7 +77,7 @@ namespace Fnf
 
             Music.Update();
             GlobalSystems.VolumeControl.Update();
-            EffectsManager.Update();
+            effectsLayer.Update();
 
             if (Input.GetAnyKeysDown(Key.Enter, Key.KeypadEnter, Key.Space))
             {
@@ -87,8 +89,8 @@ namespace Fnf
 
                     transitioning = true;
 
-                    new FlashEffect(0, 1, Color.White);
-                    new TransitionInEffect(1, 1, Color.Black, delegate { Active = new MainMenu(); });
+                    effectsLayer.Add(new FlashEffect(0, 1, Color.White));
+                    effectsLayer.Add(new TransitionInEffect(1, 1, Color.Black, delegate { Active = new MainMenu(); }));
                 }
 
                 if (!skippedIntro)
@@ -108,7 +110,7 @@ namespace Fnf
 
             GlobalSystems.VolumeControl.Render();
 
-            EffectsManager.Render();
+            effectsLayer.Render();
         }
 
         void OnBeatHit(int beat)
@@ -145,7 +147,7 @@ namespace Fnf
             skippedIntro = true;
             introShown = true;
 
-            new FlashEffect(0, 4, Color.White);
+            effectsLayer.Add(new FlashEffect(0, 4, Color.White));
 
             ShowAnimators(true);
 
