@@ -97,6 +97,7 @@
     <Compile Include="UI\Text.cs" />
     <Compile Include="Units\Color.cs" />
     <Compile Include="Units\Point.cs" />
+    <Compile Include="Units\SizeF.cs" />
     <Compile Include="Units\Size.cs" />
     <Compile Include="Units\Vector2.cs" />
     <Compile Include="Systems\UI.cs" />
