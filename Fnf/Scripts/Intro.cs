@@ -88,7 +88,7 @@ namespace Fnf
             PETB.Update();
 
             Music.Update();
-            GlobalSystems.VolumeControl.Update();
+            SharedGameSystems.VolumeControl.Update();
             effectsLayer.Update();
 
             if (Input.GetAnyKeysDown(Key.Enter, Key.KeypadEnter, Key.Space))
@@ -120,7 +120,7 @@ namespace Fnf
             PETB.Render();
             introText.Render();
 
-            GlobalSystems.VolumeControl.Render();
+            SharedGameSystems.VolumeControl.Render();
 
             effectsLayer.Render();
         }

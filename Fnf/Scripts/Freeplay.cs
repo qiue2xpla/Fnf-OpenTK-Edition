@@ -112,7 +112,7 @@ namespace Fnf
 
             if (Math.Abs(smoothedScore - score) < 500) smoothedScore = score;
 
-            GlobalSystems.VolumeControl.Update();
+            SharedGameSystems.VolumeControl.Update();
         }
 
         void Render()
@@ -157,7 +157,7 @@ namespace Fnf
             scoreText.Render();
             difficultyText.Render();
 
-            GlobalSystems.VolumeControl.Render();
+            SharedGameSystems.VolumeControl.Render();
         }
 
         float lerp(float a, float b, float t)

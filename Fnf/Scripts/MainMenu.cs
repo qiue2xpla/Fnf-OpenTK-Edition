@@ -63,7 +63,7 @@ namespace Fnf
 
             CurrentBGPosition = Lerp(CurrentBGPosition, TargetBGPosition, Time.deltaTime * 4);
 
-            GlobalSystems.VolumeControl.Update();
+            SharedGameSystems.VolumeControl.Update();
 
             effectsLayer.Update();
 
@@ -71,7 +71,7 @@ namespace Fnf
 
             if (Input.GetKeyDown(Key.Escape))
             {
-                effectsLayer.Add(new TransitionInEffect(0, 0.5f, Color.Black));
+                effectsLayer.Add(new TransitionInEffect(0, 0.5f, Color.Black, delegate { Active = new Intro(); }));
                 selectedSomethin = true;
                 return;
             }
@@ -160,7 +160,7 @@ namespace Fnf
                 menuItems[i].Render();
             }
             effectsLayer.Render();
-            GlobalSystems.VolumeControl.Render();
+            SharedGameSystems.VolumeControl.Render();
         }
 
         void changeItem(int huh = 0)

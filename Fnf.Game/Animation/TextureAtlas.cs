@@ -14,6 +14,7 @@ namespace Fnf.Game
 
         public static void LoadAtlas(string name, string path)
         {
+            if(atlases.ContainsKey(name)) return;
             atlases.Add(name, new Atlas(path));
         }
 

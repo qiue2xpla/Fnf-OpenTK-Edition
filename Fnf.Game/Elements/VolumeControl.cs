@@ -12,9 +12,7 @@ namespace Fnf.Game
         public bool isUpdatable { get; set; } = true;
         public bool isRenderable { get; set; } = true;
 
-        Text text;
-
-        int volume
+        public int volume
         {
             get => (int)Math.Round(ClipsManager.AppVolume * 10);
             set
@@ -29,6 +27,7 @@ namespace Fnf.Game
         }
 
         float slide = 0;
+        Text text;
 
         public VolumeControl()
         {

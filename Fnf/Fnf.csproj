@@ -86,22 +86,34 @@
     <Content Include="Assets\IntroText.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\MenuBackgrounds\menu_christmas.png" />
-    <Content Include="Assets\MenuBackgrounds\menu_halloween.png" />
-    <Content Include="Assets\MenuBackgrounds\menu_limo.png" />
-    <Content Include="Assets\MenuBackgrounds\menu_philly.png" />
-    <Content Include="Assets\MenuBackgrounds\menu_school.png" />
-    <Content Include="Assets\MenuBackgrounds\menu_stage.png">
+    <Content Include="Assets\Menu\Backgrounds\Christmas.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\MenuBackgrounds\menu_tank.png" />
-    <Content Include="Assets\Difficulties\easy.png">
+    <Content Include="Assets\Menu\Backgrounds\Halloween.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Backgrounds\Limo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Backgrounds\Philly.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Backgrounds\School.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Backgrounds\Stage.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Backgrounds\Tank.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Difficulties\easy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Difficulties\hard.png">
+    <Content Include="Assets\Menu\Difficulties\hard.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Difficulties\normal.png">
+    <Content Include="Assets\Menu\Difficulties\normal.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Notes\Default.png">
@@ -162,6 +174,9 @@
     <Content Include="Assets\Background\metabg.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Shared\Menu_Tracks.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Shared\scrollMenu.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -212,25 +227,49 @@
     <Content Include="Assets\Songs\Tenshi\VoicesPlayer.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\StoryWeeks\tutorial.png">
+    <Content Include="Assets\Menu\Characters\Menu_BF.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\StoryWeeks\week1.png">
+    <Content Include="Assets\Menu\Characters\Menu_BF.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\StoryWeeks\week2.png">
+    <Content Include="Assets\Menu\Characters\Menu_Dad.png" />
+    <Content Include="Assets\Menu\Characters\Menu_Dad.xml" />
+    <Content Include="Assets\Menu\Characters\Menu_GF.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\StoryWeeks\week3.png">
+    <Content Include="Assets\Menu\Characters\Menu_GF.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\StoryWeeks\week4.png">
+    <Content Include="Assets\Menu\Characters\Menu_Mom.png" />
+    <Content Include="Assets\Menu\Characters\Menu_Mom.xml" />
+    <Content Include="Assets\Menu\Characters\Menu_Parents.png" />
+    <Content Include="Assets\Menu\Characters\Menu_Parents.xml" />
+    <Content Include="Assets\Menu\Characters\Menu_Pico.png" />
+    <Content Include="Assets\Menu\Characters\Menu_Pico.xml" />
+    <Content Include="Assets\Menu\Characters\Menu_Senpai.png" />
+    <Content Include="Assets\Menu\Characters\Menu_Senpai.xml" />
+    <Content Include="Assets\Menu\Characters\Menu_Spooky_Kids.png" />
+    <Content Include="Assets\Menu\Characters\Menu_Spooky_Kids.xml" />
+    <Content Include="Assets\Menu\Weeks\tutorial.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\StoryWeeks\week5.png">
+    <Content Include="Assets\Menu\Weeks\week1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\StoryWeeks\week6.png">
+    <Content Include="Assets\Menu\Weeks\week2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Weeks\week3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Weeks\week4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Weeks\week5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Menu\Weeks\week6.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Assets\Fonts\vcr.ttf">
