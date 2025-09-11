@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
 using System.Drawing;
+using System.IO;
 
 namespace Fnf.Framework.Graphics
 {
@@ -14,6 +15,8 @@ namespace Fnf.Framework.Graphics
 
         public static int GenerateFromPath(string path, out Size size)
         {
+            if(!File.Exists(path)) throw new System.IO.FileNotFoundException(path);
+
             using (Bitmap bitmap = new Bitmap(path))
             {
                 size = new Size(bitmap.Width, bitmap.Height);

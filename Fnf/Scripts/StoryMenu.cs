@@ -5,134 +5,116 @@ using Fnf.Framework;
 using Fnf.Game;
 
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 using System;
 
 namespace Fnf
 {
 	public class StoryMenu : Script
 	{
+		// Stage stuff
+		Animator gf, bf, opponent;
+
+		// Text stuff
 		Text weekScore, weekName, tracks;
-		Animator leftArrow, rightArrow;
 
-		List<(int, Size)> difs = new();
-
-		int ttex; Size tsize;
-
+		// Song selection stuff
 		WeekOption[] options;
-		int currentWeek;
-
 		float scrollLerp;
+        int ttex; Size tsize;
+		int selectedWeek;
 
-		void Start()
+		// Difficulty stuff
+		Dictionary<string, (int id, Size size)> difficulties;
+		Animator leftArrow, rightArrow;
+		float leftArrowCooldown, rightArrowCooldown, fallingValue;
+		int selectedDifficulty;
+
+        void Start()
 		{
-			// TODO: Fuck this font system. Make a new one bitch.
-			Font font = new("Assets/Fonts/vcr");
-			FontAtlas atlas = new(font, 100, 3, 2, 0, FontAtlas.UpperCase + FontAtlas.LowerCase +
-				FontAtlas.Numbers + FontAtlas.Ponctuals + FontAtlas.Space);
-
-			weekScore = new Text(atlas);
-			weekScore.text = "WEEK SCORE:0";
-			weekScore.textAlignment = TextAlignment.Left;
-			weekScore.height = 60;
-			weekScore.width = 1000;
-			weekScore.fontSize = 37;
-			Anchor.PositionUILocaly(weekScore, AnchorType.TopLeft, new Vector2(15, 0));
-
-			weekName = new(atlas);
-			weekName.text = "CUTIE";
-			weekName.textAlignment = TextAlignment.Right;
-			weekName.height = 60;
-			weekName.width = 1000;
-			weekName.fontSize = 37;
-			weekName.color = new Color(178, 178, 178);
-			Anchor.PositionUILocaly(weekName, AnchorType.TopRight, new Vector2(15, 0));
-
-			tracks = new(atlas);
-			tracks.text = "TUTORIAL";
-			tracks.textAlignment = TextAlignment.Top;
-			tracks.height = 400;
-			tracks.width = 1000;
-			tracks.fontSize = 32;
-			tracks.color = new Color(229, 87, 119);
-			tracks.localPosition = new Vector2(-470, -375);
-
+			SetupTexts();
+			SetupDifficulty();
+			SetupWeeks();
             ttex = Texture.GenerateFromPath("Assets/Shared/Menu_Tracks.png", out tsize);
 
+			TextureAtlas.LoadAtlas("menugf", "Assets/Menu/Characters/Menu_GF");
+            TextureAtlas.LoadAtlas("menubf", "Assets/Menu/Characters/Menu_BF");
 
+            Animation gfidle = TextureAtlas.GetAnimation("menugf", "M GF Idle");
+			gfidle.looped = true;
 
-			leftArrow = new();
-			rightArrow = new();
+            Animation bfidle = TextureAtlas.GetAnimation("menubf", "M BF Idle");
+            bfidle.looped = true;
 
-			TextureAtlas.LoadAtlas("cmua", "Assets/campaign_menu_UI_assets");
+            gf = new();
+			gf.localPosition = new Vector2(0, 110);
+			gf.localScale = new Vector2(1.2f);
+			gf.add("idle", gfidle);
+			gf.play("idle");
 
-			leftArrow.add("idle", TextureAtlas.GetAnimation("cmua", "arrow left"));
-			leftArrow.add("pressed", TextureAtlas.GetAnimation("cmua", "arrow push left"));
-			rightArrow.add("idle", TextureAtlas.GetAnimation("cmua", "arrow right"));
-			rightArrow.add("pressed", TextureAtlas.GetAnimation("cmua", "arrow push right"));
+            bf = new();
+            bf.localPosition = new Vector2(440, 80);
+            bf.localScale = new Vector2(1.0f);
+            bf.add("idle", bfidle);
+            bf.play("idle");
 
-			leftArrow.play("idle");
-			rightArrow.play("idle");
-
-			difs.Add((Texture.GenerateFromPath("Assets/Difficulties/normal.png", out Size size3), size3));
-
-			float maxw = 0;
-
-			for (int i = 0; i < difs.Count; i++)
-			{
-				maxw = Math.Max(difs[i].Item2.width, maxw);
-			}
-
-			//maxw *= 1.2f;
-			maxw /= 2;
-			maxw += 29;
-
-			leftArrow.localPosition = new(470 - maxw, -165);
-			rightArrow.localPosition = new(470 + maxw, -165);
-
-			// Load weeks data
-			WeekOption tutor = new WeekOption()
-			{
-				stageBg = Texture.GenerateFromPath("Assets/MenuBackgrounds/menu_stage.png", out _),
-				optionTex = Texture.GenerateFromPath("Assets/StoryWeeks/tutorial.png", out Size to),
-				optionSize = to
-			};
-
-			WeekOption week1 = new WeekOption()
-			{
-				stageBg = tutor.stageBg,
-				optionTex = Texture.GenerateFromPath("Assets/StoryWeeks/week1.png", out Size w1o),
-				optionSize = w1o
-			};
-
-			options = new WeekOption[6];
-			options[0] = tutor;
-			options[1] = week1;
-			options[2] = tutor;
-			options[3] = tutor;
-			options[4] = tutor;
-			options[5] = tutor;
-		}
+        }
 
 		void Update()
 		{
 			leftArrow.Update();
 			rightArrow.Update();
+			gf.Update();
+			bf.Update();
 
-			if (Input.GetAnyKeysDown(Key.W, Key.Up))
+			// Week selection
+			if (Input.GetAnyKeysDown(Key.W, Key.Up))   selectedWeek = MathFunctions.WrapClamp(selectedWeek - 1, options.Length - 1, 0);
+            if (Input.GetAnyKeysDown(Key.S, Key.Down)) selectedWeek = MathFunctions.WrapClamp(selectedWeek + 1, options.Length - 1, 0);
+
+            // Difficulty selection
+            if (Input.GetAnyKeysDown(Key.D, Key.Right))
+            {
+                selectedDifficulty = MathFunctions.WrapClamp(selectedDifficulty + 1, options[selectedWeek].difficulties.Length - 1, 0);
+                rightArrow.play("pressed");
+				rightArrowCooldown = 0.1f;
+                fallingValue = .1f;
+            }
+            if (Input.GetAnyKeysDown(Key.A, Key.Left))
+            {
+                selectedDifficulty = MathFunctions.WrapClamp(selectedDifficulty - 1, options[selectedWeek].difficulties.Length - 1, 0);
+                leftArrow.play("pressed");
+                leftArrowCooldown = 0.1f;
+				fallingValue = .1f;
+            }
+
+			if(rightArrowCooldown > 0)
 			{
-				currentWeek--;
-				if(currentWeek < 0) 
-					currentWeek = 0;
+                rightArrowCooldown -= Time.deltaTime;
+				if (rightArrowCooldown == 0) rightArrowCooldown = -1f;
 			}
+            if (leftArrowCooldown > 0)
+            {
+                leftArrowCooldown -= Time.deltaTime;
+                if (leftArrowCooldown == 0) leftArrowCooldown = -1f;
+            }
 
-			if(Input.GetAnyKeysDown(Key.S, Key.Down))
+			if (rightArrowCooldown < 0)
 			{
-				currentWeek++;
-				if (currentWeek >= options.Length)
-					currentWeek = options.Length - 1;
+                rightArrowCooldown = 0;
+				rightArrow.play("idle");
 			}
+            if (leftArrowCooldown < 0)
+            {
+                leftArrowCooldown = 0;
+                leftArrow.play("idle");
+            }
 
-			scrollLerp = MathFunctions.Lerp(scrollLerp, currentWeek * 148, Time.deltaTime * 10);
+            scrollLerp = MathFunctions.Lerp(scrollLerp, selectedWeek * 148, Time.deltaTime * 10);
+			fallingValue = MathFunctions.Clamp(fallingValue - Time.deltaTime, 1, 0);
+
+			tracks.text = options[selectedWeek].tracks;
+			weekName.text = options[selectedWeek].weekName;
 		}
 
 		void Render()
@@ -157,7 +139,7 @@ namespace Fnf
 			float bottom = Window.PixelToViewportVertical(Window.GridSize.height / 2f - 60 - 412);
 
 			OpenGL.Color3(1, 1, 1);
-			Texture.Use(options[currentWeek].stageBg);
+			Texture.Use(options[selectedWeek].menuBackground);
 			OpenGL.BeginDrawing(DrawMode.Quads);
 			OpenGL.TextureCoord(1, 0);
 			OpenGL.Vertex2(1, top);
@@ -170,6 +152,8 @@ namespace Fnf
 			OpenGL.EndDrawing();
 			Texture.Use(OpenGL.NULL);
 
+			gf.Render();
+			bf.Render();
 		}
 
 		void RenderWeekTracks()
@@ -200,19 +184,19 @@ namespace Fnf
 
 		void RenderDifficulty()
 		{
-			float yoffset = -165;
+			float yoffset = -165 + fallingValue * 100;
 
 			float xoffset = 470;
 
-			Size size = difs[0].Item2;
+			Size size = difficulties[options[selectedWeek].difficulties[selectedDifficulty]].size;
 
 			float scale = 1f;
 			float w = size.width / 2 * scale;
 			float h = size.height / 2 * scale;
 
-			OpenGL.Color4(Color.White);
+			OpenGL.Color4(Color.White, 1 - fallingValue * 6);
 
-			Texture.Use(difs[0].Item1);
+			Texture.Use(difficulties[options[selectedWeek].difficulties[selectedDifficulty]].id);
 			OpenGL.BeginDrawing(DrawMode.Quads);
 			OpenGL.TextureCoord(1, 0);
 			OpenGL.Pixel2(w + xoffset, h + yoffset);
@@ -235,15 +219,15 @@ namespace Fnf
 
 			for (int i = 0; i < options.Length; i++)
 			{
-				Size size = options[i].optionSize;
+				Size size = options[i].weekImageSize;
 
 				float scale = 1.05f;
 				float w = size.width / 2 * scale;
 				float h = size.height / 2 * scale;
 
-				OpenGL.Color4(Color.White, i == currentWeek ? 1 : 0.8f);
+				OpenGL.Color4(Color.White, i == selectedWeek ? 1 : 0.8f);
 
-				Texture.Use(options[i].optionTex);
+				Texture.Use(options[i].weekImage);
 				OpenGL.BeginDrawing(DrawMode.Quads);
 				OpenGL.TextureCoord(1, 0);
 				OpenGL.Pixel2(w, h + yoffset);
@@ -259,13 +243,153 @@ namespace Fnf
 				yoffset -= 148;
 			} 
 		}
+
+		void SetupTexts()
+		{
+            // TODO: Fuck this font system. Make a new one bitch.
+            Font font = new("Assets/Fonts/vcr");
+            FontAtlas atlas = new(font, 100, 3, 2, 0,
+                FontAtlas.UpperCase + FontAtlas.LowerCase +
+                FontAtlas.Numbers + FontAtlas.Ponctuals + FontAtlas.Space);
+
+            weekScore = new(atlas)
+            {
+                text = "WEEK SCORE:0",
+                textAlignment = TextAlignment.Left,
+                height = 60,
+                width = 1000,
+                fontSize = 37
+            };
+
+			weekName = new(atlas)
+			{
+				text = "",
+				textAlignment = TextAlignment.Right,
+				height = 60,
+				width = 1000,
+				fontSize = 37,
+				color = new Color(178, 178, 178)
+			};
+
+            tracks = new(atlas)
+            {
+                text = "",
+                textAlignment = TextAlignment.Top,
+                height = 400,
+                width = 1000,
+                fontSize = 32,
+                color = new Color(229, 87, 119),
+                localPosition = new Vector2(-470, -375)
+            };
+
+            Anchor.PositionUILocaly(weekName, AnchorType.TopRight, new Vector2(15, 0));
+            Anchor.PositionUILocaly(weekScore, AnchorType.TopLeft, new Vector2(15, 0));
+        }
+
+		void SetupDifficulty()
+		{
+			difficulties = new();
+			List<string> diffsImagePaths = Directory.GetFileSystemEntries("Assets/Menu/Difficulties").ToList();
+			for (int i = 0; i < diffsImagePaths.Count; i++)
+			{
+				string diffName = new FileInfo(diffsImagePaths[i]).Name;
+				diffName = diffName.Substring(0, diffName.Length - 4);
+				difficulties.Add(diffName, (Texture.GenerateFromPath(diffsImagePaths[i], out Size sizeout), sizeout));
+			}
+
+            float maxDifficultyWidth = 0;
+			foreach (var difficulty in difficulties)
+			{
+				float width = difficulty.Value.size.width / 2 + 29;
+                maxDifficultyWidth = Math.Max(maxDifficultyWidth, width);
+            }
+
+            leftArrow = new();
+            rightArrow = new();
+
+            leftArrow.localPosition = new(470 - maxDifficultyWidth, -165);
+            rightArrow.localPosition = new(470 + maxDifficultyWidth, -165);
+
+            TextureAtlas.LoadAtlas("cmua", "Assets/campaign_menu_UI_assets");
+
+            leftArrow.add("idle", TextureAtlas.GetAnimation("cmua", "arrow left"));
+            leftArrow.add("pressed", TextureAtlas.GetAnimation("cmua", "arrow push left"));
+            rightArrow.add("idle", TextureAtlas.GetAnimation("cmua", "arrow right"));
+            rightArrow.add("pressed", TextureAtlas.GetAnimation("cmua", "arrow push right"));
+
+            leftArrow.play("idle");
+            rightArrow.play("idle");
+        }
+
+		void SetupWeeks()
+		{
+            options = new WeekOption[7];
+
+			options[0] = new WeekOption("Stage", "tutorial")
+			{
+				tracks = "TUTORIAL",
+				weekName = "TEACHING TIME",
+				difficulties = new string[3] { "easy", "normal", "hard" }
+			};
+
+            options[1] = new WeekOption("Stage", "week1")
+            {
+                tracks = "Bopeebo\nFresh\nDadBattle",
+                weekName = "DADDY DEAREST",
+                difficulties = new string[3] { "easy", "normal", "hard" }
+            };
+
+            options[2] = new WeekOption("Halloween", "week2")
+            {
+                tracks = "Spookeez\nSouth\nMonster",
+                weekName = "SPOOKY MONTH",
+                difficulties = new string[3] { "easy", "normal", "hard" }
+            };
+
+            options[3] = new WeekOption("Philly", "week3") 
+			{
+                tracks = "Pico\nPhilly Nice\nBlammed",
+                weekName = "PICO",
+                difficulties = new string[3] { "easy", "normal", "hard" } 
+			};
+
+            options[4] = new WeekOption("Limo", "week4") 
+			{
+                tracks = "Satin Panties\nHigh\nM.I.L.F",
+                weekName = "MOMMY MUST MURDER",
+                difficulties = new string[3] { "easy", "normal", "hard" } 
+			};
+
+            options[5] = new WeekOption("Christmas", "week5") 
+			{
+                tracks = "Cocoa\nEggnog\nWinter HorrorLand",
+                weekName = "RED SNOW",
+                difficulties = new string[3] { "easy", "normal", "hard" } 
+			};
+
+            options[6] = new WeekOption("School", "week6") 
+			{
+                tracks = "Senpai\nRoses\nThrons",
+                weekName = "HATING SIMULATOR FT. MAOWLING",
+                difficulties = new string[3] { "easy", "normal", "hard" } 
+			};
+        }
 	}
 
 	class WeekOption
 	{
-		public int stageBg;
-		public int optionTex;
+		public string[] difficulties;
+		public string tracks;
+		public string weekName;
+
+		public int menuBackground;
+		public int weekImage;
+		public Size weekImageSize;
 		 
-		public Size optionSize;
+		public WeekOption(string backgroundImageName, string weekImageName)
+		{
+			menuBackground = Texture.GenerateFromPath($"Assets/Menu/Backgrounds/{backgroundImageName}.png", out _);
+			weekImage = Texture.GenerateFromPath($"Assets/Menu/Weeks/{weekImageName}.png", out weekImageSize);
+		}
 	}
 }

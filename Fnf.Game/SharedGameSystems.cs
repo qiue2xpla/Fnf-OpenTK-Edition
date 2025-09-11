@@ -1,10 +1,10 @@
 ﻿namespace Fnf.Game
 {
-    public static class GlobalSystems
+    public static class SharedGameSystems
     {
         public static VolumeControl VolumeControl;
 
-        static GlobalSystems()
+        public static void InitiateSystens()
         {
             VolumeControl = new VolumeControl();
         }

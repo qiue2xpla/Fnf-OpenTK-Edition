@@ -68,7 +68,7 @@
     <Compile Include="Elements\Conveyor\PlayerConveyor.cs" />
     <Compile Include="Elements\Conveyor\ViewRange.cs" />
     <Compile Include="FnfText.cs" />
-    <Compile Include="GlobalSystems.cs" />
+    <Compile Include="SharedGameSystems.cs" />
     <Compile Include="IntroText.cs" />
     <Compile Include="Music.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

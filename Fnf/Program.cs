@@ -1,5 +1,6 @@
 ﻿using Fnf.Framework.Audio;
 using Fnf.Framework;
+using Fnf.Game;
 
 namespace Fnf
 {
@@ -7,7 +8,7 @@ namespace Fnf
     {
         static void Main()
         {
-            Script.AssignStartupScript<StoryMenu>();
+            Script.AssignStartupScript<Intro>();
             ClipsManager.AppVolume = 0.1f;
 
             Window.Initiate();
@@ -15,6 +16,8 @@ namespace Fnf
             Window.IsGridFixed = true;
             Window.WindowSize = Window.GridSize * 0.9f;
             Window.Title = "Friday Night Funkin";
+
+            SharedGameSystems.InitiateSystens();
 
             Window.Run();
         }
