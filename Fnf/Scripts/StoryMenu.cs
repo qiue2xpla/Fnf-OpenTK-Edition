@@ -67,6 +67,9 @@ namespace Fnf
 			rightArrow.Update();
 			gf.Update();
 			bf.Update();
+			SharedGameSystems.VolumeControl.Update();
+
+			if(Input.GetKeyDown(Key.Escape)) Active = new MainMenu();
 
 			// Week selection
 			if (Input.GetAnyKeysDown(Key.W, Key.Up))   selectedWeek = MathFunctions.WrapClamp(selectedWeek - 1, options.Length - 1, 0);
@@ -154,7 +157,9 @@ namespace Fnf
 
 			gf.Render();
 			bf.Render();
-		}
+
+            SharedGameSystems.VolumeControl.Render();
+        }
 
 		void RenderWeekTracks()
 		{

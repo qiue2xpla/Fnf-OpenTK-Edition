@@ -71,7 +71,7 @@ namespace Fnf
 
             if (Input.GetKeyDown(Key.Escape))
             {
-                effectsLayer.Add(new TransitionInEffect(0, 0.5f, Color.Black));
+                effectsLayer.Add(new TransitionInEffect(0, 0.5f, Color.Black, delegate { Active = new Intro(); }));
                 selectedSomethin = true;
                 return;
             }
