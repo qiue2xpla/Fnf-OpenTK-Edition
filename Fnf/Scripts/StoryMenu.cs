@@ -38,8 +38,8 @@ namespace Fnf
 			SetupWeeks();
             ttex = Texture.GenerateFromPath("Assets/Shared/Menu_Tracks.png", out tsize);
 
-			TextureAtlas.LoadAtlas("menugf", "Assets/Menu/Characters/Menu_GF");
-            TextureAtlas.LoadAtlas("menubf", "Assets/Menu/Characters/Menu_BF");
+			TextureAtlas.LoadAtlas("menugf", "Assets/Story Menu/Characters/Menu_GF");
+            TextureAtlas.LoadAtlas("menubf", "Assets/Story Menu/Characters/Menu_BF");
 
             Animation gfidle = TextureAtlas.GetAnimation("menugf", "M GF Idle");
 			gfidle.looped = true;
@@ -69,11 +69,15 @@ namespace Fnf
 			bf.Update();
 			SharedGameSystems.VolumeControl.Update();
 
-			if(Input.GetKeyDown(Key.Escape)) Active = new MainMenu();
+			if (Input.GetKeyDown(Key.Escape)) Active = new MainMenu();
 
 			// Week selection
-			if (Input.GetAnyKeysDown(Key.W, Key.Up))   selectedWeek = MathFunctions.WrapClamp(selectedWeek - 1, options.Length - 1, 0);
-            if (Input.GetAnyKeysDown(Key.S, Key.Down)) selectedWeek = MathFunctions.WrapClamp(selectedWeek + 1, options.Length - 1, 0);
+			if (Input.GetAnyKeysDown(Key.W, Key.Up)) selectedWeek = MathFunctions.WrapClamp(selectedWeek - 1, options.Length - 1, 0);
+			if (Input.GetAnyKeysDown(Key.S, Key.Down)) selectedWeek = MathFunctions.WrapClamp(selectedWeek + 1, options.Length - 1, 0);
+			if (Input.GetKeyDown(Key.Enter))
+			{
+				Active = new PlayMode("Fuck you!", new string[] { "Epiphany" });
+			}
 
             // Difficulty selection
             if (Input.GetAnyKeysDown(Key.D, Key.Right))
@@ -294,7 +298,7 @@ namespace Fnf
 		void SetupDifficulty()
 		{
 			difficulties = new();
-			List<string> diffsImagePaths = Directory.GetFileSystemEntries("Assets/Menu/Difficulties").ToList();
+			List<string> diffsImagePaths = Directory.GetFileSystemEntries("Assets/Story Menu/Difficulties").ToList();
 			for (int i = 0; i < diffsImagePaths.Count; i++)
 			{
 				string diffName = new FileInfo(diffsImagePaths[i]).Name;
@@ -393,8 +397,10 @@ namespace Fnf
 		 
 		public WeekOption(string backgroundImageName, string weekImageName)
 		{
-			menuBackground = Texture.GenerateFromPath($"Assets/Menu/Backgrounds/{backgroundImageName}.png", out _);
-			weekImage = Texture.GenerateFromPath($"Assets/Menu/Weeks/{weekImageName}.png", out weekImageSize);
+			menuBackground = Texture.GenerateFromPath($"Assets/Story Menu/Backgrounds/{backgroundImageName}.png", out _);
+			weekImage = Texture.GenerateFromPath($"Assets/Story Menu/Weeks/{weekImageName}.png", out weekImageSize);
+
+			Texture.SetWrap(weekImage, WrapMode.Clamp, WrapMode.Clamp); // Not working
 		}
 	}
 }
