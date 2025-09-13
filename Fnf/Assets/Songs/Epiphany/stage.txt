@@ -1,0 +1,7 @@
+﻿[Stage]
+Image background "Assets/Backgrounds/FutileBG.png"
+Image background2 "Assets/Backgrounds/FutileBG.png"
+
+[Layout]
+background 500 0 90 0.1 0.1
+background2 -500 0 -90 0.2 0.1

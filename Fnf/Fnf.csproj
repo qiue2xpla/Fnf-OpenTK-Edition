@@ -87,7 +87,9 @@
     <Content Include="Assets\IntroText.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Songs\Epiphany\scene.txt" />
+    <Content Include="Assets\Songs\Epiphany\stage.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Story Menu\Backgrounds\Christmas.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -143,7 +145,9 @@
     <Content Include="Assets\Shared\Confirm.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Background-temporary\FutileBG.png" />
+    <Content Include="Assets\Backgrounds\FutileBG.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Shared\Intro\GfIntro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -173,7 +177,7 @@
     <Content Include="Assets\Shared\menuDesat.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Background-temporary\metabg.png">
+    <Content Include="Assets\Backgrounds\metabg.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Shared\Menu_Tracks.png">

@@ -7,7 +7,7 @@ public class Test : Script
 {
     Animator animator;
     Character character;
-    Background background;
+    Image background;
 
     PlayerConveyor player;
     OpponentConveyor opponent;
@@ -41,7 +41,7 @@ public class Test : Script
 
 
 
-        background = new Background("Assets/Background/metabg.png");
+        background = new Image("Assets/Background/metabg.png");
 
         Music.LoadSong("Unknown Suffering", 0.5f);
         Music.Play();

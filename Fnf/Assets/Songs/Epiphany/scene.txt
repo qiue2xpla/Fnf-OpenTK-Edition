@@ -1,5 +1,0 @@
-﻿[Assets]
-Character OppositonExpunged
-
-[Scene]
-Animator opp  

@@ -46,7 +46,7 @@
     <Compile Include="Animation\Frame.cs" />
     <Compile Include="Animation\SubTexture.cs" />
     <Compile Include="Animation\TextureAtlas.cs" />
-    <Compile Include="Elements\Character.cs" />
+    <Compile Include="Elements\underwork\Character.cs" />
     <Compile Include="CharacterIcon.cs" />
     <Compile Include="Chart\Beatmap.cs" />
     <Compile Include="Chart\Chart.cs" />
@@ -61,12 +61,12 @@
     <Compile Include="Effects\SlideValueEffect.cs" />
     <Compile Include="Effects\TransitionInEffect.cs" />
     <Compile Include="Effects\TransitionOutEffect.cs" />
-    <Compile Include="Elements\Background.cs" />
-    <Compile Include="Elements\Conveyor\ConveyorBase.cs" />
-    <Compile Include="Elements\Conveyor\NoteColumn.cs" />
-    <Compile Include="Elements\Conveyor\OpponentConveyor.cs" />
-    <Compile Include="Elements\Conveyor\PlayerConveyor.cs" />
-    <Compile Include="Elements\Conveyor\ViewRange.cs" />
+    <Compile Include="Elements\Image.cs" />
+    <Compile Include="Elements\underwork\Conveyor\ConveyorBase.cs" />
+    <Compile Include="Elements\underwork\Conveyor\NoteColumn.cs" />
+    <Compile Include="Elements\underwork\Conveyor\OpponentConveyor.cs" />
+    <Compile Include="Elements\underwork\Conveyor\PlayerConveyor.cs" />
+    <Compile Include="Elements\underwork\Conveyor\ViewRange.cs" />
     <Compile Include="FnfText.cs" />
     <Compile Include="SharedGameSystems.cs" />
     <Compile Include="IntroText.cs" />
@@ -75,7 +75,7 @@
     <Compile Include="Skins\CharacterSkin.cs" />
     <Compile Include="Skins\ControlsSkin.cs" />
     <Compile Include="Skins\NotesSkin.cs" />
-    <Compile Include="Elements\VolumeControl.cs" />
+    <Compile Include="Elements\underwork\VolumeControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fnf.Framework\Fnf.Framework.csproj">
