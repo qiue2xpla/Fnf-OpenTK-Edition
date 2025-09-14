@@ -1,7 +1,17 @@
 ﻿[Stage]
+Image background3 "Assets/Backgrounds/FutileBG.png"
 Image background "Assets/Backgrounds/FutileBG.png"
 Image background2 "Assets/Backgrounds/FutileBG.png"
+
+Character opp oppoEx
 
 [Layout]
 background 500 0 90 0.1 0.1
 background2 -500 0 -90 0.2 0.1
+background3 0 0 0 1 1
+
+[Paralax]
+background 1
+background2 0.2 0.5
+background3 0.01
+opp 0.24

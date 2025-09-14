@@ -72,8 +72,8 @@ namespace Fnf
 			if (Input.GetKeyDown(Key.Escape)) Active = new MainMenu();
 
 			// Week selection
-			if (Input.GetAnyKeysDown(Key.W, Key.Up)) selectedWeek = MathFunctions.WrapClamp(selectedWeek - 1, options.Length - 1, 0);
-			if (Input.GetAnyKeysDown(Key.S, Key.Down)) selectedWeek = MathFunctions.WrapClamp(selectedWeek + 1, options.Length - 1, 0);
+			if (Input.GetAnyKeysDown(Key.W, Key.Up)) selectedWeek = MathUtility.WrapClamp(selectedWeek - 1, options.Length - 1, 0);
+			if (Input.GetAnyKeysDown(Key.S, Key.Down)) selectedWeek = MathUtility.WrapClamp(selectedWeek + 1, options.Length - 1, 0);
 			if (Input.GetKeyDown(Key.Enter))
 			{
 				Active = new PlayMode("Fuck you!", new string[] { "Epiphany" });
@@ -82,14 +82,14 @@ namespace Fnf
             // Difficulty selection
             if (Input.GetAnyKeysDown(Key.D, Key.Right))
             {
-                selectedDifficulty = MathFunctions.WrapClamp(selectedDifficulty + 1, options[selectedWeek].difficulties.Length - 1, 0);
+                selectedDifficulty = MathUtility.WrapClamp(selectedDifficulty + 1, options[selectedWeek].difficulties.Length - 1, 0);
                 rightArrow.play("pressed");
 				rightArrowCooldown = 0.1f;
                 fallingValue = .1f;
             }
             if (Input.GetAnyKeysDown(Key.A, Key.Left))
             {
-                selectedDifficulty = MathFunctions.WrapClamp(selectedDifficulty - 1, options[selectedWeek].difficulties.Length - 1, 0);
+                selectedDifficulty = MathUtility.WrapClamp(selectedDifficulty - 1, options[selectedWeek].difficulties.Length - 1, 0);
                 leftArrow.play("pressed");
                 leftArrowCooldown = 0.1f;
 				fallingValue = .1f;
@@ -117,8 +117,8 @@ namespace Fnf
                 leftArrow.play("idle");
             }
 
-            scrollLerp = MathFunctions.Lerp(scrollLerp, selectedWeek * 148, Time.deltaTime * 10);
-			fallingValue = MathFunctions.Clamp(fallingValue - Time.deltaTime, 1, 0);
+            scrollLerp = MathUtility.Lerp(scrollLerp, selectedWeek * 148, Time.deltaTime * 10);
+			fallingValue = MathUtility.Clamp(fallingValue - Time.deltaTime, 1, 0);
 
 			tracks.text = options[selectedWeek].tracks;
 			weekName.text = options[selectedWeek].weekName;

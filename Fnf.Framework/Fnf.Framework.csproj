@@ -53,7 +53,7 @@
     <Compile Include="Audio\Bass Wrapper\Enums\BASSMode.cs" />
     <Compile Include="Audio\Bass Wrapper\Enums\BASSSync.cs" />
     <Compile Include="Audio\VolumeLevel.cs" />
-    <Compile Include="MathFunctions.cs" />
+    <Compile Include="MathUtility.cs" />
     <Compile Include="RNG.cs" />
     <Compile Include="Systems\Anchor.cs" />
     <Compile Include="UI\InputField.cs" />

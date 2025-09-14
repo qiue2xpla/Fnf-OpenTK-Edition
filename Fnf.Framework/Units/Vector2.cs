@@ -42,6 +42,16 @@ namespace Fnf.Framework
             return new Vector2(Math.Min(a.x, b.x), Math.Min(a.y, b.y));
         }
 
+        public static bool operator ==(Vector2 a, Vector2 b)
+        {
+            return a.x == b.x && a.y == b.y;
+        }
+
+        public static bool operator !=(Vector2 a, Vector2 b)
+        {
+            return a.x != b.x || a.y != b.y;
+        }
+
         public static Vector2 operator +(Vector2 v1, Vector2 v2) => new Vector2(v1.x + v2.x, v1.y + v2.y);
         public static Vector2 operator -(Vector2 v1, Vector2 v2) => new Vector2(v1.x - v2.x, v1.y - v2.y);
         public static Vector2 operator *(Vector2 v1, Vector2 v2) => new Vector2(v1.x * v2.x, v1.y * v2.y);

@@ -72,10 +72,9 @@
     <Compile Include="IntroText.cs" />
     <Compile Include="Music.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Skins\CharacterSkin.cs" />
     <Compile Include="Skins\ControlsSkin.cs" />
     <Compile Include="Skins\NotesSkin.cs" />
-    <Compile Include="Elements\underwork\VolumeControl.cs" />
+    <Compile Include="VolumeControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fnf.Framework\Fnf.Framework.csproj">

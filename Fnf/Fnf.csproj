@@ -81,6 +81,9 @@
     <Content Include="Assets\campaign_menu_UI_assets.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Characters\Data\oppoEx.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Icons\bf.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

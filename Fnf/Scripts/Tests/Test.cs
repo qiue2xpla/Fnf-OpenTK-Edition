@@ -22,22 +22,7 @@ public class Test : Script
         animator = new Animator();
         animator.add("idle", TextureAtlas.GetAnimation("op", "OppoExpungedIdle"));
         animator.play("idle");
-
-        CharacterSkin skin = new CharacterSkin()
-        {
-            Idle = TextureAtlas.GetAnimation("op", "OppoExpungedIdle"),
-            Hit = new Animation[]{
-                    TextureAtlas.GetAnimation("op", "OppoExpungedRight"),
-                    TextureAtlas.GetAnimation("op", "OppoExpungedUp"),
-                    TextureAtlas.GetAnimation("op", "OppoExpungedDown"),
-                    TextureAtlas.GetAnimation("op", "OppoExpungedLeft"),
-                }
-
-        };
-
-        for (int i = 0; i < 4; i++) skin.Hit[i].looped = false;
-
-        character = new Character(skin);
+        character = new Character();
 
 
 
@@ -108,12 +93,12 @@ public class Test : Script
     {
         animator.Update();
         character.Update();
-        character.position = new Vector2(500, 500);
+        character.localPosition = new Vector2(500, 500);
         bool miss = Input.GetAnyKeys(Key.LShift, Key.RShift);
-        if (Input.GetKeyDown(Key.Q)) character.Hit(3, miss);
+        /*if (Input.GetKeyDown(Key.Q)) character.Hit(3, miss);
         if (Input.GetKeyDown(Key.W)) character.Hit(2, miss);
         if (Input.GetKeyDown(Key.BracketLeft)) character.Hit(1, miss);
-        if (Input.GetKeyDown(Key.BracketRight)) character.Hit(0, miss);
+        if (Input.GetKeyDown(Key.BracketRight)) character.Hit(0, miss);*/
 
         if (Input.GetKeyDown(Key.Space)) Music.Position += 10;
 

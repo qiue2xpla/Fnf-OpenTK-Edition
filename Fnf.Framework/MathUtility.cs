@@ -1,8 +1,9 @@
 ﻿namespace Fnf.Framework
 {
-    public static class MathFunctions
+    public static class MathUtility
     {
         public static float Lerp(float a, float b, float t) => a + (b - a) * t;
+        public static Vector2 Lerp(Vector2 a, Vector2 b, float t) => a + (b - a) * t;
 
         public static float Clamp(float a, float max, float min)
         {

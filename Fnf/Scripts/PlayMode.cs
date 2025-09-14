@@ -10,6 +10,7 @@ namespace Fnf
     public class PlayMode : Script
     {
         Dictionary<string, MovableObject> elements;
+        List<(Vector2 factor, MovableObject parent)> paralaxLayers;
         List<Action> updateList;
         List<Action> renderList;
 
@@ -17,12 +18,16 @@ namespace Fnf
         string weekName;
 
         int currentTrack;
-  
+
+        Vector2 cameraTarget;
+        Vector2 camera;
+
         public PlayMode(string weekName, string[] tracks)
         {
             elements = new();
             updateList = new();
             renderList = new();
+            paralaxLayers = new();
             this.weekName = weekName;
             this.tracks = tracks;
         }
@@ -30,6 +35,8 @@ namespace Fnf
         void Start()
         {
             SetupStage(tracks[currentTrack]);
+
+            Music.OnBeatHit += OnBeat;
         }
 
         void Update()
@@ -37,16 +44,39 @@ namespace Fnf
             for (int i = 0; i < updateList.Count; i++) updateList[i].Invoke();
             SharedGameSystems.VolumeControl.Update();
 
+            cameraTarget = Input.GetGridMousePosition();
+            camera = MathUtility.Lerp(camera, cameraTarget, Time.deltaTime * 8);
+
+            for (int i = 0; i < paralaxLayers.Count; i++)
+            {
+                MovableObject p = paralaxLayers[i].parent;
+                Vector2 effectValue = paralaxLayers[i].factor;
+                p.localPosition = camera * effectValue * new Vector2(-1);
+            }
+
             if(Input.GetKeyDown(Key.Escape))
             {
                 Active = new StoryMenu();
             }
+
+            Music.Update();
         }
 
         void Render()
         {
             for (int i = 0; i < renderList.Count; i++) renderList[i].Invoke();
             SharedGameSystems.VolumeControl.Render();
+        }
+
+        void OnBeat(int beat)
+        {
+            foreach (var pair in elements)
+            {
+                if (pair.Value is Character character)
+                {
+                    character.Idle();
+                }
+            }
         }
 
         void SetupStage(string track)
@@ -68,6 +98,32 @@ namespace Fnf
                                 Image image = new Image(elementArgs[2]);
                                 elements.Add(elementArgs[1], image);
                                 renderList.Add(image.Render);
+                                break;
+
+                            case "Character":
+                                Character character = new Character();
+
+                                string[] anims = File.ReadAllLines($"Assets/Characters/Data/{elementArgs[2]}.txt");
+                                for (int a = 0; a < anims.Length; a++)
+                                {
+                                    string[] animArgs = GetSegments(anims[a], 0);
+                                    TextureAtlas.LoadAtlas(animArgs[1], $"Assets/Characters/{animArgs[1]}");
+                                    if (animArgs.Length >= 3)
+                                    {
+                                        Animation animation = TextureAtlas.GetAnimation(animArgs[1], animArgs[2]);
+                                        if (animArgs.Length == 5)
+                                        {
+                                            animation.offset = new Vector2(float.Parse(animArgs[3]), float.Parse(animArgs[4]));
+                                        }
+
+                                        character.add(animArgs[0], animation);
+                                        character.play("idle");
+                                    }
+                                }
+
+                                elements.Add(elementArgs[1], character);
+                                renderList.Add(character.Render);
+                                updateList.Add(character.Update);
                                 break;
                         }
                     }
@@ -101,6 +157,52 @@ namespace Fnf
                         }
 
                         float parse(int element) => float.Parse(layoutArgs[element]);
+                    }
+                    i--;
+                }
+                else if (stageLines[i].Trim() == "[Paralax]")
+                {
+                    i++;
+                    while (i < stageLines.Length && !stageLines[i].Trim().StartsWith("["))
+                    {
+                        if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; }
+                        string[] paralaxArgs = GetSegments(stageLines[i++], 1);
+                        MovableObject targetObject = elements[paralaxArgs[0]];
+
+                        Vector2 factor = Vector2.Zero;
+                        if (paralaxArgs.Length == 2) // One value initiate
+                        {
+                            factor = new Vector2(parse(1));
+                        }
+                        else if (paralaxArgs.Length == 3) // Two value initiate
+                        {
+                            factor = new Vector2(parse(1), parse(2));
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Paralax does not use {paralaxArgs.Length} args");
+                        }
+
+                        MovableObject paralaxLayer = null; 
+                        for (int a = 0; a < paralaxLayers.Count; a++)
+                        {
+                            if (paralaxLayers[a].factor == factor)
+                            {
+                                paralaxLayer = paralaxLayers[a].parent;
+                                break;
+                            }
+                        }
+
+                        if (paralaxLayer == null)
+                        {
+                            paralaxLayer = new MovableObject();
+                        }
+
+                        paralaxLayers.Add((factor, paralaxLayer));
+
+                        targetObject.parent = paralaxLayer;
+
+                        float parse(int element) => float.Parse(paralaxArgs[element]);
                     }
                     i--;
                 }
