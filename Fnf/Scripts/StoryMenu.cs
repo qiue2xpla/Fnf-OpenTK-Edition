@@ -36,10 +36,10 @@ namespace Fnf
 			SetupTexts();
 			SetupDifficulty();
 			SetupWeeks();
-            ttex = Texture.GenerateFromPath("Assets/Shared/Menu_Tracks.png", out tsize);
-
-			TextureAtlas.LoadAtlas("menugf", "Assets/Story Menu/Characters/Menu_GF");
-            TextureAtlas.LoadAtlas("menubf", "Assets/Story Menu/Characters/Menu_BF");
+            ttex = Texture.GenerateFromPath($"{GamePaths.StoryMenu}/Menu_Tracks.png");
+			tsize = Texture.GetTextureSize(ttex);
+			TextureAtlas.LoadAtlas("menugf", $"{GamePaths.StoryMenu}/Characters/Menu_GF");
+            TextureAtlas.LoadAtlas("menubf", $"{GamePaths.StoryMenu}/Characters/Menu_BF");
 
             Animation gfidle = TextureAtlas.GetAnimation("menugf", "M GF Idle");
 			gfidle.looped = true;
@@ -298,12 +298,14 @@ namespace Fnf
 		void SetupDifficulty()
 		{
 			difficulties = new();
-			List<string> diffsImagePaths = Directory.GetFileSystemEntries("Assets/Story Menu/Difficulties").ToList();
+			List<string> diffsImagePaths = Directory.GetFileSystemEntries($"{GamePaths.StoryMenu}/Difficulties").ToList();
 			for (int i = 0; i < diffsImagePaths.Count; i++)
 			{
 				string diffName = new FileInfo(diffsImagePaths[i]).Name;
 				diffName = diffName.Substring(0, diffName.Length - 4);
-				difficulties.Add(diffName, (Texture.GenerateFromPath(diffsImagePaths[i], out Size sizeout), sizeout));
+				int id = Texture.GenerateFromPath(diffsImagePaths[i]);
+				Size size = Texture.GetTextureSize(id);
+				difficulties.Add(diffName, (id, size));
 			}
 
             float maxDifficultyWidth = 0;
@@ -319,7 +321,7 @@ namespace Fnf
             leftArrow.localPosition = new(470 - maxDifficultyWidth, -165);
             rightArrow.localPosition = new(470 + maxDifficultyWidth, -165);
 
-            TextureAtlas.LoadAtlas("cmua", "Assets/campaign_menu_UI_assets");
+            TextureAtlas.LoadAtlas("cmua", $"{GamePaths.StoryMenu}/campaign_menu_UI_assets");
 
             leftArrow.add("idle", TextureAtlas.GetAnimation("cmua", "arrow left"));
             leftArrow.add("pressed", TextureAtlas.GetAnimation("cmua", "arrow push left"));
@@ -397,9 +399,9 @@ namespace Fnf
 		 
 		public WeekOption(string backgroundImageName, string weekImageName)
 		{
-			menuBackground = Texture.GenerateFromPath($"Assets/Story Menu/Backgrounds/{backgroundImageName}.png", out _);
-			weekImage = Texture.GenerateFromPath($"Assets/Story Menu/Weeks/{weekImageName}.png", out weekImageSize);
-
+			menuBackground = Texture.GenerateFromPath($"{GamePaths.StoryMenu}/Backgrounds/{backgroundImageName}.png");
+			weekImage = Texture.GenerateFromPath($"{GamePaths.StoryMenu}/Weeks/{weekImageName}.png");
+			weekImageSize = Texture.GetTextureSize(weekImage);
 			Texture.SetWrap(weekImage, WrapMode.Clamp, WrapMode.Clamp); // Not working
 		}
 	}

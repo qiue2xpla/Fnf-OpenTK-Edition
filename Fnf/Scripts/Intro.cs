@@ -20,9 +20,9 @@ namespace Fnf
         void Start()
         {
             // Load atlases
-            TextureAtlas.LoadAtlas("logo", "Assets/Shared/Intro/logo");
-            TextureAtlas.LoadAtlas("gf", "Assets/Shared/Intro/GfIntro");
-            TextureAtlas.LoadAtlas("petb", "Assets/Shared/Intro/titleEnter");
+            TextureAtlas.LoadAtlas("logo", $"{GamePaths.Intro}/logo");
+            TextureAtlas.LoadAtlas("gf", $"{GamePaths.Intro}/GfIntro");
+            TextureAtlas.LoadAtlas("petb", $"{GamePaths.Intro}/titleEnter");
 
             // Make the animators
             GF = new();
@@ -97,7 +97,7 @@ namespace Fnf
                 {
                     PETB.play("pressed");
 
-                    new Clip("Assets/Shared/Confirm.ogg") { volume = 0.7f, endAction = EndAction.Dispose }.play(); 
+                    new Clip($"{GamePaths.Sounds}/Confirm.ogg") { volume = 0.7f, endAction = EndAction.Dispose }.play(); 
 
                     transitioning = true;
 
@@ -107,7 +107,7 @@ namespace Fnf
 
                 if (!skippedIntro)
                 {
-                    new Clip("Assets/Shared/Confirm.ogg") { volume = 0.7f, endAction = EndAction.Dispose }.play();
+                    new Clip($"{GamePaths.Sounds}/Confirm.ogg") { volume = 0.7f, endAction = EndAction.Dispose }.play();
                     skipIntro();
                 }
             }

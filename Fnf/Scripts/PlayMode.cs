@@ -10,7 +10,7 @@ namespace Fnf
     public class PlayMode : Script
     {
         Dictionary<string, MovableObject> elements;
-        List<(Vector2 factor, MovableObject parent)> paralaxLayers;
+        List<(Vector2 factor, MovableObject parent)> parallaxLayers;
         List<Action> updateList;
         List<Action> renderList;
 
@@ -27,7 +27,7 @@ namespace Fnf
             elements = new();
             updateList = new();
             renderList = new();
-            paralaxLayers = new();
+            parallaxLayers = new();
             this.weekName = weekName;
             this.tracks = tracks;
         }
@@ -47,10 +47,10 @@ namespace Fnf
             cameraTarget = Input.GetGridMousePosition();
             camera = MathUtility.Lerp(camera, cameraTarget, Time.deltaTime * 8);
 
-            for (int i = 0; i < paralaxLayers.Count; i++)
+            for (int i = 0; i < parallaxLayers.Count; i++)
             {
-                MovableObject p = paralaxLayers[i].parent;
-                Vector2 effectValue = paralaxLayers[i].factor;
+                MovableObject p = parallaxLayers[i].parent;
+                Vector2 effectValue = parallaxLayers[i].factor;
                 p.localPosition = camera * effectValue * new Vector2(-1);
             }
 
@@ -81,7 +81,7 @@ namespace Fnf
 
         void SetupStage(string track)
         {
-            string[] stageLines = File.ReadAllLines($"Assets/Songs/{track}/stage.txt");
+            string[] stageLines = File.ReadAllLines($"{GamePaths.Songs}/{track}/stage.txt");
             for (int i = 0; i < stageLines.Length; i++)
             {
                 if (stageLines[i].Trim() == "[Stage]") // The arguments is in the format of (Type typeName arg1 "arg2" etc.)
@@ -103,11 +103,11 @@ namespace Fnf
                             case "Character":
                                 Character character = new Character();
 
-                                string[] anims = File.ReadAllLines($"Assets/Characters/Data/{elementArgs[2]}.txt");
+                                string[] anims = File.ReadAllLines($"{GamePaths.CharactersConfigurations}/{elementArgs[2]}.txt");
                                 for (int a = 0; a < anims.Length; a++)
                                 {
                                     string[] animArgs = GetSegments(anims[a], 0);
-                                    TextureAtlas.LoadAtlas(animArgs[1], $"Assets/Characters/{animArgs[1]}");
+                                    TextureAtlas.LoadAtlas(animArgs[1], $"{GamePaths.Characters}/{animArgs[1]}");
                                     if (animArgs.Length >= 3)
                                     {
                                         Animation animation = TextureAtlas.GetAnimation(animArgs[1], animArgs[2]);
@@ -160,7 +160,7 @@ namespace Fnf
                     }
                     i--;
                 }
-                else if (stageLines[i].Trim() == "[Paralax]")
+                else if (stageLines[i].Trim() == "[Parallax]")
                 {
                     i++;
                     while (i < stageLines.Length && !stageLines[i].Trim().StartsWith("["))
@@ -184,11 +184,11 @@ namespace Fnf
                         }
 
                         MovableObject paralaxLayer = null; 
-                        for (int a = 0; a < paralaxLayers.Count; a++)
+                        for (int a = 0; a < parallaxLayers.Count; a++)
                         {
-                            if (paralaxLayers[a].factor == factor)
+                            if (parallaxLayers[a].factor == factor)
                             {
-                                paralaxLayer = paralaxLayers[a].parent;
+                                paralaxLayer = parallaxLayers[a].parent;
                                 break;
                             }
                         }
@@ -198,7 +198,7 @@ namespace Fnf
                             paralaxLayer = new MovableObject();
                         }
 
-                        paralaxLayers.Add((factor, paralaxLayer));
+                        parallaxLayers.Add((factor, paralaxLayer));
 
                         targetObject.parent = paralaxLayer;
 

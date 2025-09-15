@@ -56,7 +56,7 @@ namespace Fnf.Framework
                 _atlas = value;
                 mustReNewMesh = true;
                 Texture.Destroy(texture);
-                texture = Texture.GenerateFromBitmap(value.bitmap);
+                texture = Texture.GenerateFromBitmap(value.bitmap, "FontAtlas");
                 textureSize = new Size(value.bitmap.Width, value.bitmap.Height);
             }
         }

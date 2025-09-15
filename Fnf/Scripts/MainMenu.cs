@@ -10,7 +10,7 @@ namespace Fnf
         Animator[] menuItems;
         EffectsLayer effectsLayer;
 
-        int bg = Texture.GenerateFromPath("Assets/Shared/menuBG.png", out _);
+        int bg = Texture.GenerateFromPath($"{GamePaths.MainMenu}/menuBG.png", false);
 
         string[] Options = { "story mode", "freeplay", "options" };
         static int CurrentSelected = 0;
@@ -30,7 +30,7 @@ namespace Fnf
 
             menuItems = new Animator[Options.Length];
 
-            TextureAtlas.LoadAtlas("menuitems", "Assets/Shared/MainMenuAssets");
+            TextureAtlas.LoadAtlas("menuitems", $"{GamePaths.MainMenu}/MainMenuAssets");
 
             for (int i = 0; i < Options.Length; i++)
             {
@@ -78,13 +78,13 @@ namespace Fnf
 
             if (Input.GetKeyDown(Key.Up))
             {
-                new Clip("Assets/Shared/scrollMenu.ogg") { endAction = EndAction.Dispose }.play();
+                new Clip($"{GamePaths.Sounds}/scrollMenu.ogg") { endAction = EndAction.Dispose }.play();
                 changeItem(-1);
             }
 
             if (Input.GetKeyDown(Key.Down))
             {
-                new Clip("Assets/Shared/scrollMenu.ogg") { endAction = EndAction.Dispose }.play();
+                new Clip($"{GamePaths.Sounds}/scrollMenu.ogg") { endAction = EndAction.Dispose }.play();
                 changeItem(1);
             }
 
@@ -92,7 +92,7 @@ namespace Fnf
             {
                 selectedSomethin = true;
 
-                new Clip("Assets/Shared/confirm.ogg") { endAction = EndAction.Dispose }.play();
+                new Clip($"{GamePaths.Sounds}/confirm.ogg") { endAction = EndAction.Dispose }.play();
 
                 //flickerRenderEffect.Start(0, 1.1f, 5, bg);
 
@@ -126,7 +126,7 @@ namespace Fnf
                                 break;
 
                             case "options":
-                                effectsLayer.Add(new TransitionInEffect(0.7f, 0.5f, Color.Black, delegate { Active = new Test(); }));
+                                effectsLayer.Add(new TransitionInEffect(0.7f, 0.5f, Color.Black, delegate { Active = new MainMenu(); }));
                                 break;
                         }
                     }

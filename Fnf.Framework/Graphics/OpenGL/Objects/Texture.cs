@@ -1,30 +1,77 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using OpenTK.Graphics.OpenGL;
 
 namespace Fnf.Framework.Graphics
 {
     public static class Texture
     {
+        public static Dictionary<string, int> LoadedTextures = new Dictionary<string, int>();
+
         public static void Destroy(int id)
         {
             if (id <= OpenGL.NULL) return;
+            if(LoadedTextures.ContainsValue(id))
+            {
+                foreach (var item in LoadedTextures.Where(kvp => kvp.Value == id).ToList())
+                {
+                    LoadedTextures.Remove(item.Key);
+                }
+            };
             GL.DeleteTexture(id);
         }
 
-        public static int GenerateFromPath(string path, out Size size)
+        public static int GenerateFromPath(string path, bool newInstance = true)
         {
-            if(!File.Exists(path)) throw new System.IO.FileNotFoundException(path);
+            if(!File.Exists(path)) throw new FileNotFoundException(path);
 
-            using (Bitmap bitmap = new Bitmap(path))
+            int id;
+
+            if (newInstance)
             {
-                size = new Size(bitmap.Width, bitmap.Height);
-                return GenerateFromBitmap(bitmap);
+                id = GL.GenTexture();
+                string textureName = $"New{id}-{path}";
+                LoadedTextures.Add(textureName, id);
+                LoadImage();
+                return id;
+            }
+            else
+            {
+                if (LoadedTextures.ContainsKey(path))
+                {
+                    return LoadedTextures[path];
+                }
+                else
+                {
+                    id = GL.GenTexture();
+                    LoadedTextures.Add(path, id);
+                    LoadImage();
+                    return id;
+                }
+            }
+
+            void LoadImage()
+            {
+                Bitmap bitmap = new Bitmap(path);
+                BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                GL.BindTexture(TextureTarget.Texture2D, id);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0,
+                    OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
+
+                bitmap.UnlockBits(bitmapData);
+                bitmap.Dispose();
+
+                SetFilter(id, Filter.Linear, Filter.Linear);
+                SetWrap(id, WrapMode.Repeat, WrapMode.Repeat);
+                Use(0);
             }
         }
 
-        public static int GenerateFromBitmap(Bitmap bitmap)
+        public static int GenerateFromBitmap(Bitmap bitmap, string optionalName = null)
         {
             BitmapData bitmapData = bitmap.LockBits(
                 new Rectangle(0, 0, bitmap.Width, bitmap.Height),
@@ -47,8 +94,18 @@ namespace Fnf.Framework.Graphics
             SetWrap(id, WrapMode.Repeat, WrapMode.Repeat);
 
             GL.BindTexture(TextureTarget.Texture2D, OpenGL.NULL);
+            LoadedTextures.Add("Bitmap" + id + (optionalName == null ? "-" + optionalName : ""), id);
 
             return id;
+        }
+
+        public static Size GetTextureSize(int id)
+        {
+            Use(id);
+            GL.GetTextureLevelParameter(id, 0, GetTextureParameter.TextureWidth, out int width);
+            GL.GetTextureLevelParameter(id, 0, GetTextureParameter.TextureHeight, out int height);
+            Use(OpenGL.NULL);
+            return new Size(width, height);
         }
 
         public static void SetActive(int id, int index)

@@ -13,7 +13,8 @@ namespace Fnf.Game
 
         public Image(string imagePath)
         {
-            texture = Texture.GenerateFromPath(imagePath, out size);
+            texture = Texture.GenerateFromPath(imagePath, false);
+            size = Texture.GetTextureSize(texture);
         }
 
         public void Render()

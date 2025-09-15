@@ -92,7 +92,7 @@ namespace Fnf.Game
 
         public static void LoadMenuMusic(float volume = 1)
         {
-            string path = $"Assets/Shared/Menu.ogg";
+            string path = $"{GamePaths.Sounds}/Menu.ogg";
 
             UnloadAll();
 
