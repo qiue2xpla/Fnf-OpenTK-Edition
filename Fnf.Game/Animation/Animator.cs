@@ -40,6 +40,11 @@ namespace Fnf.Game
             animations.Remove(name);
         }
 
+        public void clear()
+        {
+            animations.Clear();
+        }
+
         public void Update()
         {
             if (!isUpdatable) return; 

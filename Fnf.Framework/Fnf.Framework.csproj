@@ -55,6 +55,7 @@
     <Compile Include="Audio\VolumeLevel.cs" />
     <Compile Include="MathUtility.cs" />
     <Compile Include="RNG.cs" />
+    <Compile Include="StringUtility.cs" />
     <Compile Include="Systems\Anchor.cs" />
     <Compile Include="UI\InputField.cs" />
     <Compile Include="UI\Panel.cs" />

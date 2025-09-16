@@ -7,7 +7,7 @@ Character bf bf
 Image background "Assets/Shared/Stage/FutileBG.png"
 Image background2 "Assets/Shared/Stage/FutileBG.png"
 
-Conductor playerConductor
+Conductor playerConductor default default
 
 
 

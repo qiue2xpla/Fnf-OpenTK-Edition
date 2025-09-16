@@ -91,7 +91,7 @@ namespace Fnf
                     while (i < stageLines.Length && !stageLines[i].Trim().StartsWith("[")) 
                     {
                         if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; } // If an empty line appears, skip it
-                        string[] elementArgs = GetSegments(stageLines[i++], 2);
+                        string[] elementArgs = StringUtility.Segment(stageLines[i++], 2);
                         switch(elementArgs[0]) // Here is the implemented element types
                         {
                             case "Image":
@@ -101,30 +101,20 @@ namespace Fnf
                                 break;
 
                             case "Character":
-                                Character character = new Character();
-
-                                string[] anims = File.ReadAllLines($"{GamePaths.CharactersConfigurations}/{elementArgs[2]}.txt");
-                                for (int a = 0; a < anims.Length; a++)
-                                {
-                                    string[] animArgs = GetSegments(anims[a], 0);
-                                    TextureAtlas.LoadAtlas(animArgs[1], $"{GamePaths.Characters}/{animArgs[1]}");
-                                    if (animArgs.Length >= 3)
-                                    {
-                                        Animation animation = TextureAtlas.GetAnimation(animArgs[1], animArgs[2]);
-                                        if (animArgs.Length == 5)
-                                        {
-                                            animation.offset = new Vector2(float.Parse(animArgs[3]), float.Parse(animArgs[4]));
-                                        }
-
-                                        character.add(animArgs[0], animation);
-                                        character.play("idle");
-                                    }
-                                }
-
+                                Character character = new Character(elementArgs[2]);
                                 elements.Add(elementArgs[1], character);
                                 renderList.Add(character.Render);
                                 updateList.Add(character.Update);
                                 break;
+
+                            case "Conductor":
+                                Conductor conductor = new Conductor(elementArgs[2], elementArgs[3]);
+                                elements.Add(elementArgs[1], conductor);
+                                renderList.Add(conductor.Render);
+                                updateList.Add(conductor.Update);
+                                break;
+
+                            default: throw new InvalidDataException($"'{elementArgs[0]}' is not a valid element");
                         }
                     }
                     i--; // When we return to the loop, the i++ in the loop is executed making us not able to reach the next decleration
@@ -135,7 +125,7 @@ namespace Fnf
                     while (i < stageLines.Length && !stageLines[i].Trim().StartsWith("["))
                     {
                         if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; }
-                        string[] layoutArgs = GetSegments(stageLines[i++], 1);
+                        string[] layoutArgs = StringUtility.Segment(stageLines[i++], 1);
                         MovableObject targetObject = elements[layoutArgs[0]];
 
                         if (layoutArgs.Length == 7) // With parent
@@ -166,7 +156,7 @@ namespace Fnf
                     while (i < stageLines.Length && !stageLines[i].Trim().StartsWith("["))
                     {
                         if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; }
-                        string[] paralaxArgs = GetSegments(stageLines[i++], 1);
+                        string[] paralaxArgs = StringUtility.Segment(stageLines[i++], 1);
                         MovableObject targetObject = elements[paralaxArgs[0]];
 
                         Vector2 factor = Vector2.Zero;
@@ -207,48 +197,6 @@ namespace Fnf
                     i--;
                 }
             }
-        }
-
-        // Splits a line thats seperated with spaces into segments while allowing
-        // some segments to be combined with the spaces between then using quotes
-        string[] GetSegments(string element, int allowStringAfterTheseArgs)
-        {
-            List<string> args = new();
-            string currentArg = "";
-            bool inString = false;
-
-            for (int i = 0; i < element.Length; i++)
-            {
-                if (element[i] == ' ')
-                {
-                    if(inString && args.Count >= allowStringAfterTheseArgs)
-                    {
-                        currentArg += ' ';
-                    }
-                    else if (currentArg.Length > 0)
-                    {
-                        args.Add(currentArg);
-                        currentArg = "";
-                    }
-                }
-                else
-                {
-                    if (element[i] == '"')
-                    {
-                        if (args.Count < allowStringAfterTheseArgs) throw new InvalidDataException("A type or its name can't be loaded as a string");
-                        inString = !inString;
-                    }
-                    else
-                    {
-                        currentArg += element[i];
-                    }
-                }
-            }
-
-            if (currentArg.Length > 0) args.Add(currentArg);
-            if (inString) throw new InvalidDataException("A string was not ended");
-
-            return args.ToArray();
         }
     }
 }

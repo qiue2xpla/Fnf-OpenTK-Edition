@@ -1,0 +1,4 @@
+﻿150 "Assets/Notes/Default"
+press "left press" "down press" "up press" "right press"
+confirm  "left confirm" "down confirm" "up confirm" "right confirm"
+blank arrowLEFT arrowDOWN arrowUP arrowRIGHT

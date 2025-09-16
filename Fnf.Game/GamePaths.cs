@@ -3,6 +3,8 @@
     public static class GamePaths
     {
         public const string CharactersConfigurations = "Assets/Characters/Configurations";
+        public const string ControlsConfigurations = "Assets/Notes/Configurations/Controls";
+        public const string NotesConfigurations = "Assets/Notes/Configurations/Notes";
         public const string Characters = "Assets/Characters";
         public const string Songs = "Assets/Songs";
         public const string Shared = "Assets/Shared";

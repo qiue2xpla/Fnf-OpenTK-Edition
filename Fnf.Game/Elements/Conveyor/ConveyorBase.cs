@@ -12,30 +12,7 @@ namespace Fnf.Game
 
         private ViewRange viewRange;
 
-            InitializeColumns();
-            for (int i = 0; i < 4; i++)  Release(i);
-
             viewRange = new ViewRange(this);
-        }
-
-        public virtual void Update()
-        {
-            for (int i = 0; i < columns.Length; i++) columns[i].animator.Update();
-        }
-
-        public void Render()
-        {
-            viewRange.Update();
-
-            RenderControls();
-            RenderHolds();
-            RenderNotes();
-        }
-
-        protected void Release(int column)
-        {
-            columns[column].animator.play("blank");
-        }
 
         protected void Press(int column)
         {
@@ -51,9 +28,6 @@ namespace Fnf.Game
         {
             OnHit?.Invoke(column);
         }
-
-        
-
         void RenderControls()
         {
             for (int i = 0; i < 4; i++)

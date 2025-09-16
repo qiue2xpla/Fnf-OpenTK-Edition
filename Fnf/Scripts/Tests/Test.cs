@@ -1,26 +1,6 @@
 ﻿/*
-    PlayerConveyor player;
-    OpponentConveyor opponent;
-
         Music.LoadSong("Unknown Suffering", 0.5f);
         Music.Play();
-
-        controlsSkin = new ControlsSkin()
-        {
-            Blank = TextureAtlas.GetAnimations("notes", "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT"),
-            Press = TextureAtlas.GetAnimations("notes", "left press", "down press", "up press", "right press"),
-            Confirm = TextureAtlas.GetAnimations("notes", "left confirm", "down confirm", "up confirm", "right confirm")
-        };
-
-        controlsSkin.ColumnsSpacing = controlsSkin.Blank[0].frames[0].verts[0].x * 2 + 5;
-
-        for (int i = 0; i < 4; i++)
-        {
-            controlsSkin.Blank[i].looped = false;
-            controlsSkin.Press[i].looped = false;
-            controlsSkin.Confirm[i].looped = false;
-        }
-
 
         notesSkin = new NotesSkin()
         {
