@@ -7,6 +7,7 @@
         public const string NotesConfigurations = "Assets/Notes/Configurations/Notes";
         public const string Characters = "Assets/Characters";
         public const string Songs = "Assets/Songs";
+        public const string Fonts = "Assets/Fonts";
         public const string Shared = "Assets/Shared";
         public const string Sounds = "Assets/Shared/Sounds";
         public const string Stage = "Assets/Shared/Stage";

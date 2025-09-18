@@ -7,7 +7,7 @@ Character bf bf
 Image background "Assets/Shared/Stage/FutileBG.png"
 Image background2 "Assets/Shared/Stage/FutileBG.png"
 
-Conductor playerConductor default default
+Conductor playerConductor default default player
 
 
 
@@ -19,8 +19,8 @@ opp -300 0 0 1 1
 bf 300 0 0 1 1
 
 [Parallax]
-background 0.3
-background2 0.2 0.5
-background3 0.01
-opp 0.24
-bf 0.24
+background 0.8
+background2 0.8
+background3 0.1
+opp 0.95
+bf 0.95

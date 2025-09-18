@@ -4,11 +4,8 @@ namespace Fnf.Game
 {
     public class PlayerConveyor : ConveyorBase
     {
-        /*public static Key[] inputKeys = { Key.Q, Key.W, Key.BracketLeft, Key.BracketRight };
-        public bool botPlay;
-
+        /*
         private int botReachedNote = 0;
-
 
         public PlayerConveyor(ControlsSkin controlsSkin, NotesSkin notesSkin) : base (controlsSkin, notesSkin)
         {
@@ -69,13 +66,6 @@ namespace Fnf.Game
                     else break;
                 }*/
 
-                /*for (int i = 0; i < 4; i++)
-                {
-                    if (Input.GetKeyDown(inputKeys[i])) Press(i);
-                    if (Input.GetKeyUp(inputKeys[i])) Release(i);
-                }
-            }
-        }
             /*
             int GetClosest(int slot)
             {

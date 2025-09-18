@@ -17,11 +17,11 @@ namespace Fnf.Game
             note.delay = Convert.ToInt32(data[DelayIndex]) / 1000f;
             note.column = Convert.ToInt32(data[ColumnIndex]);
             note.length = Convert.ToInt32(data[LengthIndex]) / 1000f;
-            note.player = mustHitSection == note.column % 8 < 4;
-            note.type = "Default";
+            note.target = mustHitSection == note.column % 8 < 4 ? "player" : "opponent";
+            note.type = "default";
 
             if (data.Length > 3) note.type = Convert.ToString(data[NoteTypeIndex]);
-            if (note.column > 7 && note.type == "Default") note.type = "Odd";
+            if (note.column > 7 && note.type == "default") note.type = "odd";
 
             note.column = note.column % 4;
             return note;

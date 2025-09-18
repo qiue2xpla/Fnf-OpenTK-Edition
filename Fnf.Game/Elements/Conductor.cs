@@ -5,27 +5,49 @@ namespace Fnf.Game
 {
     public class Conductor : MovableObject, IRenderable, IUpdatable
     {
+        // TODO: Fix this shit
+        private static Key[] input = new Key[4] { Key.Q, Key.W, Key.BracketLeft, Key.BracketRight };
         public bool isRenderable { get; set; } = true;
         public bool isUpdatable { get; set; } = true;
 
-        public float[] holdCooldown;
-        public float[] hitCooldown;
-        public float noteSpeed = 2.5f; // Note's distance per second is (screenHight * noteSpeed)
-
+        public NoteTrack noteTrack;
         public Animator[] columns;
+        public float noteSpeed = 2.5f; // Note's distance per second is (screenGridHight * noteSpeed)
 
-        public Conductor(string controlsConfigurations, string notesConfiguration)
+        float[] holdCooldown;
+        float[] hitCooldown;
+
+        public Conductor(string controlsConfigurations, string notesConfiguration, NoteTrack track)
         {
+            noteTrack = track; 
             ApplyControlConfigurations(controlsConfigurations);
-
-            for (int i = 0; i < columns.Length; i++) Release(i);
+            for (int i = 0; i < columns.Length; i++) SetColumnState(i, "blank");
         }
 
-        protected void Release(int column)
+        public void Update()
         {
-            columns[column].play("blank");
+            for (int i = 0; i < 4; i++)
+            {
+                if (Input.GetKeyDown(input[i])) SetColumnState(i, "press");
+                if (Input.GetKeyUp(input[i])) SetColumnState(i, "blank");
+            }
+
+            for (int i = 0; i < columns.Length; i++)
+            {
+                columns[i].Update();
+            }
         }
 
+        public void Render()
+        {
+            // Render controls
+            for (int i = 0; i < columns.Length; i++)
+            {
+                columns[i].Render();
+            }
+        }
+
+        void SetColumnState(int column, string state) => columns[column].play(state);
 
         public void ApplyControlConfigurations(string controlsConfigurations)
         {
@@ -56,22 +78,6 @@ namespace Fnf.Game
                     Animator animator = columns[i];
                     animator.add(args[0], TextureAtlas.GetAnimation("Config-" + controlsConfigurations, args[i + 1]));
                 }
-            }
-        }
-
-        public void Render()
-        {
-            for (int i = 0; i < columns.Length; i++)
-            {
-                columns[i].Render();
-            }
-        }
-
-        public void Update()
-        {
-            for (int i = 0; i < columns.Length; i++)
-            {
-                columns[i].Update();
             }
         }
     }

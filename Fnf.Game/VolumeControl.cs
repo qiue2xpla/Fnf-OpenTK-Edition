@@ -31,7 +31,7 @@ namespace Fnf.Game
 
         public VolumeControl()
         {
-            Font font = new Font("Assets/Fonts/vcr");
+            Font font = new Font($"{GamePaths.Fonts}/vcr");
             FontAtlas atlas = new FontAtlas(font, 70, 0, 3, 0, "Volume");
 
             text = new Text(atlas);
@@ -51,7 +51,7 @@ namespace Fnf.Game
                 if (volume < 0) volume = 0;
 
                 ClipsManager.AppVolume = volume / 10f;
-                new Clip("Assets/Shared/scrollMenu.ogg") { endAction = EndAction.Dispose}.play();
+                new Clip($"{GamePaths.Sounds}/scrollMenu.ogg") { endAction = EndAction.Dispose}.play();
             }
 
             if (Input.GetKeyDown(Key.Plus))
@@ -61,7 +61,7 @@ namespace Fnf.Game
                 if (volume > 10) volume = 10;
 
                 ClipsManager.AppVolume = volume /10f;
-                new Clip("Assets/Shared/scrollMenu.ogg") { endAction = EndAction.Dispose }.play();
+                new Clip($"{GamePaths.Sounds}/scrollMenu.ogg") { endAction = EndAction.Dispose }.play();
             }
 
             if (slide < 0) return;

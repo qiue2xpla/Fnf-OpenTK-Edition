@@ -14,26 +14,7 @@ namespace Fnf.Game
 
             viewRange = new ViewRange(this);
 
-        protected void Press(int column)
-        {
-            columns[column].animator.play("press");
-        }
-
-        protected void Confirm(int column)
-        {
-            columns[column].animator.play("confirm");
-        }
-
-        protected void Hit(int column)
-        {
-            OnHit?.Invoke(column);
-        }
-        void RenderControls()
-        {
-            for (int i = 0; i < 4; i++)
-                columns[i].animator.Render();
-        }
-
+       
         // Animated notes are not supported for now for my sanity
         void RenderNotes()
         {

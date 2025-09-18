@@ -3,31 +3,33 @@ using System.IO;
 using System;
 
 using Fnf.Framework;
-using Fnf.Game;
+using Fnf.Game; 
 
 namespace Fnf
 {
     public class PlayMode : Script
     {
-        Dictionary<string, MovableObject> elements;
-        List<(Vector2 factor, MovableObject parent)> parallaxLayers;
-        List<Action> updateList;
-        List<Action> renderList;
+        public static Dictionary<string, MovableObject> Elements;
+        public static List<(Vector2 factor, MovableObject parent)> ParallaxLayers;
+        public static List<Action> UpdateList;
+        public static List<Action> RenderList;
+        public static Beatmap Beatmap;
 
         string[] tracks;
+        string difficulty;
         string weekName;
-
         int currentTrack;
 
         Vector2 cameraTarget;
         Vector2 camera;
 
-        public PlayMode(string weekName, string[] tracks)
+        public PlayMode(string weekName, string difficulty, string[] tracks)
         {
-            elements = new();
-            updateList = new();
-            renderList = new();
-            parallaxLayers = new();
+            Elements = new();
+            UpdateList = new();
+            RenderList = new();
+            ParallaxLayers = new();
+            this.difficulty = difficulty;
             this.weekName = weekName;
             this.tracks = tracks;
         }
@@ -41,16 +43,16 @@ namespace Fnf
 
         void Update()
         {
-            for (int i = 0; i < updateList.Count; i++) updateList[i].Invoke();
+            for (int i = 0; i < UpdateList.Count; i++) UpdateList[i].Invoke();
             SharedGameSystems.VolumeControl.Update();
 
             cameraTarget = Input.GetGridMousePosition();
             camera = MathUtility.Lerp(camera, cameraTarget, Time.deltaTime * 8);
 
-            for (int i = 0; i < parallaxLayers.Count; i++)
+            for (int i = 0; i < ParallaxLayers.Count; i++)
             {
-                MovableObject p = parallaxLayers[i].parent;
-                Vector2 effectValue = parallaxLayers[i].factor;
+                MovableObject p = ParallaxLayers[i].parent;
+                Vector2 effectValue = ParallaxLayers[i].factor;
                 p.localPosition = camera * effectValue * new Vector2(-1);
             }
 
@@ -59,18 +61,23 @@ namespace Fnf
                 Active = new StoryMenu();
             }
 
+            if (Input.GetKeyDown(Key.F2))
+            {
+                SetupStage(tracks[currentTrack]);
+            }    
+
             Music.Update();
         }
 
         void Render()
         {
-            for (int i = 0; i < renderList.Count; i++) renderList[i].Invoke();
+            for (int i = 0; i < RenderList.Count; i++) RenderList[i].Invoke();
             SharedGameSystems.VolumeControl.Render();
         }
 
         void OnBeat(int beat)
         {
-            foreach (var pair in elements)
+            foreach (var pair in Elements)
             {
                 if (pair.Value is Character character)
                 {
@@ -81,6 +88,13 @@ namespace Fnf
 
         void SetupStage(string track)
         {
+            Beatmap = new Beatmap(tracks[currentTrack], difficulty, new NoteParser());
+
+            Elements.Clear();
+            UpdateList.Clear();
+            RenderList.Clear();
+            ParallaxLayers.Clear();
+
             string[] stageLines = File.ReadAllLines($"{GamePaths.Songs}/{track}/stage.txt");
             for (int i = 0; i < stageLines.Length; i++)
             {
@@ -96,22 +110,23 @@ namespace Fnf
                         {
                             case "Image":
                                 Image image = new Image(elementArgs[2]);
-                                elements.Add(elementArgs[1], image);
-                                renderList.Add(image.Render);
+                                Elements.Add(elementArgs[1], image);
+                                RenderList.Add(image.Render);
                                 break;
 
                             case "Character":
                                 Character character = new Character(elementArgs[2]);
-                                elements.Add(elementArgs[1], character);
-                                renderList.Add(character.Render);
-                                updateList.Add(character.Update);
+                                Elements.Add(elementArgs[1], character);
+                                RenderList.Add(character.Render);
+                                UpdateList.Add(character.Update);
                                 break;
 
                             case "Conductor":
-                                Conductor conductor = new Conductor(elementArgs[2], elementArgs[3]);
-                                elements.Add(elementArgs[1], conductor);
-                                renderList.Add(conductor.Render);
-                                updateList.Add(conductor.Update);
+                                NoteTrack noteTrack = new NoteTrack(Beatmap, elementArgs[4]);
+                                Conductor conductor = new Conductor(elementArgs[2], elementArgs[3], noteTrack);
+                                Elements.Add(elementArgs[1], conductor);
+                                RenderList.Add(conductor.Render);
+                                UpdateList.Add(conductor.Update);
                                 break;
 
                             default: throw new InvalidDataException($"'{elementArgs[0]}' is not a valid element");
@@ -126,11 +141,11 @@ namespace Fnf
                     {
                         if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; }
                         string[] layoutArgs = StringUtility.Segment(stageLines[i++], 1);
-                        MovableObject targetObject = elements[layoutArgs[0]];
+                        MovableObject targetObject = Elements[layoutArgs[0]];
 
                         if (layoutArgs.Length == 7) // With parent
                         {
-                            targetObject.parent = elements[layoutArgs[1]];
+                            targetObject.parent = Elements[layoutArgs[1]];
                             targetObject.localPosition = new Vector2(parse(2), parse(3));
                             targetObject.localRotation = parse(4);
                             targetObject.localScale = new Vector2(parse(5), parse(6));
@@ -157,7 +172,7 @@ namespace Fnf
                     {
                         if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; }
                         string[] paralaxArgs = StringUtility.Segment(stageLines[i++], 1);
-                        MovableObject targetObject = elements[paralaxArgs[0]];
+                        MovableObject targetObject = Elements[paralaxArgs[0]];
 
                         Vector2 factor = Vector2.Zero;
                         if (paralaxArgs.Length == 2) // One value initiate
@@ -174,11 +189,11 @@ namespace Fnf
                         }
 
                         MovableObject paralaxLayer = null; 
-                        for (int a = 0; a < parallaxLayers.Count; a++)
+                        for (int a = 0; a < ParallaxLayers.Count; a++)
                         {
-                            if (parallaxLayers[a].factor == factor)
+                            if (ParallaxLayers[a].factor == factor)
                             {
-                                paralaxLayer = parallaxLayers[a].parent;
+                                paralaxLayer = ParallaxLayers[a].parent;
                                 break;
                             }
                         }
@@ -188,7 +203,7 @@ namespace Fnf
                             paralaxLayer = new MovableObject();
                         }
 
-                        parallaxLayers.Add((factor, paralaxLayer));
+                        ParallaxLayers.Add((factor, paralaxLayer));
 
                         targetObject.parent = paralaxLayer;
 
