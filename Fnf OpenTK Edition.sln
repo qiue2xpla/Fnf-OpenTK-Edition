@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fnf", "Fnf\Fnf.csproj", "{C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fnf.Framework", "Fnf.Framework\Fnf.Framework.csproj", "{C75478C3-64A1-45B5-B200-BA7F2852449E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinMaker", "SkinMaker\SkinMaker.csproj", "{6428D006-B136-402E-96BE-A3961FADDE6B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fnf.Game", "Fnf.Game\Fnf.Game.csproj", "{1DFFEF30-D377-49EE-B414-5A3202FF2FC5}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{C75478C3-64A1-45B5-B200-BA7F2852449E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C75478C3-64A1-45B5-B200-BA7F2852449E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C75478C3-64A1-45B5-B200-BA7F2852449E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6428D006-B136-402E-96BE-A3961FADDE6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6428D006-B136-402E-96BE-A3961FADDE6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6428D006-B136-402E-96BE-A3961FADDE6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6428D006-B136-402E-96BE-A3961FADDE6B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1DFFEF30-D377-49EE-B414-5A3202FF2FC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1DFFEF30-D377-49EE-B414-5A3202FF2FC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1DFFEF30-D377-49EE-B414-5A3202FF2FC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
