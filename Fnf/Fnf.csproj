@@ -66,14 +66,15 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Notes\Configurations\Notes\default.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Scripts\Freeplay.cs" />
     <Compile Include="Scripts\MainMenu.cs" />
     <Compile Include="Scripts\PlayMode.cs" />
     <Compile Include="Scripts\StoryMenu.cs" />
-    <Compile Include="Scripts\Tests\GUITest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scripts\Tests\Test.cs" />
     <Compile Include="Scripts\Intro.cs" />
     <Content Include="Assets\Shared\Story Menu\campaign_menu_UI_assets.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -366,8 +367,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Notes\Configurations\Notes\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

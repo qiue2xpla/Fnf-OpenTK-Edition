@@ -8,50 +8,9 @@ namespace Fnf.Game
     {/*
         public event Action<int> OnHit;
 
-        public Chart chart;
-
         private ViewRange viewRange;
 
             viewRange = new ViewRange(this);
-
-       
-        // Animated notes are not supported for now for my sanity
-        void RenderNotes()
-        {
-            Texture.Use(notesSkin.Note[0].texture);
-            Shader.Use(-1);
-            OpenGL.Color3(1f, 1f, 1f);
-            OpenGL.BeginDrawing(DrawMode.Quads);
-
-            for (int noteIndex = viewRange.LowerIndex; noteIndex >= viewRange.UpperIndex; noteIndex--)
-            {
-                if (chart.notes[noteIndex].pressed) continue;
-
-                float hitOffset = (float)Music.Position - chart.notes[noteIndex].delay;
-                float noteDisplacement = hitOffset * DistanceInSecond;
-                int column = chart.notes[noteIndex].column;
-
-                for (int vertexIndex = 0; vertexIndex < 4; vertexIndex++)
-                {
-                    // Could be animated from here
-                    Frame noteFrame = notesSkin.Note[column].frames[0];
-
-                    OpenGL.TextureCoord(noteFrame.coords[vertexIndex]);
-
-                    Vector2 displacement = new Vector2(0, noteDisplacement);
-                    displacement = displacement.Rotate(columns[column].animator.globalRotation);
-
-                    Vector2 vertex = noteFrame.verts[vertexIndex];
-                    vertex *= columns[column].animator.globalScale;
-                    vertex = vertex.Rotate(columns[column].animator.globalRotation);
-                    vertex += columns[column].animator.globalPosition;
-                    
-                    OpenGL.Pixel2(vertex + displacement);
-                }
-            }
-
-            OpenGL.EndDrawing();
-        }
 
         void RenderHolds()
         {

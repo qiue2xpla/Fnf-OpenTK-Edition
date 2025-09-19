@@ -10,7 +10,7 @@ namespace Fnf.Game
             string[] anims = File.ReadAllLines($"{GamePaths.CharactersConfigurations}/{configuration}.txt");
             for (int a = 0; a < anims.Length; a++)
             {
-                string[] animArgs = StringUtility.Segment(anims[a], 0);
+                string[] animArgs = StringUtility.SplitValues(anims[a], 0);
                 TextureAtlas.LoadAtlas(animArgs[1], $"{GamePaths.Characters}/{animArgs[1]}");
                 if (animArgs.Length >= 3)
                 {

@@ -3,7 +3,8 @@ using System.IO;
 using System;
 
 using Fnf.Framework;
-using Fnf.Game; 
+using Fnf.Game;
+using System.Security.Policy;
 
 namespace Fnf
 {
@@ -88,128 +89,144 @@ namespace Fnf
 
         void SetupStage(string track)
         {
-            Beatmap = new Beatmap(tracks[currentTrack], difficulty, new NoteParser());
+            Beatmap = new Beatmap(track, difficulty, new NoteParser());
+
+            Music.LoadSong(track);
+            Music.Play();
 
             Elements.Clear();
             UpdateList.Clear();
             RenderList.Clear();
             ParallaxLayers.Clear();
 
-            string[] stageLines = File.ReadAllLines($"{GamePaths.Songs}/{track}/stage.txt");
-            for (int i = 0; i < stageLines.Length; i++)
+            var Sections = StringUtility.SplitSections(File.ReadAllLines($"{GamePaths.Songs}/{track}/stage.txt"));
+            foreach ((string Section, string[] Entries) in Sections)
             {
-                if (stageLines[i].Trim() == "[Stage]") // The arguments is in the format of (Type typeName arg1 "arg2" etc.)
+                switch (Section)
                 {
-                    i++; // Go to the next element after the declaration of the stage section
-                    // Make sure we are in range and didn't go beyond the next declaration
-                    while (i < stageLines.Length && !stageLines[i].Trim().StartsWith("[")) 
+                    case "Stage": // Data format is as follows: ObjectType objectName arg1 "arg2" etc...
                     {
-                        if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; } // If an empty line appears, skip it
-                        string[] elementArgs = StringUtility.Segment(stageLines[i++], 2);
-                        switch(elementArgs[0]) // Here is the implemented element types
+                        for (int i = 0; i < Entries.Length; i++)
                         {
-                            case "Image":
-                                Image image = new Image(elementArgs[2]);
-                                Elements.Add(elementArgs[1], image);
-                                RenderList.Add(image.Render);
-                                break;
+                            string[] entryValues = StringUtility.SplitValues(Entries[i], 2);
 
-                            case "Character":
-                                Character character = new Character(elementArgs[2]);
-                                Elements.Add(elementArgs[1], character);
-                                RenderList.Add(character.Render);
-                                UpdateList.Add(character.Update);
-                                break;
+                            string objectType = entryValues[0];
+                            string objectName = entryValues[1];
 
-                            case "Conductor":
-                                NoteTrack noteTrack = new NoteTrack(Beatmap, elementArgs[4]);
-                                Conductor conductor = new Conductor(elementArgs[2], elementArgs[3], noteTrack);
-                                Elements.Add(elementArgs[1], conductor);
-                                RenderList.Add(conductor.Render);
-                                UpdateList.Add(conductor.Update);
-                                break;
-
-                            default: throw new InvalidDataException($"'{elementArgs[0]}' is not a valid element");
-                        }
-                    }
-                    i--; // When we return to the loop, the i++ in the loop is executed making us not able to reach the next decleration
-                } 
-                else if (stageLines[i].Trim() == "[Layout]")
-                {
-                    i++;
-                    while (i < stageLines.Length && !stageLines[i].Trim().StartsWith("["))
-                    {
-                        if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; }
-                        string[] layoutArgs = StringUtility.Segment(stageLines[i++], 1);
-                        MovableObject targetObject = Elements[layoutArgs[0]];
-
-                        if (layoutArgs.Length == 7) // With parent
-                        {
-                            targetObject.parent = Elements[layoutArgs[1]];
-                            targetObject.localPosition = new Vector2(parse(2), parse(3));
-                            targetObject.localRotation = parse(4);
-                            targetObject.localScale = new Vector2(parse(5), parse(6));
-                        }
-                        else if (layoutArgs.Length == 6) // Without parent
-                        {
-                            targetObject.localPosition = new Vector2(parse(1), parse(2));
-                            targetObject.localRotation = parse(3);
-                            targetObject.localScale = new Vector2(parse(4), parse(5));
-                        }
-                        else
-                        {
-                            throw new ArgumentException($"Layout does not use {layoutArgs.Length} args");
-                        }
-
-                        float parse(int element) => float.Parse(layoutArgs[element]);
-                    }
-                    i--;
-                }
-                else if (stageLines[i].Trim() == "[Parallax]")
-                {
-                    i++;
-                    while (i < stageLines.Length && !stageLines[i].Trim().StartsWith("["))
-                    {
-                        if (string.IsNullOrWhiteSpace(stageLines[i])) { i++; continue; }
-                        string[] paralaxArgs = StringUtility.Segment(stageLines[i++], 1);
-                        MovableObject targetObject = Elements[paralaxArgs[0]];
-
-                        Vector2 factor = Vector2.Zero;
-                        if (paralaxArgs.Length == 2) // One value initiate
-                        {
-                            factor = new Vector2(parse(1));
-                        }
-                        else if (paralaxArgs.Length == 3) // Two value initiate
-                        {
-                            factor = new Vector2(parse(1), parse(2));
-                        }
-                        else
-                        {
-                            throw new ArgumentException($"Paralax does not use {paralaxArgs.Length} args");
-                        }
-
-                        MovableObject paralaxLayer = null; 
-                        for (int a = 0; a < ParallaxLayers.Count; a++)
-                        {
-                            if (ParallaxLayers[a].factor == factor)
+                            switch (objectType) // The implemented object types
                             {
-                                paralaxLayer = ParallaxLayers[a].parent;
-                                break;
+                                case "Image":
+                                {
+                                    string imagePath = entryValues[2];
+
+                                    Image image = new Image(imagePath);
+
+                                    Elements.Add(objectName, image);
+                                    RenderList.Add(image.Render);
+                                    break;
+                                }
+
+                                case "Character":
+                                {
+                                    string characterConfiguration = entryValues[2];
+
+                                    Character character = new Character(characterConfiguration);
+
+                                    Elements.Add(objectName, character);
+                                    RenderList.Add(character.Render);
+                                    UpdateList.Add(character.Update);
+                                    break;
+                                }
+
+                                case "Conductor":
+                                {
+                                    string controlsConfig = entryValues[2];
+                                    string notesConfig = entryValues[3]; // TODO: huh
+                                    string targetNotes = entryValues[4];
+
+                                    NoteTrack noteTrack = new NoteTrack(Beatmap, entryValues[4]);
+                                    Conductor conductor = new Conductor(controlsConfig, notesConfig, noteTrack);
+
+                                    Elements.Add(objectName, conductor);
+                                    RenderList.Add(conductor.Render);
+                                    UpdateList.Add(conductor.Update);
+                                    break;
+                                }
+
+                                default: throw new InvalidDataException($"'{objectType}' is not a valid object type");
                             }
                         }
-
-                        if (paralaxLayer == null)
-                        {
-                            paralaxLayer = new MovableObject();
-                        }
-
-                        ParallaxLayers.Add((factor, paralaxLayer));
-
-                        targetObject.parent = paralaxLayer;
-
-                        float parse(int element) => float.Parse(paralaxArgs[element]);
+                        break;
                     }
-                    i--;
+                    case "Layout": // ObjectName parentName(Optional) x y rotation sizeX sizeY
+                    {
+                        for (int i = 0; i < Entries.Length; i++)
+                        {
+                            string[] entryValues = StringUtility.SplitValues(Entries[i], 1);
+
+                            string targetName = entryValues[0];
+                            int indexOffset = 0;
+
+                            MovableObject targetObject = Elements[targetName];
+
+                            if (entryValues.Length == 7)
+                            {
+                                indexOffset = 1;
+                                string parentName = entryValues[1];
+                                targetObject.parent = Elements[parentName];
+                            }
+                            else if (entryValues.Length != 6) new InvalidDataException($"Layout does not use '{entryValues.Length}' args");
+
+                            float parse(int element) => float.Parse(entryValues[element + indexOffset]);
+                            float x = parse(1);
+                            float y = parse(2);
+                            float rotation = parse(3);
+                            float sizeX = parse(4);
+                            float sizeY = parse(5);
+
+                            targetObject.localPosition = new Vector2(x, y);
+                            targetObject.localRotation = rotation;
+                            targetObject.localScale = new Vector2(sizeX, sizeY);
+                        }
+                        break;
+                    }
+                    case "Parallax": // ObjectName factor(one value or two for xy)
+                    {
+                        for (int i = 0; i < Entries.Length; i++)
+                        {
+                            string[] entryValues = StringUtility.SplitValues(Entries[i], 1);
+
+                            string targetName = entryValues[0];
+
+                            MovableObject targetObject = Elements[targetName];
+                            MovableObject paralaxLayer = null;
+                            Vector2 factor = Vector2.Zero;
+
+                            if (entryValues.Length == 2) factor = new Vector2(parse(1));
+                            else if (entryValues.Length == 3) factor = new Vector2(parse(1), parse(2));
+                            else throw new InvalidDataException($"Paralax does not use '{entryValues.Length}' args");
+
+                            for (int a = 0; a < ParallaxLayers.Count; a++)
+                            {
+                                if (ParallaxLayers[a].factor == factor)
+                                {
+                                    paralaxLayer = ParallaxLayers[a].parent;
+                                    break;
+                                }
+                            }
+
+                            if (paralaxLayer == null)
+                            {
+                                paralaxLayer = new MovableObject();
+                                ParallaxLayers.Add((factor, paralaxLayer));
+                            }
+
+                            targetObject.parent = paralaxLayer;
+
+                            float parse(int element) => float.Parse(entryValues[element]);
+                        }
+                        break;
+                    }
                 }
             }
         }
