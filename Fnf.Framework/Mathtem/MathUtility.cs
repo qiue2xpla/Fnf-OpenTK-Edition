@@ -1,4 +1,6 @@
-﻿namespace Fnf.Framework
+﻿using System;
+
+namespace Fnf.Framework
 {
     public static class MathUtility
     {
@@ -24,6 +26,11 @@
             if (a > max) return min;
             if (a < min) return max;
             return a;
+        }
+
+        public static float ToRadian(float degree)
+        {
+            return (float)(degree / 180 * Math.PI);
         }
     }
 }

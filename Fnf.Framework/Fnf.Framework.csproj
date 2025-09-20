@@ -31,7 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=3.3.3.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
@@ -53,9 +54,11 @@
     <Compile Include="Audio\Bass Wrapper\Enums\BASSMode.cs" />
     <Compile Include="Audio\Bass Wrapper\Enums\BASSSync.cs" />
     <Compile Include="Audio\VolumeLevel.cs" />
-    <Compile Include="MathUtility.cs" />
-    <Compile Include="RNG.cs" />
-    <Compile Include="StringUtility.cs" />
+    <Compile Include="Mathtem\Matrix3x3.cs" />
+    <Compile Include="Mathtem\Vector3.cs" />
+    <Compile Include="Mathtem\MathUtility.cs" />
+    <Compile Include="Mathtem\RNG.cs" />
+    <Compile Include="Systems\StringUtility.cs" />
     <Compile Include="Systems\Anchor.cs" />
     <Compile Include="UI\InputField.cs" />
     <Compile Include="UI\Panel.cs" />
@@ -116,7 +119,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Graphics\Gizmos.cs" />
-    <Content Include="icon.ico" />
     <None Include="Resources\round.frag" />
     <None Include="Resources\round.vert" />
     <None Include="Resources\defaultFont.frag" />

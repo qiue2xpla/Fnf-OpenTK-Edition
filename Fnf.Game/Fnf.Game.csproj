@@ -39,9 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation\Animation.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
+    <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\Animator.cs" />
     <Compile Include="Animation\Frame.cs" />
     <Compile Include="Animation\SubTexture.cs" />
@@ -62,10 +60,6 @@
     <Compile Include="Effects\TransitionOutEffect.cs" />
     <Compile Include="Elements\Conductor.cs" />
     <Compile Include="Elements\Image.cs" />
-    <Compile Include="Elements\Conveyor\ConveyorBase.cs" />
-    <Compile Include="Elements\Conveyor\OpponentConveyor.cs" />
-    <Compile Include="Elements\Conveyor\PlayerConveyor.cs" />
-    <Compile Include="Elements\Conveyor\ViewRange.cs" />
     <Compile Include="FnfText.cs" />
     <Compile Include="GamePaths.cs" />
     <Compile Include="SharedGameSystems.cs" />

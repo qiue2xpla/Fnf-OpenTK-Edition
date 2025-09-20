@@ -56,8 +56,8 @@ namespace Fnf.Framework
                 }
                 else // Data line
                 {
-                    if (currentSection == null) throw new InvalidDataException("Data does not fall under a section");
                     if (string.IsNullOrWhiteSpace(line)) continue;
+                    if (currentSection == null) throw new InvalidDataException("Data does not fall under a section");
                     currentSectionEntries.Add(line);
                 }
             }

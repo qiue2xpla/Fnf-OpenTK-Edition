@@ -13,7 +13,7 @@ namespace Fnf
         public static Dictionary<string, MovableObject> Elements;
         public static List<(Vector2 factor, MovableObject parent)> ParallaxLayers;
         public static List<Action> UpdateList;
-        public static List<Action> RenderList;
+        public static List<IRenderable> RenderList;
         public static Beatmap Beatmap;
 
         string[] tracks;
@@ -62,6 +62,11 @@ namespace Fnf
                 Active = new StoryMenu();
             }
 
+            if (Input.GetKeyDown(Key.Right))
+            {
+                Music.Position += 10;
+            }
+
             if (Input.GetKeyDown(Key.F2))
             {
                 SetupStage(tracks[currentTrack]);
@@ -72,7 +77,7 @@ namespace Fnf
 
         void Render()
         {
-            for (int i = 0; i < RenderList.Count; i++) RenderList[i].Invoke();
+            for (int i = 0; i < RenderList.Count; i++) RenderList[i].Render();
             SharedGameSystems.VolumeControl.Render();
         }
 
@@ -122,10 +127,8 @@ namespace Fnf
                                     Image image = new Image(imagePath);
 
                                     Elements.Add(objectName, image);
-                                    RenderList.Add(image.Render);
                                     break;
                                 }
-
                                 case "Character":
                                 {
                                     string characterConfiguration = entryValues[2];
@@ -133,7 +136,6 @@ namespace Fnf
                                     Character character = new Character(characterConfiguration);
 
                                     Elements.Add(objectName, character);
-                                    RenderList.Add(character.Render);
                                     UpdateList.Add(character.Update);
                                     break;
                                 }
@@ -143,17 +145,34 @@ namespace Fnf
                                     string controlsConfig = entryValues[2];
                                     string notesConfig = entryValues[3]; // TODO: huh
                                     string targetNotes = entryValues[4];
+                                    string targetCharacter = entryValues[5];
 
-                                    NoteTrack noteTrack = new NoteTrack(Beatmap, entryValues[4]);
-                                    Conductor conductor = new Conductor(controlsConfig, notesConfig, noteTrack);
+                                    NoteTrack noteTrack = new NoteTrack(Beatmap, targetNotes);
+                                    Conductor conductor = new Conductor(controlsConfig, notesConfig, noteTrack, targetNotes == "player");
+
+                                    conductor.targetCharacter = Elements[targetCharacter] as Character;
 
                                     Elements.Add(objectName, conductor);
-                                    RenderList.Add(conductor.Render);
                                     UpdateList.Add(conductor.Update);
                                     break;
                                 }
 
                                 default: throw new InvalidDataException($"'{objectType}' is not a valid object type");
+                            }
+                        }
+                        break;
+                    }
+                    case "RenderOrder":
+                    {
+                        for (int i = 0; i < Entries.Length; i++)
+                        {
+                            string[] entryValues = StringUtility.SplitValues(Entries[i], 1);
+
+                            string targetObject = entryValues[0];
+
+                            if (Elements[targetObject] is IRenderable renderable)
+                            {
+                                RenderList.Add(renderable);
                             }
                         }
                         break;

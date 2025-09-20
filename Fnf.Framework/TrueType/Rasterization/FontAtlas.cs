@@ -130,7 +130,7 @@ namespace Fnf.Framework.TrueType.Rasterization
 
             if(!File.Exists($"Cach/{cachName}.png"))
             {
-
+                // TODO: Add cache
             }
         }
 

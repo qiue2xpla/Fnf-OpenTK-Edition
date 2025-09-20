@@ -76,7 +76,7 @@ namespace Fnf
 			if (Input.GetAnyKeysDown(Key.S, Key.Down)) selectedWeek = MathUtility.WrapClamp(selectedWeek + 1, options.Length - 1, 0);
 			if (Input.GetKeyDown(Key.Enter))
 			{
-				Active = new PlayMode("Fuck you!", "hard", new string[] { "Epiphany" });
+				Active = new PlayMode("Fuck you!", "hard", new string[] { "Markov" });
 			}
 
             // Difficulty selection

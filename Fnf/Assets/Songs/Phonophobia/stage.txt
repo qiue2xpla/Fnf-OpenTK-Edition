@@ -2,11 +2,11 @@
 [Stage]
 Image background3 "Assets/Shared/Stage/FutileBG.png"
 
+Conductor playerConductor default default player opp
+Conductor opponentConductor default default opponent bf
+
 Character opp oppoEx
 Character bf bf
-
-Conductor opponentConductor default default opponent opp
-Conductor playerConductor default default player bf
 
 Image background "Assets/Shared/Stage/FutileBG.png"
 Image background2 "Assets/Shared/Stage/FutileBG.png"
