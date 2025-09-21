@@ -3,10 +3,11 @@ using Fnf.Framework;
 using System.IO;
 using System;
 using System.Security.Policy;
+using System.Xml.XPath;
 
 namespace Fnf.Game
 {
-    public class Conductor : MovableObject, IRenderable, IUpdatable
+    public class Conductor : GameObject, IRenderable, IUpdatable
     {
         // TODO: Fix this shit
         private static Key[] input = new Key[4] { Key.Q, Key.W, Key.BracketLeft, Key.BracketRight };
@@ -21,8 +22,7 @@ namespace Fnf.Game
         public bool botplay;
 
         Animation[][] noteAnimations;
-        float[] holdCooldown;
-        float[] hitCooldown;
+        float[] hitCooldown; // Cooldown for the controls to reset 
         float musicPosition;
         int botNoteIndex;
         int startIndex;
@@ -70,20 +70,47 @@ namespace Fnf.Game
             {
                 for (int i = botNoteIndex; i < noteTrack.notes.Length; i++)
                 {
-                    if (noteTrack.notes[i].delay < musicPosition)
-                    {
-                        if (!noteTrack.notes[i].pressed)
-                        {
-                            botNoteIndex++;
-                            noteTrack.notes[i].pressed = true;
-                            SetColumnState(noteTrack.notes[i].column, "confirm");
-                            targetCharacter?.play(dirs[noteTrack.notes[i].column]);
-                            hitCooldown[noteTrack.notes[i].column] = 0.1f;
+                    NoteData note = noteTrack.notes [i];
+
+                    // Gets rid of note that we didn't reach yet
+                    if (note.delay > musicPosition) break;
+
+                    if (note.length > 0)
+                    { // Its a hold note
+                        if (note.state == NoteState.None)
+                        { // The note is not pressed
+                            note.state = NoteState.Bot;
+                            note.holdProgress = note.delay + note.length - musicPosition;
+                            hitCooldown[note.column] = 0.12f;
+                            SetColumnState(note.column, "confirm");
+                            targetCharacter?.Hit(dirs[note.column]);
+                        }
+                        else
+                        { // The note is pressed
+                            note.holdProgress = MathUtility.Clamp(note.delay + note.length - musicPosition, float.PositiveInfinity, 0);
+
+                            if (note.holdProgress > 0 && hitCooldown[note.column] - Time.deltaTime <= 0)
+                            {
+                                hitCooldown[note.column] = 0.12f;
+                                SetColumnState(note.column, "confirm");
+                                targetCharacter?.Hit(dirs[note.column]);
+                            }
                         }
                     }
                     else
+                    { // Its a notmal note
+                        if (note.state == NoteState.None)
+                        { // The note is not pressed yet
+                            note.state = NoteState.Bot;
+                            hitCooldown[note.column] = 0.1f;
+                            SetColumnState(note.column, "confirm");
+                            targetCharacter?.Hit(dirs[note.column]);
+                        }
+                    }
+
+                    if ((int)note.state > 0 && note.holdProgress == 0 && i == botNoteIndex + 1)
                     {
-                        break;
+                        botNoteIndex = i;
                     }
                 }
 
@@ -115,7 +142,7 @@ namespace Fnf.Game
                         {
                             NoteData note = noteTrack.notes[n];
                             float delay = Math.Abs(note.delay - musicPosition);
-                            if (!note.pressed && note.column == i && delay < closestDelay)
+                            if (note.state == NoteState.None && note.column == i && delay < closestDelay)
                             {
                                 closestNote = n;
                                 closestDelay = delay;
@@ -129,8 +156,8 @@ namespace Fnf.Game
                         else
                         {
                             NoteData note = noteTrack.notes[closestNote];
-                            note.pressed = true;
-                            targetCharacter?.play(dirs[note.column]);
+                            note.state = NoteState.Perfect;
+                            targetCharacter?.Hit(dirs[note.column]);
                             SetColumnState(i, "confirm");
                         }
                     }
@@ -169,28 +196,24 @@ namespace Fnf.Game
 
             for (int noteIndex = endIndex; noteIndex >= startIndex; noteIndex--)
             {
-                if (noteTrack.notes[noteIndex].pressed) continue;
+                NoteData note = noteTrack.notes[noteIndex];
+                // Don't render notes that are pressed
+                if (note.state > NoteState.Miss) continue;
 
-                float hitOffset = (float)musicPosition - noteTrack.notes[noteIndex].delay;
-                float noteDisplacement = hitOffset * noteSpeed * Window.GridSize.height;
-                int column = noteTrack.notes[noteIndex].column;
+                float notePlacement = (musicPosition - note.delay) * noteSpeed * Window.GridSize.height;
 
                 for (int vertexIndex = 0; vertexIndex < 4; vertexIndex++)
                 {
                     // Could be animated from here
-                    Frame noteFrame = noteAnimations[0][column].frames[0];
+                    Frame noteFrame = noteAnimations[0][note.column].frames[0];
 
                     OpenGL.TextureCoord(noteFrame.coords[vertexIndex]);
 
-                    Vector2 displacement = new Vector2(0, noteDisplacement);
-                    displacement = displacement.Rotate(columns[column].globalRotation);
-
-                    Vector2 vertex = noteFrame.verts[vertexIndex];
-                    vertex *= columns[column].globalScale;
-                    vertex = vertex.Rotate(columns[column].globalRotation);
-                    vertex += columns[column].globalPosition;
-
-                    OpenGL.Pixel2(vertex + displacement);
+                    // We only need the rotation to be applied to the placement
+                    Vector2 placement = (Matrix3x3.CreateRotationMatrix(-MathUtility.ToRadian(columns[note.column].globalRotation)) * new Vector3(0, notePlacement, 1)).ToEuclidean();
+                    Vector2 frame = (columns[note.column].GetObjectWorldlTransformMatrix() * noteFrame.verts[vertexIndex].ToHomogeneous()).ToEuclidean();
+        
+                    OpenGL.Pixel2(placement + frame);
                 }
             }
 
@@ -199,97 +222,94 @@ namespace Fnf.Game
 
         void RenderHolds()
         {
-            // Might be moved to the note skin 
-            const float HoldSegment = 300;
-            const float OverlapInPixels = 10;
+            const float Segment = 300, Overlap = 10;
 
             Texture.Use(noteAnimations[0][0].texture);
 
             for (int i = endIndex; i >= startIndex; i--)
             {
-                if (noteTrack.notes[i].length > 0 && noteTrack.notes[i].hold != 1)
-                {
-                    int column = noteTrack.notes[i].column;
+                NoteData note = noteTrack.notes[i];
+                int column = noteTrack.notes[i].column;
+                float progress = 1 - note.holdProgress / note.length;
 
+                if (note.length > 0 && progress != 1)
+                {
                     Vector2[] Hold_Vert = noteAnimations[1][column].frames[0].verts;
                     Vector2[] Hold_Coord = noteAnimations[1][column].frames[0].coords;
                     Vector2[] End_Vert = noteAnimations[2][column].frames[0].verts;
                     Vector2[] End_Coord = noteAnimations[2][column].frames[0].coords;
 
-                    float hitOffset = (float)Music.Position - noteTrack.notes[i].delay;
-                    float noteDisplacement = hitOffset * noteSpeed * Window.GridSize.height;
+                    float startPlacement = (musicPosition - noteTrack.notes[i].delay) * noteSpeed * Window.GridSize.height;
+                    float endPlacement = startPlacement - noteTrack.notes[i].length * noteSpeed * Window.GridSize.height;
 
-                    Vector2 endPoint = new Vector2(0, noteDisplacement - noteTrack.notes[i].length * noteSpeed * Window.GridSize.height);
-                    Vector2 startPoint = new Vector2(0, Lerp(noteDisplacement, endPoint.y, noteTrack.notes[i].hold));
-                    Vector2 drawPoint = endPoint;
+                    // Used to know hold progress position
+                    float midPlacement = MathUtility.Lerp(startPlacement, endPlacement, progress);
+                    float lengthToDraw = Math.Abs(midPlacement - endPlacement);
+                    float pointer = endPlacement;
 
                     OpenGL.BeginDrawing(DrawMode.Quads);
 
-                    float remainingLength = noteTrack.notes[i].length * noteSpeed * Window.GridSize.height * (1 - noteTrack.notes[i].hold);
-
-                    while (remainingLength > 0)
+                    while (lengthToDraw > 0)
                     {
-                        if (remainingLength < HoldSegment)
+                        if (lengthToDraw < Segment)
                         {
                             OpenGL.TextureCoord(Hold_Coord[0]);
-                            OpenGL.Pixel2(transform(new Vector2(Hold_Vert[0].x, startPoint.y)));
+                            Pixel2(Hold_Vert[0].x, midPlacement);
 
                             OpenGL.TextureCoord(Hold_Coord[1]);
-                            OpenGL.Pixel2(transform(new Vector2(Hold_Vert[1].x, startPoint.y)));
+                            Pixel2(Hold_Vert[1].x, midPlacement);
 
                             OpenGL.TextureCoord(Hold_Coord[2]);
-                            OpenGL.Pixel2(transform(new Vector2(Hold_Vert[2].x, drawPoint.y - OverlapInPixels)));
+                            Pixel2(Hold_Vert[2].x, pointer - Overlap);
 
                             OpenGL.TextureCoord(Hold_Coord[3]);
-                            OpenGL.Pixel2(transform(new Vector2(Hold_Vert[3].x, drawPoint.y - OverlapInPixels)));
+                            Pixel2(Hold_Vert[3].x, pointer - Overlap);
                         }
                         else
                         {
                             OpenGL.TextureCoord(Hold_Coord[0]);
-                            OpenGL.Pixel2(transform(new Vector2(Hold_Vert[0].x, drawPoint.y + HoldSegment)));
+                            Pixel2(Hold_Vert[0].x, pointer + Segment);
 
                             OpenGL.TextureCoord(Hold_Coord[1]);
-                            OpenGL.Pixel2(transform(new Vector2(Hold_Vert[1].x, drawPoint.y + HoldSegment)));
+                            Pixel2(Hold_Vert[1].x, pointer + Segment);
 
                             OpenGL.TextureCoord(Hold_Coord[2]);
-                            OpenGL.Pixel2(transform(new Vector2(Hold_Vert[2].x, drawPoint.y - OverlapInPixels)));
+                            Pixel2(Hold_Vert[2].x, pointer - Overlap);
 
                             OpenGL.TextureCoord(Hold_Coord[3]);
-                            OpenGL.Pixel2(transform(new Vector2(Hold_Vert[3].x, drawPoint.y - OverlapInPixels)));
+                            Pixel2(Hold_Vert[3].x, pointer - Overlap);
                         }
 
-                        drawPoint.y += HoldSegment;
-                        remainingLength -= HoldSegment;
+                        pointer += Segment;
+                        lengthToDraw -= Segment;
                     }
 
-                    float offset = End_Vert[3].y - End_Vert[0].y;
+                    float endPieceHeight = End_Vert[3].y - End_Vert[0].y; 
 
                     OpenGL.TextureCoord(End_Coord[0]);
-                    OpenGL.Pixel2(transform(new Vector2(End_Vert[0].x, endPoint.y)));
+                    Pixel2(End_Vert[0].x, endPlacement);
 
                     OpenGL.TextureCoord(End_Coord[1]);
-                    OpenGL.Pixel2(transform(new Vector2(End_Vert[1].x, endPoint.y)));
+                    Pixel2(End_Vert[1].x, endPlacement);
 
                     OpenGL.TextureCoord(End_Coord[2]);
-                    OpenGL.Pixel2(transform(new Vector2(End_Vert[2].x, endPoint.y + offset)));
+                    Pixel2(End_Vert[2].x, endPlacement + endPieceHeight);
 
                     OpenGL.TextureCoord(End_Coord[3]);
-                    OpenGL.Pixel2(transform(new Vector2(End_Vert[3].x, endPoint.y + offset)));
+                    Pixel2(End_Vert[3].x, endPlacement + endPieceHeight);
 
                     OpenGL.EndDrawing();
 
-                    Vector2 transform(Vector2 vector2)
+                    void Pixel2(float x, float y)
                     {
-                        Animator nc = columns[column];
-                        vector2.x *= nc.globalScale.x;
-                        vector2 = vector2.Rotate(nc.globalRotation);
-                        vector2 += nc.globalPosition;
-                        return vector2;
+                        // Only translation and rotation and scaleX is allowed to not alter the note position
+                        Animator c = columns[column];
+                        OpenGL.Pixel2((
+                            Matrix3x3.CreateTransformMatrix(c.globalPosition, -MathUtility.ToRadian(c.globalRotation), new Vector2(c.globalScale.x, 1)) * 
+                            new Vector3(x, y, 1)).ToEuclidean()); 
                     }
                 }
             }
-
-            float Lerp(float a, float b, float t) => a + (b - a) * t;
         }
 
         (float topTime, float bottomTime) GetTimeOffsets()

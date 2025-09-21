@@ -6,7 +6,7 @@ namespace Fnf.Game
     /// Contains a collection of <seealso cref="NoteData"/> for 
     /// the <seealso cref="Conductor"/> to use and utilize
     /// </summary>
-    public class NoteTrack
+    public class NoteTrack // TODO: Delete the class and use the notes only
     {
         public NoteData[] notes;
 
@@ -33,8 +33,8 @@ namespace Fnf.Game
     /// </summary>
     public class NoteData :  Note
     {
-        public bool pressed;
-        public float hold;
+        public NoteState state;
+        public float holdProgress;
 
         public NoteData(Note note)
         {
@@ -42,6 +42,17 @@ namespace Fnf.Game
             length = note.length;
             column = note.column;
             type = note.type;
+            holdProgress = length;
         }
+    }
+
+    public enum NoteState
+    {
+        None,
+        Miss,
+        Bad,
+        Good,
+        Perfect,
+        Bot,    
     }
 }

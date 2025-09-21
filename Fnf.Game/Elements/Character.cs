@@ -38,11 +38,24 @@ namespace Fnf.Game
             }*/
 
             base.Update();
+
+            cooldown = MathUtility.Clamp(cooldown - Time.deltaTime, 100, 0);
+        }
+
+        float cooldown;
+
+        public void Hit(string anim)
+        {
+            play(anim);
+            cooldown = 0.6f;
         }
 
         public void Idle()
         {
+            if (cooldown > 0) return; 
+
             play("idle");
+
         }
     }
 }

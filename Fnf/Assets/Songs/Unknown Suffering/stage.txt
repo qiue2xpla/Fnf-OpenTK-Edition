@@ -30,7 +30,7 @@ opp -300 0 0 1 1
 bf 300 0 0 1 1
 
 playerConductor 350 270 0 0.78 0.78
-opponentConductor -350 270 0 0.78 0.1
+opponentConductor -350 270 0 0.78 0.78
 
 [Parallax]
 background 0.8

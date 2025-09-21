@@ -9,7 +9,7 @@ namespace Fnf.Game
     /// Contains a list of animations with alias names to be <br/>
     /// called with when an animation is going to be played
     /// </summary>
-    public class Animator : MovableObject, IRenderable, IUpdatable
+    public class Animator : GameObject, IRenderable, IUpdatable
     {
         public bool isRenderable { get; set; } = true;
         public bool isUpdatable { get; set; } = true;

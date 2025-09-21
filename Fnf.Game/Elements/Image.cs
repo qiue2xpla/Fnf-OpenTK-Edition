@@ -4,7 +4,7 @@ using System;
 
 namespace Fnf.Game
 {
-    public class Image : MovableObject, IRenderable, IDisposable
+    public class Image : GameObject, IRenderable, IDisposable
     {
         public bool isRenderable { get; set; } = true;
         public Size size;

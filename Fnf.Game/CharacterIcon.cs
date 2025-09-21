@@ -3,7 +3,7 @@ using Fnf.Framework;
 
 namespace Fnf.Game
 {
-    public class CharacterIcon : MovableObject, IRenderable
+    public class CharacterIcon : GameObject, IRenderable
     {
         public bool isRenderable { get; set; } = true;
         public bool isNormal = true;

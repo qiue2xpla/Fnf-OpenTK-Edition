@@ -5,6 +5,7 @@ namespace Fnf.Framework
 {
     public struct Vector2
     {
+        public static Vector2 NegativeOne = new Vector2(-1, -1);
         public float x, y;
 
         public Vector2(float v)
@@ -25,6 +26,11 @@ namespace Fnf.Framework
             float rx = (float)(x * Math.Cos(radian) - y * Math.Sin(radian));
             float ry = (float)(x * Math.Sin(radian) + y * Math.Cos(radian));
             return new Vector2(rx, ry);
+        }
+
+        public Vector3 ToHomogeneous()
+        {
+            return new Vector3(x, y, 1);
         }
 
         public override string ToString()

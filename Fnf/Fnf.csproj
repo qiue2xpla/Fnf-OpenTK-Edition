@@ -255,6 +255,9 @@
     <Content Include="Assets\Songs\Unknown Suffering\Inst.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Songs\Unknown Suffering\stage.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Songs\Unknown Suffering\Voices.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

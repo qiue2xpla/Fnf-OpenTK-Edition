@@ -10,8 +10,8 @@ namespace Fnf
 {
     public class PlayMode : Script
     {
-        public static Dictionary<string, MovableObject> Elements;
-        public static List<(Vector2 factor, MovableObject parent)> ParallaxLayers;
+        public static Dictionary<string, GameObject> Elements;
+        public static List<(Vector2 factor, GameObject parent)> ParallaxLayers;
         public static List<Action> UpdateList;
         public static List<IRenderable> RenderList;
         public static Beatmap Beatmap;
@@ -47,12 +47,13 @@ namespace Fnf
             for (int i = 0; i < UpdateList.Count; i++) UpdateList[i].Invoke();
             SharedGameSystems.VolumeControl.Update();
 
-            cameraTarget = Input.GetGridMousePosition();
+            //cameraTarget = Input.GetGridMousePosition();
+            cameraTarget = new Vector2((float)Math.Cos(Time.time * 0.8), (float)Math.Sin(Time.time * 0.5)) * 50;
             camera = MathUtility.Lerp(camera, cameraTarget, Time.deltaTime * 8);
 
             for (int i = 0; i < ParallaxLayers.Count; i++)
             {
-                MovableObject p = ParallaxLayers[i].parent;
+                GameObject p = ParallaxLayers[i].parent;
                 Vector2 effectValue = ParallaxLayers[i].factor;
                 p.localPosition = camera * effectValue * new Vector2(-1);
             }
@@ -186,7 +187,7 @@ namespace Fnf
                             string targetName = entryValues[0];
                             int indexOffset = 0;
 
-                            MovableObject targetObject = Elements[targetName];
+                            GameObject targetObject = Elements[targetName];
 
                             if (entryValues.Length == 7)
                             {
@@ -217,8 +218,8 @@ namespace Fnf
 
                             string targetName = entryValues[0];
 
-                            MovableObject targetObject = Elements[targetName];
-                            MovableObject paralaxLayer = null;
+                            GameObject targetObject = Elements[targetName];
+                            GameObject paralaxLayer = null;
                             Vector2 factor = Vector2.Zero;
 
                             if (entryValues.Length == 2) factor = new Vector2(parse(1));
@@ -236,7 +237,7 @@ namespace Fnf
 
                             if (paralaxLayer == null)
                             {
-                                paralaxLayer = new MovableObject();
+                                paralaxLayer = new GameObject();
                                 ParallaxLayers.Add((factor, paralaxLayer));
                             }
 
