@@ -24,6 +24,7 @@ namespace Fnf.Game
         Animation[][] noteAnimations;
         float[] hitCooldown; // Cooldown for the controls to reset 
         float musicPosition;
+        float previousMusicPosition;
         int botNoteIndex;
         int startIndex;
         int endIndex;
@@ -40,6 +41,7 @@ namespace Fnf.Game
 
         public void Update()
         {
+            previousMusicPosition = musicPosition;
             musicPosition = (float)Music.Position;
 
             (float topTime, float bottomTime) = GetTimeOffsets(); // TODO: Add double sided colitions
@@ -138,7 +140,7 @@ namespace Fnf.Game
                         int closestNote = -1;
                         float closestDelay = float.MaxValue;
 
-                        for (int n = 0; n < noteTrack.notes.Length; n++)
+                        for (int n = startIndex; n < endIndex + 1; n++)
                         {
                             NoteData note = noteTrack.notes[n];
                             float delay = Math.Abs(note.delay - musicPosition);
@@ -162,6 +164,54 @@ namespace Fnf.Game
                         }
                     }
                     if (Input.GetKeyUp(input[i])) SetColumnState(i, "blank");
+                }
+
+                for (int n = startIndex; n < endIndex + 1; n++)
+                {
+                    NoteData note = noteTrack.notes[n];
+
+                    if (note.length == 0) continue;
+
+                    float noteDis = musicPosition - note.delay;
+                    if (noteDis > 0)
+                    {
+                        if (noteDis <= note.length)
+                        {
+                            if (Input.GetKey(input[note.column]))
+                            {
+                                note.holdProgress = note.delay + note.length - musicPosition;
+
+                                if (hitCooldown[note.column] == 0)
+                                {
+                                    targetCharacter?.Hit(dirs[note.column]);
+                                    SetColumnState(note.column, "confirm");
+                                    hitCooldown[note.column] = 0.12f;
+                                }
+                            }
+                            else
+                            {
+                                if (hitCooldown[note.column] == 0)
+                                {
+                                    // Miss
+                                    hitCooldown[note.column] = 0.12f;
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            float prevDis = previousMusicPosition - note.delay;
+                            if (prevDis <= note.length && Input.GetKey(input[note.column]))
+                            {
+                                note.holdProgress = 0;
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < hitCooldown.Length; i++)
+                {
+                    hitCooldown[i] = MathUtility.Clamp(hitCooldown[i] - Time.deltaTime, 100, 0);
                 }
             }
 
@@ -253,10 +303,11 @@ namespace Fnf.Game
                     {
                         if (lengthToDraw < Segment)
                         {
-                            OpenGL.TextureCoord(Hold_Coord[0]);
+                            float topTextureCoordinate = MathUtility.Lerp(Hold_Coord[2].y, Hold_Coord[0].y, lengthToDraw / Segment);
+                            OpenGL.TextureCoord(Hold_Coord[0].x, topTextureCoordinate);
                             Pixel2(Hold_Vert[0].x, midPlacement);
 
-                            OpenGL.TextureCoord(Hold_Coord[1]);
+                            OpenGL.TextureCoord(Hold_Coord[1].x, topTextureCoordinate);
                             Pixel2(Hold_Vert[1].x, midPlacement);
 
                             OpenGL.TextureCoord(Hold_Coord[2]);
