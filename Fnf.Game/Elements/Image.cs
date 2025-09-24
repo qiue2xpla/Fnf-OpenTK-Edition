@@ -4,43 +4,45 @@ using System;
 
 namespace Fnf.Game
 {
-    public class Image : GameObject, IRenderable, IDisposable
+    public class Image : GameObject, IRenderable
     {
         public bool isRenderable { get; set; } = true;
-        public Size size;
+        public float width, height;
+        public Color color = Color.White;
 
         int texture;
 
         public Image(string imagePath)
         {
             texture = Texture.GenerateFromPath(imagePath, false);
-            size = Texture.GetTextureSize(texture);
+            Size size = Texture.GetTextureSize(texture);
+            (width, height) = (size.width, size.height);
         }
 
         public void Render()
         {
-            Vector2 v = size.ToVector2() / 2 * globalScale;
-
             Texture.Use(texture);
             OpenGL.BeginDrawing(DrawMode.Quads);
+            OpenGL.Color4(color);
+
+            Vector2 wv = new Vector2(width, height) / 2;
 
             OpenGL.TextureCoord(1, 0);
-            OpenGL.Pixel2(v.Rotate(globalRotation) + globalPosition);
+            Pixel2( wv.x,  wv.y);
             OpenGL.TextureCoord(0, 0);
-            OpenGL.Pixel2((v * new Vector2(-1, 1)).Rotate(globalRotation) + globalPosition);
+            Pixel2(-wv.x,  wv.y);
             OpenGL.TextureCoord(0, 1);
-            OpenGL.Pixel2((v * new Vector2(-1,-1)).Rotate(globalRotation) + globalPosition);
+            Pixel2(-wv.x, -wv.y);
             OpenGL.TextureCoord(1, 1);
-            OpenGL.Pixel2((v * new Vector2( 1,-1)).Rotate(globalRotation) + globalPosition);
+            Pixel2( wv.x, -wv.y);
 
             OpenGL.EndDrawing();
             Texture.Use(OpenGL.NULL);
-        }
 
-        public void Dispose()
-        {
-            Texture.Destroy(texture);
-            texture = OpenGL.NULL;
+            void Pixel2(float x, float y)
+            {
+                OpenGL.Pixel2((GetObjectWorldlTransformMatrix() * new Vector3(x, y, 1)).ToEuclidean());
+            }
         }
     }
 }

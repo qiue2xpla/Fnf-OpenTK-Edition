@@ -21,8 +21,10 @@ namespace Fnf
         string weekName;
         int currentTrack;
 
-        Vector2 cameraTarget;
         Vector2 camera;
+        Vector2 cameraTarget;
+        Vector2 cameraZoom;
+        Vector2 cameraZoomTarget = Vector2.One;
 
         public PlayMode(string weekName, string difficulty, string[] tracks)
         {
@@ -47,15 +49,18 @@ namespace Fnf
             for (int i = 0; i < UpdateList.Count; i++) UpdateList[i].Invoke();
             SharedGameSystems.VolumeControl.Update();
 
-            //cameraTarget = Input.GetGridMousePosition();
-            cameraTarget = new Vector2((float)Math.Cos(Time.time * 0.8), (float)Math.Sin(Time.time * 0.5)) * 50;
+            cameraTarget = Input.GetGridMousePosition();
+            //cameraTarget = new Vector2((float)Math.Cos(Time.time * 0.8), (float)Math.Sin(Time.time * 0.5)) * 50;
             camera = MathUtility.Lerp(camera, cameraTarget, Time.deltaTime * 8);
+            cameraZoomTarget += new Vector2(Input.GetScrollWheelDelta() * 0.1f);
+            cameraZoom = MathUtility.Lerp(cameraZoom, cameraZoomTarget, Time.deltaTime * 8);
 
             for (int i = 0; i < ParallaxLayers.Count; i++)
             {
                 GameObject p = ParallaxLayers[i].parent;
                 Vector2 effectValue = ParallaxLayers[i].factor;
                 p.localPosition = camera * effectValue * new Vector2(-1);
+                p.localScale = cameraZoom;
             }
 
             if(Input.GetKeyDown(Key.Escape))

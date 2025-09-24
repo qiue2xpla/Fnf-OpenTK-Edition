@@ -1,0 +1,30 @@
+﻿[Stage]
+Image stageFront "Assets/Shared/Stage/stagefront.png"
+Image stageBack "Assets/Shared/Stage/stageback.png"
+Image stageCurtains "Assets/Shared/Stage/stagecurtains.png"
+
+Character bf bf
+
+Conductor player default default player bf
+Conductor opponent default default opponent
+
+[Layout]
+player 350 270 0 0.78 0.78
+opponent -350 270 0 0.78 0.78
+stageFront 0 -300 0 1 1
+stageBack 0 200 0 1 1
+stageCurtains 0 100 0 1 1
+
+[Parallax]
+stageFront 0.95
+stageBack 0.5
+bf 0.95
+stageCurtains 0.8
+
+[RenderOrder]
+stageBack
+stageFront
+bf
+stageCurtains
+player
+opponent

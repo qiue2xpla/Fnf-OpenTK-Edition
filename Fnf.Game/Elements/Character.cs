@@ -29,14 +29,6 @@ namespace Fnf.Game
 
         public new void Update()
         {
-            /*bool HasFinished = _idleCountdown > 0;
-            _idleCountdown -= Time.deltaTime;
-            if (_idleCountdown < 0)
-            {
-                _idleCountdown = 0;
-                if (HasFinished) Idle();
-            }*/
-
             base.Update();
 
             cooldown = MathUtility.Clamp(cooldown - Time.deltaTime, 100, 0);

@@ -9,11 +9,11 @@ namespace Fnf.Game
         protected const int LengthIndex = 2;
         protected const int NoteTypeIndex = 3; //if exists
 
-        public virtual Note Parse(object[] data, bool mustHitSection)
+        public virtual NoteBase Parse(object[] data, bool mustHitSection)
         {
             if (Convert.ToInt32(data[ColumnIndex]) < 0) return null;
 
-            Note note = new Note();
+            NoteBase note = new NoteBase();
             note.delay = Convert.ToInt32(data[DelayIndex]) / 1000f;
             note.column = Convert.ToInt32(data[ColumnIndex]);
             note.length = Convert.ToInt32(data[LengthIndex]) / 1000f;

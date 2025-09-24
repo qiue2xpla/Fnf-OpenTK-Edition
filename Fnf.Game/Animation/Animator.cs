@@ -93,14 +93,10 @@ namespace Fnf.Game
             OpenGL.BeginDrawing(DrawMode.Quads);
             for (int i = 0; i < 4; i++)
             {
-                Vector2 vert = frame.verts[i];
-                vert += offset;
-                vert *= size;
-                vert = vert.Rotate(rot);
-                vert += pos;
+                Matrix3x3 mat = Matrix3x3.CreateTransformMatrix(pos, -MathUtility.ToRadian(rot), size) * Matrix3x3.CreateTranslationMatrix(offset);
 
                 OpenGL.TextureCoord(frame.coords[i]);
-                OpenGL.Pixel2(vert);
+                OpenGL.Pixel2((mat * frame.verts[i].ToHomogeneous()).ToEuclidean());
             }
             OpenGL.EndDrawing();
 
