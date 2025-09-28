@@ -16,7 +16,7 @@ namespace Fnf.Game
         public bool isUpdatable { get; set; } = true;
 
         public Character targetCharacter;
-        public NoteTrack noteTrack;
+        public NoteData[] notes;
         public Animator[] columns;
         public float noteSpeed = 2f; // Note's distance per second is (screenGridHight * noteSpeed)
         public bool botplay;
@@ -29,10 +29,10 @@ namespace Fnf.Game
         int startIndex;
         int endIndex;
 
-        public Conductor(string controlsConfigurations, string notesConfiguration, NoteTrack track, bool isPlayer)
+        public Conductor(string controlsConfigurations, string notesConfiguration, NoteData[] track, bool isPlayer)
         {
             botplay = !isPlayer;
-            noteTrack = track; 
+            notes = track; 
             ApplyNotesConfiguration(notesConfiguration);
             ApplyControlsConfigurations(controlsConfigurations);
             for (int i = 0; i < columns.Length; i++) SetColumnState(i, "blank");
@@ -46,18 +46,18 @@ namespace Fnf.Game
 
             (float topTime, float bottomTime) = GetTimeOffsets(); // TODO: Add double sided colitions
 
-            for (int i = startIndex; i < noteTrack.notes.Length; i++)
+            for (int i = startIndex; i < notes.Length; i++)
             {
-                NoteData note = noteTrack.notes[i];
+                NoteData note = notes[i];
                 float time = musicPosition - (note.delay + note.length); // The length is used so long notes doesn't suddenly dissappear
 
                 if (time > topTime) startIndex++;
                 else break;
             }
 
-            for (int i = endIndex; i < noteTrack.notes.Length; i++)
+            for (int i = endIndex; i < notes.Length; i++)
             {
-                NoteData note = noteTrack.notes[i];
+                NoteData note = notes[i];
                 float time = musicPosition - note.delay;
 
                 if (time < bottomTime) break;
@@ -65,14 +65,14 @@ namespace Fnf.Game
                 endIndex++;
             }
 
-            startIndex = MathUtility.Clamp(startIndex, noteTrack.notes.Length - 1, 0);
-            endIndex = MathUtility.Clamp(endIndex, noteTrack.notes.Length - 1, 0);
+            startIndex = MathUtility.Clamp(startIndex, notes.Length - 1, 0);
+            endIndex = MathUtility.Clamp(endIndex, notes.Length - 1, 0);
 
             if (botplay)
             {
-                for (int i = botNoteIndex; i < noteTrack.notes.Length; i++)
+                for (int i = botNoteIndex; i < notes.Length; i++)
                 {
-                    NoteData note = noteTrack.notes [i];
+                    NoteData note = notes [i];
 
                     // Gets rid of note that we didn't reach yet
                     if (note.delay > musicPosition) break;
@@ -142,7 +142,7 @@ namespace Fnf.Game
 
                         for (int n = startIndex; n < endIndex + 1; n++)
                         {
-                            NoteData note = noteTrack.notes[n];
+                            NoteData note = notes[n];
                             float delay = Math.Abs(note.delay - musicPosition);
                             if (note.state == NoteState.None && note.column == i && delay < closestDelay)
                             {
@@ -157,7 +157,7 @@ namespace Fnf.Game
                         }
                         else
                         {
-                            NoteData note = noteTrack.notes[closestNote];
+                            NoteData note = notes[closestNote];
                             note.state = NoteState.Perfect;
                             targetCharacter?.Hit(dirs[note.column]);
                             SetColumnState(i, "confirm");
@@ -168,7 +168,7 @@ namespace Fnf.Game
 
                 for (int n = startIndex; n < endIndex + 1; n++)
                 {
-                    NoteData note = noteTrack.notes[n];
+                    NoteData note = notes[n];
 
                     if (note.length == 0) continue;
 
@@ -246,7 +246,7 @@ namespace Fnf.Game
 
             for (int noteIndex = endIndex; noteIndex >= startIndex; noteIndex--)
             {
-                NoteData note = noteTrack.notes[noteIndex];
+                NoteData note = notes[noteIndex];
                 // Don't render notes that are pressed
                 if (note.state > NoteState.Miss) continue;
 
@@ -260,7 +260,7 @@ namespace Fnf.Game
                     OpenGL.TextureCoord(noteFrame.coords[vertexIndex]);
 
                     // We only need the rotation to be applied to the placement
-                    Vector2 placement = (Matrix3x3.CreateRotationMatrix(-MathUtility.ToRadian(columns[note.column].globalRotation)) * new Vector3(0, notePlacement, 1)).ToEuclidean();
+                    Vector2 placement = (Matrix3.Rotation(-MathUtility.ToRadian(columns[note.column].globalRotation)) * new Vector3(0, notePlacement, 1)).ToEuclidean();
                     Vector2 frame = (columns[note.column].GetObjectWorldlTransformMatrix() * noteFrame.verts[vertexIndex].ToHomogeneous()).ToEuclidean();
         
                     OpenGL.Pixel2(placement + frame);
@@ -278,8 +278,8 @@ namespace Fnf.Game
 
             for (int i = endIndex; i >= startIndex; i--)
             {
-                NoteData note = noteTrack.notes[i];
-                int column = noteTrack.notes[i].column;
+                NoteData note = notes[i];
+                int column = notes[i].column;
                 float progress = 1 - note.holdProgress / note.length;
 
                 if (note.length > 0 && progress != 1)
@@ -289,8 +289,8 @@ namespace Fnf.Game
                     Vector2[] End_Vert = noteAnimations[2][column].frames[0].verts;
                     Vector2[] End_Coord = noteAnimations[2][column].frames[0].coords;
 
-                    float startPlacement = (musicPosition - noteTrack.notes[i].delay) * noteSpeed * Window.GridSize.height;
-                    float endPlacement = startPlacement - noteTrack.notes[i].length * noteSpeed * Window.GridSize.height;
+                    float startPlacement = (musicPosition - notes[i].delay) * noteSpeed * Window.GridSize.height;
+                    float endPlacement = startPlacement - notes[i].length * noteSpeed * Window.GridSize.height;
 
                     // Used to know hold progress position
                     float midPlacement = MathUtility.Lerp(startPlacement, endPlacement, progress);
@@ -356,7 +356,7 @@ namespace Fnf.Game
                         // Only translation and rotation and scaleX is allowed to not alter the note position
                         Animator c = columns[column];
                         OpenGL.Pixel2((
-                            Matrix3x3.CreateTransformMatrix(c.globalPosition, -MathUtility.ToRadian(c.globalRotation), new Vector2(c.globalScale.x, 1)) * 
+                            Matrix3.Transform(c.globalPosition, -MathUtility.ToRadian(c.globalRotation), new Vector2(c.globalScale.x, 1)) * 
                             new Vector3(x, y, 1)).ToEuclidean()); 
                     }
                 }
@@ -388,7 +388,7 @@ namespace Fnf.Game
         {
             noteAnimations = new Animation[3][];
 
-            var Sections = StringUtility.SplitSections(File.ReadAllLines($"{GamePaths.NotesConfigurations}\\{noteConfigurations}.txt"));
+            var Sections = StringUtility.SplitIntoSegmentedSections(File.ReadAllLines($"{GamePaths.NotesConfigurations}\\{noteConfigurations}.txt"));
             foreach ((string Section, string[] Entries) in Sections)
             {
                 switch(Section)

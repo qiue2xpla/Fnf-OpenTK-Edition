@@ -2,7 +2,7 @@
 
 namespace Fnf.Framework
 {
-    public class Panel : UI, IRenderable
+    public class Panel : GUI, IRenderable
     {
         public bool isRenderable { get; set; } = true;
 
@@ -13,7 +13,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (raycast && IsInside()) SetTopControl();
+            if (isRaycastable && IsOverGUI()) RaycastHit();
 
             Gizmos.DrawRoundQuad(globalPosition, globalScale, width, height, globalRotation, borderRadius, borderSmoothness, color);
         }

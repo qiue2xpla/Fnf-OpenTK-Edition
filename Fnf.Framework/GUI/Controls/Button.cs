@@ -3,13 +3,13 @@ using System.Net;
 
 namespace Fnf.Framework
 {
-    public class Button : UI, IRenderable, IUpdatable
+    public class Button : GUI, IRenderable, IUpdatable
     {
         public Text overlayText = new Text();
 
         public Color backgroundColor = Color.White;
-        public Color hoverColor = new Color(240, 240, 240, 255);
-        public Color pressColor = new Color(220, 220, 220, 255);
+        public Color hoverColor = new Color(220, 220, 220, 255);
+        public Color pressColor = new Color(180, 180, 180, 255);
 
         public bool isRenderable { get; set; } = true;
         public bool isUpdatable { get; set; } = false;
@@ -26,7 +26,8 @@ namespace Fnf.Framework
             current = backgroundColor;
 
             overlayText.parent = this;
-            overlayText.raycast = false;
+            overlayText.color = Color.Black;
+            overlayText.isRaycastable = false;
         }
 
         public void Update()
@@ -39,7 +40,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (raycast && IsInside()) SetTopControl();
+            if (IsOverGUI()) RaycastHit();
 
             overlayText.width = width;
             overlayText.height = height;

@@ -2,12 +2,12 @@
 {
     public static class Anchor
     {
-        public static void PositionUILocaly(UI ui , AnchorType anchor, Vector2 padding)
+        public static void PositionUILocaly(GUI ui , AnchorType anchor, Vector2 padding)
         {
             ui.localPosition = GetPos(ui, anchor, padding);
         }
 
-        private static Vector2 GetPos(UI ui, AnchorType anchor, Vector2 padding)
+        private static Vector2 GetPos(GUI ui, AnchorType anchor, Vector2 padding)
         {
             Vector2 pos = Vector2.Zero;
 

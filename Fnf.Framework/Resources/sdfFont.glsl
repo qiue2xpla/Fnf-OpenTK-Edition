@@ -1,4 +1,5 @@
-﻿#version 330
+﻿[VertexShader]
+#version 330
 
 layout (location = 0) in vec2 pos;
 layout (location = 1) in vec2 coord;
@@ -24,4 +25,21 @@ void main()
 	newPos = vec2(newX, newY) * UnitsPerPixel;
 	newPos += position * UnitsPerPixel;
 	gl_Position = vec4(newPos, 0.0, 1.0);
+}
+
+[FragmentShader]
+#version 330
+
+out vec4 color;
+
+in vec2 texCoord;
+
+uniform sampler2D tex;
+uniform vec3 textColor;
+uniform float edge1;
+uniform float edge2;
+
+void main()
+{
+	color = vec4(textColor, smoothstep(0.473, 0.487, texture(tex, texCoord).a));
 }

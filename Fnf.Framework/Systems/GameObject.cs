@@ -37,23 +37,23 @@
 
         public GameObject parent;
 
-        public Matrix3x3 GetObjectLocalTransformMatrix()
+        public Matrix3 GetObjectLocalTransformMatrix()
         {
-            return Matrix3x3.CreateTransformMatrix(localPosition, -MathUtility.ToRadian(localRotation), localScale);
+            return Matrix3.Transform(localPosition, -MathUtility.ToRadian(localRotation), localScale);
         }
 
-        public Matrix3x3 GetObjectWorldlTransformMatrix()
+        public Matrix3 GetObjectWorldlTransformMatrix()
         {
             if (parent == null) return GetObjectLocalTransformMatrix();
             return parent.GetObjectWorldlTransformMatrix() * GetObjectLocalTransformMatrix();
         }
 
-        public Matrix3x3 GetObjectLocalInverseTransformMatrix()
+        public Matrix3 GetObjectLocalInverseTransformMatrix()
         {
-            return Matrix3x3.CreateInverseTransformMatrix(localPosition, -MathUtility.ToRadian(localRotation), localScale);
+            return Matrix3.InverseTransform(localPosition, -MathUtility.ToRadian(localRotation), localScale);
         }
 
-        public Matrix3x3 GetObjectWorldInverseTransformMatrix()
+        public Matrix3 GetObjectWorldInverseTransformMatrix()
         {
             if (parent == null) return GetObjectLocalInverseTransformMatrix();
             return parent.GetObjectWorldInverseTransformMatrix() * GetObjectLocalInverseTransformMatrix();

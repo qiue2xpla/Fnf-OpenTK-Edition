@@ -54,14 +54,15 @@
     <Compile Include="Audio\Bass Wrapper\Enums\BASSMode.cs" />
     <Compile Include="Audio\Bass Wrapper\Enums\BASSSync.cs" />
     <Compile Include="Audio\VolumeLevel.cs" />
-    <Compile Include="Math\Matrix3x3.cs" />
+    <Compile Include="Math\Matrix3.cs" />
     <Compile Include="Math\Vector3.cs" />
     <Compile Include="Math\MathUtility.cs" />
+    <Compile Include="ResourceManager.cs" />
     <Compile Include="Systems\RNG.cs" />
-    <Compile Include="Systems\StringUtility.cs" />
+    <Compile Include="StringUtility.cs" />
     <Compile Include="Systems\Anchor.cs" />
-    <Compile Include="UI\InputField.cs" />
-    <Compile Include="UI\Panel.cs" />
+    <Compile Include="GUI\InputField.cs" />
+    <Compile Include="GUI\Panel.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -97,15 +98,15 @@
     <Compile Include="Units\Map.cs" />
     <Compile Include="TrueType\Rasterization\Signed Distance Field\PriorityQueue.cs" />
     <Compile Include="TrueType\Rasterization\Signed Distance Field\SDF.cs" />
-    <Compile Include="UI\Button.cs" />
-    <Compile Include="UI\UICollection.cs" />
-    <Compile Include="UI\Text.cs" />
+    <Compile Include="GUI\Controls\Button.cs" />
+    <Compile Include="GUI\UICollection.cs" />
+    <Compile Include="GUI\Text.cs" />
     <Compile Include="Units\Color.cs" />
     <Compile Include="Units\Point.cs" />
     <Compile Include="Units\SizeF.cs" />
     <Compile Include="Units\Size.cs" />
     <Compile Include="Units\Vector2.cs" />
-    <Compile Include="Systems\UI.cs" />
+    <Compile Include="GUI\GUI.cs" />
     <Compile Include="Systems\GameObject.cs" />
     <Compile Include="Systems\Input.cs" />
     <Compile Include="Systems\FunctionInvoker.cs" />
@@ -119,12 +120,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Graphics\Gizmos.cs" />
-    <None Include="Resources\round.frag" />
-    <None Include="Resources\round.vert" />
-    <None Include="Resources\defaultFont.frag" />
-    <None Include="Resources\defaultFont.vert" />
-    <None Include="Resources\sdfFont.frag" />
-    <None Include="Resources\sddfFont.vert" />
+    <None Include="Resources\round.glsl" />
+    <None Include="Resources\defaultFont.glsl" />
+    <None Include="Resources\sdfFont.glsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

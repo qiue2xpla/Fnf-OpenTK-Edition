@@ -6,38 +6,47 @@ namespace Fnf.Framework.TrueType
     internal class FontReader : IDisposable
     {
         public long Position { get => stream.Position; set => stream.Position = value; }
-        private BinaryReader reader;
-        private Stream stream;
+        BinaryReader reader;
+        Stream stream;
 
-        public FontReader(string fontName)
+        public FontReader(string font)
         {
-            string fileName = fontName + ".ttf";
+            string fontPath = font + ".ttf";
 
-            if (!File.Exists(fileName))
+            // If the font doesn't exist then check the windows folder
+            if (!File.Exists(fontPath))
             {
-                string mainName = "";
-                for (int i = 0; i < fontName.Length; i++)
+                char[] seperators = new char[] { '/', '\\' };
+                
+                string fontFileName = "";
+                for (int i = 0; i < fontPath.Length; i++)
                 {
-                    mainName += fontName[i];
-                    if (fontName[i] == '/')
-                        mainName = "";
+                    fontFileName += fontPath[i];
+                    for (int s = 0; s < seperators.Length; s++)
+                    {
+                        if (fontPath[i] == seperators[s])
+                        {
+                            fontFileName = "";
+                            break;
+                        }
+                    }
                 }
 
                 // Try to copy it from windows fonts folder
-                string pathAtWinFonts = "C:/Windows/Fonts/" + mainName + ".ttf";
-                if (File.Exists(pathAtWinFonts))
+                string pathAtWindowsFolder = "C:/Windows/Fonts/" + fontFileName;
+                if (File.Exists(pathAtWindowsFolder))
                 {
-                    if(!Directory.Exists(fileName))
+                    if(!Directory.Exists(Path.GetDirectoryName(Path.GetFullPath(fontPath))))
                     {
-                        Directory.CreateDirectory(fontName.Substring(0, fontName.Length - mainName.Length - 1));
+                        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(fontPath)));
                     }
 
-                    File.Copy(pathAtWinFonts, fileName, false);
+                    File.Copy(pathAtWindowsFolder, fontPath, false);
                 }
-                else throw new FileNotFoundException(fileName);
+                else throw new FileNotFoundException($"Could not find the given '{fontPath}' in the given path or in system fonts");
             }
 
-            stream = File.Open(fileName, FileMode.Open);
+            stream = File.Open(fontPath, FileMode.Open);
             reader = new BinaryReader(stream);
         }
 

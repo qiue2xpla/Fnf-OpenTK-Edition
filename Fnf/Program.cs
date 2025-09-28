@@ -8,7 +8,7 @@ namespace Fnf
     {
         static void Main()
         {
-            Script.AssignStartupScript<Intro>();
+            Script.AssignStartupScript<Editor>();
             ClipsManager.AppVolume = 0.1f;
 
             Window.Initiate();
@@ -17,7 +17,7 @@ namespace Fnf
             Window.WindowSize = Window.GridSize * 0.9f;
             Window.Title = "Friday Night Funkin";
 
-            SharedGameSystems.InitiateSystens();
+            //SharedGameSystems.InitiateSystens();
 
             Window.Run();
         }

@@ -5,7 +5,7 @@ using System;
 namespace Fnf.Game
 {
     // Only supports capital characters for now
-    public class FnfText : UI, IRenderable
+    public class FnfText : GUI, IRenderable
     {
         const string CharactersToLoad = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

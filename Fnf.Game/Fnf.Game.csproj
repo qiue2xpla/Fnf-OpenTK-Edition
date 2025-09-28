@@ -47,7 +47,6 @@
     <Compile Include="Elements\Character.cs" />
     <Compile Include="CharacterIcon.cs" />
     <Compile Include="Beatmap\Beatmap.cs" />
-    <Compile Include="Beatmap\NoteTrack.cs" />
     <Compile Include="Beatmap\Internal\BeatmapJson.cs" />
     <Compile Include="Beatmap\Internal\SectionJson.cs" />
     <Compile Include="Beatmap\Internal\SongJson.cs" />

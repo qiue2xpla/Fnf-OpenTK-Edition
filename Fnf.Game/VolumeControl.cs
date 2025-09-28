@@ -7,7 +7,7 @@ using System;
 
 namespace Fnf.Game
 {
-    public class VolumeControl : UI, IRenderable, IUpdatable
+    public class VolumeControl : GUI, IRenderable, IUpdatable
     {
         public bool isUpdatable { get; set; } = true;
         public bool isRenderable { get; set; } = true;

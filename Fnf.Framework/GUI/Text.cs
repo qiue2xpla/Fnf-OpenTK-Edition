@@ -2,16 +2,21 @@
 using Fnf.Framework.TrueType;
 using Fnf.Framework.Graphics;
 using System.Collections.Generic;
-using System;
 using System.Linq;
+using System;
 
 namespace Fnf.Framework
 {
-    public class Text : UI, IRenderable
+    /// <summary>
+    /// Used to display text on the screen with ease
+    /// </summary>
+    public class Text : GUI, IRenderable
     {
-        #region Mesh Updating Variables
+        // These variables require the mesh buffer to be remade
 
-        private string _text = "";
+        /// <summary>
+        /// The text that is displayed
+        /// </summary>
         public string text
         {
             get => _text;
@@ -25,16 +30,16 @@ namespace Fnf.Framework
                 {
                     if (value == _text) return;
                     _text = value;
-
                     if(fitContent) width = GetLinesWidths().Max();
-
                     mustReNewBuffer = true;
                     mustReNewMesh = true;
                 }
             }
         }
 
-        private bool _fitContent;
+        /// <summary>
+        /// Make the GUI width fit the text
+        /// </summary>
         public bool fitContent
         {
             get => _fitContent;
@@ -46,7 +51,9 @@ namespace Fnf.Framework
             }
         }
 
-        private FontAtlas _atlas;
+        /// <summary>
+        /// The atlas that the text uses
+        /// </summary>
         public FontAtlas atlas
         {
             get => _atlas;
@@ -55,13 +62,17 @@ namespace Fnf.Framework
                 if (value == _atlas) return;
                 _atlas = value;
                 mustReNewMesh = true;
+                mustReNewBuffer = true;
                 Texture.Destroy(texture);
                 texture = Texture.GenerateFromBitmap(value.bitmap, "FontAtlas");
-                textureSize = new Size(value.bitmap.Width, value.bitmap.Height);
+                atlasSize = new Vector2(value.bitmap.Width, value.bitmap.Height);
+                shader = (value?.IsSignedDistanceFeild??false) ? sdfShader : defaultShader; 
             }
         }
 
-        TextAlignment _textAlignment = TextAlignment.Center;
+        /// <summary>
+        /// How the text is aligned in the GUI
+        /// </summary>
         public TextAlignment textAlignment
         {
             get => _textAlignment;
@@ -73,52 +84,80 @@ namespace Fnf.Framework
             }
         }
 
-        public bool isRenderable { get; set; } = true;
+        // These variables doesn't require the mesh buffer to be remade
+        // Mostly handled by the Text or the shader
 
-        #endregion
-
-        #region Whose Effect is Instant Variable
-
+        /// <summary>
+        /// Displayed text font size
+        /// </summary>
         public float fontSize = 18;
 
-        public Color color = Color.White;
+        /// <summary>
+        /// The display color of the text
+        /// </summary>
+        public Color color = Color.White; // TODO: Add fore and back colors
 
-        #endregion
+        /// <summary>
+        /// Gets or sets the renderable state of the text
+        /// </summary>
+        public bool isRenderable { get; set; } = true;
 
-        const int BytesPerChar = 4 * 6 * sizeof(float); // 4 ( xyuv ) * 6 ( 2 triangles ) * float size
+        // Private variables
 
-        int bufferSizeInChars = 50;
-        int charCount = 0;
+        TextAlignment _textAlignment;
+        FontAtlas _atlas;
+        bool _fitContent;
+        string _text;
 
-        // For validating changes
+        float previousWidth, previousHeight;
         bool mustReNewBuffer = false;
         bool mustReNewMesh = false;
-        float w, h;
+        int displayedCharCount = 0; // TODO: Non character triangles may be added later, so this isn't reliable
+        int bufferSizeInChars = 50;
+        int vbo, vao, shader, texture;
+        Vector2 atlasSize;
 
-        static int DefaultShader, SDFShader;
-        int vbo, vao, texture;
-        Size textureSize;
+        static int defaultShader, sdfShader; // More than one shader copy is not needed
+
+        // Constant variables
+
+        /// <summary>
+        /// The amount of attributes in each vertex. And they are X, Y, TexCoordX and TexCoordY
+        /// </summary>
+        const int AttributesPerVertex = 4; // TODO: Add custom/Gradiant coloring
+
+        /// <summary>
+        /// Amount of vertices per a displayed character
+        /// </summary>
+        const int VerticesPerChar = 6; // 2 Triangle
+
+        /// <summary>
+        /// Amount of bytes per displayed character
+        /// </summary>
+        const int BytesPerChar = AttributesPerVertex * VerticesPerChar * sizeof(float); // 4 ( xyuv )
 
         public Text(FontAtlas atlas = null)
         {
+            _textAlignment = TextAlignment.Center;
+            _text = "";
+            
+            if (defaultShader == 0)
+            {
+                defaultShader = Shader.GenerateShaderFromResource("defaultFont");
+                Shader.Use(defaultShader);
+                Shader.Uniform1(defaultShader, "tex", 0);
+                Shader.Use(OpenGL.NULL);
+            }
+
+            if (sdfShader == 0)
+            {
+                sdfShader = Shader.GenerateShaderFromResource("sdfFont");
+                Shader.Use(sdfShader);
+                Shader.Uniform1(sdfShader, "tex", 0);
+                Shader.Use(OpenGL.NULL);
+            }
+
             this.atlas = atlas;
-
-            if (DefaultShader == 0)
-            {
-                DefaultShader = Shader.GenerateShaderFromResource("defaultFont");
-                Shader.Use(DefaultShader);
-                Shader.Uniform1(DefaultShader, "tex", 0);
-                Shader.Use(OpenGL.NULL);
-            }
-
-            if (SDFShader == 0)
-            {
-                SDFShader = Shader.GenerateShaderFromResource("sdfFont");
-                Shader.Use(SDFShader);
-                Shader.Uniform1(SDFShader, "tex", 0);
-                Shader.Use(OpenGL.NULL);
-            }
-
             vbo = VBO.GenerateVBO();
             vao = VAO.GenerateVAO();
 
@@ -133,13 +172,13 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (raycast && IsInside()) SetTopControl();
+            if (isRaycastable && IsOverGUI()) RaycastHit();
             if (atlas == null) return;
 
-            if(w != width || h != height)
+            if (previousWidth != width || previousHeight != height)
             {
-                w = width;
-                h = height;
+                previousWidth = width;
+                previousHeight = height;
                 mustReNewMesh = true;
             }
 
@@ -155,33 +194,20 @@ namespace Fnf.Framework
                 UpdateBuffer();
             }
 
-            if (atlas.IsSignedDistanceFeild)
-            {
-                Shader.Use(SDFShader);
-                Shader.Uniform3(SDFShader, "textColor", color.r / 255f, color.g / 255f, color.b / 255f);
-                Shader.Uniform2(SDFShader, "UnitsPerPixel", Window.PixelToViewport(1, 1));
-                Shader.Uniform1(SDFShader, "FontSize", fontSize);
-                                
-                Shader.Uniform2(SDFShader, "position", globalPosition);
-                Shader.Uniform2(SDFShader, "scale", globalScale);
-                Shader.Uniform1(SDFShader, "rotation", -globalRotation / 180 * (float)Math.PI);
-            }
-            else
-            {
-                Shader.Use(DefaultShader);
-                Shader.Uniform3(DefaultShader, "textColor", color.r / 255f, color.g / 255f, color.b / 255f);
-                Shader.Uniform2(DefaultShader, "UnitsPerPixel", Window.PixelToViewport(1, 1));
-                Shader.Uniform1(DefaultShader, "FontSize", fontSize);
-                
-                Shader.Uniform2(DefaultShader, "position", globalPosition);
-                Shader.Uniform2(DefaultShader, "scale", globalScale);
-                Shader.Uniform1(DefaultShader, "rotation", -globalRotation / 180 * (float)Math.PI);
-            }
+            Shader.Use(shader);
+            Shader.Uniform3(shader, "textColor", color.r / 255f, color.g / 255f, color.b / 255f);
+            Shader.Uniform1(shader, "fontSize", fontSize);
+
+            Shader.UniformMat(shader, "transform", 
+                Matrix3.Scale(Window.PixelToViewport(1, 1)) * 
+                GetObjectWorldlTransformMatrix() *
+                Matrix3.Scale(new Vector2(fontSize)));
+
 
             VAO.Use(vao);
             Texture.Use(texture);
 
-            OpenGL.DrawArrays(DrawMode.Triangles, charCount * 6);
+            OpenGL.DrawArrays(DrawMode.Triangles, displayedCharCount * 6);
 
             Texture.Use(OpenGL.NULL);
             VAO.Use(OpenGL.NULL);
@@ -247,7 +273,7 @@ namespace Fnf.Framework
 
         float[] GetMeshInEM()
         {
-            charCount = 0;
+            displayedCharCount = 0;
             if (atlas == null) return new float[0];
 
             List<float> buffer = new List<float>();
@@ -286,13 +312,13 @@ namespace Fnf.Framework
 
                     if (sub.hasOutline)
                     {
-                        charCount++;
+                        displayedCharCount++;
 
                         // Load texture data
-                        float Left = (float)(sub.x - atlas.Padding) / textureSize.width;
-                        float Right = (float)(sub.x + sub.width + atlas.Padding) / textureSize.width;
-                        float Top = (float)(sub.y - atlas.Padding) / textureSize.height;
-                        float Bottom = (float)(sub.y + sub.height + atlas.Padding) / textureSize.height;
+                        float Left = (float)(sub.x - atlas.Padding) / atlasSize.x;
+                        float Right = (float)(sub.x + sub.width + atlas.Padding) / atlasSize.x;
+                        float Top = (float)(sub.y - atlas.Padding) / atlasSize.y;
+                        float Bottom = (float)(sub.y + sub.height + atlas.Padding) / atlasSize.y;
 
                         // Load character shape data
                         float em = mat.UnitsPerEm;

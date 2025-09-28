@@ -2,7 +2,7 @@
 
 namespace Fnf.Framework
 {
-    public class InputField : UI, IRenderable, IUpdatable
+    public class InputField : GUI, IRenderable, IUpdatable
     {
         public bool isRenderable { get; set; } = true;
         public bool isUpdatable { get; set; } = true;
@@ -24,7 +24,7 @@ namespace Fnf.Framework
             textBox.textAlignment = TextAlignment.Left;
             textBox.fontSize = 30;
             textBox.color = Color.Black;
-            textBox.raycast = false;
+            textBox.isRaycastable = false;
             height = 40;
 
             Input.OnCharTyped += OnKeyPressed;
@@ -33,14 +33,14 @@ namespace Fnf.Framework
         void OnKeyPressed(char c)
         {
             if (!isUpdatable) return;
-            if (!IsSelected) return; 
+            if (!isSelected) return; 
             textBox.text += c;
         }
 
         public void Update()
         {
             if (!isUpdatable) return;
-            if (!IsSelected) return;
+            if (!isSelected) return;
 
             if(Input.GetKeyDown(Key.BackSpace))
             {
@@ -68,7 +68,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (IsInside()) SetTopControl();
+            if (IsOverGUI()) RaycastHit();
 
             globalRotation = 0;
 

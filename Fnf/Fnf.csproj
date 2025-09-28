@@ -73,6 +73,7 @@
     <Content Include="Assets\Notes\Configurations\Notes\default.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Scripts\Editor.cs" />
     <Compile Include="Scripts\Freeplay.cs" />
     <Compile Include="Scripts\MainMenu.cs" />
     <Compile Include="Scripts\PlayMode.cs" />

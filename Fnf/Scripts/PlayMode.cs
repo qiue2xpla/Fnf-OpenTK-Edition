@@ -110,7 +110,7 @@ namespace Fnf
             RenderList.Clear();
             ParallaxLayers.Clear();
 
-            var Sections = StringUtility.SplitSections(File.ReadAllLines($"{GamePaths.Songs}/{track}/stage.txt"));
+            var Sections = StringUtility.SplitIntoSegmentedSections(File.ReadAllLines($"{GamePaths.Songs}/{track}/stage.txt"));
             foreach ((string Section, string[] Entries) in Sections)
             {
                 switch (Section)
@@ -153,8 +153,7 @@ namespace Fnf
                                     string targetNotes = entryValues[4];
                                     string targetCharacter = entryValues[5];
 
-                                    NoteTrack noteTrack = new NoteTrack(Beatmap, targetNotes);
-                                    Conductor conductor = new Conductor(controlsConfig, notesConfig, noteTrack, targetNotes == "player");
+                                    Conductor conductor = new Conductor(controlsConfig, notesConfig, Beatmap.GetTargetNotes(targetNotes), targetNotes == "player");
 
                                     conductor.targetCharacter = Elements[targetCharacter] as Character;
 

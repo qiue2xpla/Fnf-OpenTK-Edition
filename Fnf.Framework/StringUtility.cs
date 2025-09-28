@@ -27,9 +27,59 @@ namespace Fnf.Framework
         }
 
         /// <summary>
+        /// Splits sections and returns unsegmented data and removes comment lines
+        /// </summary>
+        public static (string Section, string Data)[] SplitIntoWholeSections(string[] lines)
+        {
+            List<(string, string)> result = new List<(string, string)>();
+            string currentSectionData = "";
+            string currentSection = null;
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i].Trim();
+
+                if (line.Contains("//"))
+                {
+                    // Remove comment line
+                    int commentStartPoint = line.IndexOf("//");
+                    line = line.Substring(0, commentStartPoint).Trim();
+                }
+                if (line.StartsWith("[") && line.EndsWith("]")) // Section declaration line
+                {
+                    if (currentSectionData.Length > 0) // There is loaded data
+                    {
+                        result.Add((currentSection, currentSectionData));
+                    }
+                    currentSection = line.Substring(1, line.Length - 2);
+                    currentSectionData = "";
+                }
+                else // Data line
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+                    if (currentSection == null) throw new InvalidDataException("Data does not fall under a section");
+                    
+                    if(currentSectionData.Length > 0)
+                    {
+                        currentSectionData += '\n';
+                    }
+
+                    currentSectionData += line;
+                }
+            }
+
+            if (currentSectionData.Length > 0) // There is loaded data
+            {
+                result.Add((currentSection, currentSectionData));
+            }
+
+            return result.ToArray();
+        }
+
+        /// <summary>
         /// Splits sections and catagorize its enries and removes comment lines
         /// </summary>
-        public static (string Section, string[] Entries)[] SplitSections(string[] lines)
+        public static (string Section, string[] Entries)[] SplitIntoSegmentedSections(string[] lines)
         {
             List<(string, string[])> result = new List<(string, string[])>();
             List<string> currentSectionEntries = new List<string>();

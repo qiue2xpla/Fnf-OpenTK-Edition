@@ -2,6 +2,7 @@
 using System.IO;
 using System;
 using System.Text;
+using System.Xml;
 
 namespace Fnf.Framework.Graphics
 {
@@ -9,15 +10,30 @@ namespace Fnf.Framework.Graphics
     {
         public static int GenerateShaderFromResource(string name)
         {
-            string vert = Encoding.UTF8.GetString(ResourcesAccesser.GetResource<byte[]>(name + "vert")) + "\r\n";
-            string frag = Encoding.UTF8.GetString(ResourcesAccesser.GetResource<byte[]>(name + "frag")) + "\r\n";
-            return GenerateShaderFromSource(vert, frag);
+            return GenerateShaderFromSource(Encoding.UTF8.GetString(ResourcesAccesser.GetResource<byte[]>(name)).TrimStart('\uFEFF') + "\r\n");
         }
 
         public static int GenerateShaderFromFolder(string name)
         {
-            string vert = File.ReadAllText($"{name}/shader.vert", System.Text.Encoding.UTF8);
-            string frag = File.ReadAllText($"{name}/shader.frag", System.Text.Encoding.UTF8);
+            return GenerateShaderFromSource(File.ReadAllText($"{name}/shader.glsl", Encoding.UTF8));
+        }
+
+        public static int GenerateShaderFromSource(string shaderSource)
+        {
+            var sections = StringUtility.SplitIntoWholeSections(shaderSource.Replace('\r', ' ').Split('\n'));
+
+            string vert = null, frag = null;
+
+            foreach (var section in sections)
+            {
+                switch(section.Section)
+                {
+                    case "VertexShader": vert = section.Data; break;
+                    case "FragmentShader": frag = section.Data; break;
+                    default: throw new InvalidDataException($"Section '{section.Section}' is not a valid shader section");
+                }
+            }
+
             return GenerateShaderFromSource(vert, frag);
         }
 
@@ -92,6 +108,11 @@ namespace Fnf.Framework.Graphics
         public static void Uniform4(int id, string name, float a, float b, float c, float d)
         {
             GL.Uniform4(GL.GetUniformLocation(id, name), a, b, c, d);
+        }
+
+        public static void UniformMat(int id, string name, Matrix3 mat)
+        {
+            GL.UniformMatrix3(GL.GetUniformLocation(id, name), 1, false, mat.ToColumnMajorFloatArray());
         }
     }
 }

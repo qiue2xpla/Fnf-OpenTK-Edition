@@ -143,7 +143,7 @@ namespace Fnf.Framework
             if (Input.AllowUnfocusedInput || Focused)
             {
                 Input.Update();
-                UI.InvokeEvents();
+                GUI.StartInvokingEvents();
             }
 
             if (Input.GetKeyDown(Key.F11))
@@ -173,7 +173,7 @@ namespace Fnf.Framework
         {
             base.OnUpdateFrame(e);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            UI.Raycast();
+            GUI.StartRaycasting();
             Script.RenderScript();
             Context.SwapBuffers();
         }

@@ -118,22 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="defaultFontfrag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\defaultFont.frag;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="defaultFont" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\defaultFont.glsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="defaultFontvert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\defaultFont.vert;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="round" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\round.glsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="roundfrag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\round.frag;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="roundvert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\round.vert;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="sdfFontfrag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sdfFont.frag;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="sdfFontvert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sddfFont.vert;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="sdfFont" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sdfFont.glsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

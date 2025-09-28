@@ -3,10 +3,10 @@ using Fnf.Framework.Graphics;
 
 namespace Fnf.Framework
 {
-    public class UICollection : UI, IRenderable
+    public class UICollection : GUI, IRenderable
     {
-        private Dictionary<UI, bool> isAutoPositioned = new Dictionary<UI, bool>();
-        private List<UI> guis = new List<UI>();
+        private Dictionary<GUI, bool> isAutoPositioned = new Dictionary<GUI, bool>();
+        private List<GUI> guis = new List<GUI>();
 
         public Color color;
         public bool isRenderable { get; set; } = true;
@@ -14,13 +14,13 @@ namespace Fnf.Framework
         public float Padding = 5;
         public float Spacing = 5;
 
-        public void Add(UI gui, bool autoPos)
+        public void Add(GUI gui, bool autoPos)
         {
             guis.Add(gui);
             isAutoPositioned.Add(gui, autoPos);
         }
 
-        public void Remove(UI gui)
+        public void Remove(GUI gui)
         {
             guis.Remove(gui);
             isAutoPositioned.Remove(gui);
@@ -37,7 +37,7 @@ namespace Fnf.Framework
             guis.Clear();
         }
 
-        public void Up(UI gui)
+        public void Up(GUI gui)
         {
             int index = guis.IndexOf(gui) - 1;
             if (index >= 0)
@@ -47,7 +47,7 @@ namespace Fnf.Framework
             }
         }
 
-        public void Down(UI gui)
+        public void Down(GUI gui)
         {
             int index = guis.IndexOf(gui) + 1;
             if (index < guis.Count)
@@ -59,7 +59,7 @@ namespace Fnf.Framework
 
         public void Update()
         {
-            foreach (UI gui in guis)
+            foreach (GUI gui in guis)
             {
                 if (gui is IUpdatable updatable)
                 {
@@ -71,14 +71,14 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if(IsInside()) SetTopControl();
+            if(IsOverGUI()) RaycastHit();
 
             Gizmos.DrawRoundQuad(globalPosition, globalScale, width, height, globalRotation, 5, 1, color);
 
             Vector2 cursor = new Vector2(0, height) / 2;
             cursor.y -= Padding;
 
-            foreach(UI gui in guis)
+            foreach(GUI gui in guis)
             {
                 gui.parent = this;
 

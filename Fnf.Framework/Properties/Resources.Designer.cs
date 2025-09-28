@@ -63,9 +63,9 @@ namespace Fnf.Framework.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] defaultFontfrag {
+        internal static byte[] defaultFont {
             get {
-                object obj = ResourceManager.GetObject("defaultFontfrag", resourceCulture);
+                object obj = ResourceManager.GetObject("defaultFont", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace Fnf.Framework.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] defaultFontvert {
+        internal static byte[] round {
             get {
-                object obj = ResourceManager.GetObject("defaultFontvert", resourceCulture);
+                object obj = ResourceManager.GetObject("round", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -83,39 +83,9 @@ namespace Fnf.Framework.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] roundfrag {
+        internal static byte[] sdfFont {
             get {
-                object obj = ResourceManager.GetObject("roundfrag", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] roundvert {
-            get {
-                object obj = ResourceManager.GetObject("roundvert", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] sdfFontfrag {
-            get {
-                object obj = ResourceManager.GetObject("sdfFontfrag", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] sdfFontvert {
-            get {
-                object obj = ResourceManager.GetObject("sdfFontvert", resourceCulture);
+                object obj = ResourceManager.GetObject("sdfFont", resourceCulture);
                 return ((byte[])(obj));
             }
         }
