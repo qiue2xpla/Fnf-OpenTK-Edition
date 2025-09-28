@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Fnf.Framework
 {
-    public abstract class UI : MovableObject
+    public abstract class UI : GameObject
     {
         public bool IsSelected => selectedUI == this;
         public float width, height;

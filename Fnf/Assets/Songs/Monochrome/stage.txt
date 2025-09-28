@@ -1,0 +1,41 @@
+﻿
+[Stage]
+Image background3 "Assets/Shared/Stage/FutileBG.png"
+
+Character opp oppoEx
+Character bf bf
+
+Conductor opponentConductor default default opponent opp
+Conductor playerConductor default default player bf
+
+Image background "Assets/Shared/Stage/FutileBG.png"
+Image background2 "Assets/Shared/Stage/FutileBG.png"
+
+
+[RenderOrder]
+background3
+opp
+bf
+background
+background2
+playerConductor
+opponentConductor
+
+[Layout]
+background 500 0 90 0.1 0.1
+background2 -500 0 -90 0.2 0.1
+background3 0 0 0 1 1
+
+opp -300 0 0 1 1
+bf 300 0 0 1 1
+
+playerConductor 350 270 0 0.78 0.78
+opponentConductor -350 270 0 0.78 0.1
+
+[Parallax]
+background 0.8
+background2 0.8
+background3 0.1
+
+opp 0.95
+bf 0.95

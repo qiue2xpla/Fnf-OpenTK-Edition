@@ -39,43 +39,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation\Animation.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
+    <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\Animator.cs" />
     <Compile Include="Animation\Frame.cs" />
     <Compile Include="Animation\SubTexture.cs" />
     <Compile Include="Animation\TextureAtlas.cs" />
     <Compile Include="Elements\Character.cs" />
     <Compile Include="CharacterIcon.cs" />
-    <Compile Include="Chart\Beatmap.cs" />
-    <Compile Include="Chart\Chart.cs" />
-    <Compile Include="Chart\Internal\BeatmapJson.cs" />
-    <Compile Include="Chart\Internal\SectionJson.cs" />
-    <Compile Include="Chart\Internal\SongJson.cs" />
-    <Compile Include="Chart\Note.cs" />
-    <Compile Include="Chart\NoteParser.cs" />
+    <Compile Include="Beatmap\Beatmap.cs" />
+    <Compile Include="Beatmap\NoteTrack.cs" />
+    <Compile Include="Beatmap\Internal\BeatmapJson.cs" />
+    <Compile Include="Beatmap\Internal\SectionJson.cs" />
+    <Compile Include="Beatmap\Internal\SongJson.cs" />
+    <Compile Include="Beatmap\NoteParser.cs" />
     <Compile Include="Effects\EffectsLayer.cs" />
     <Compile Include="Effects\FlashEffect.cs" />
     <Compile Include="Effects\FlickerRenderEffect.cs" />
     <Compile Include="Effects\SlideValueEffect.cs" />
     <Compile Include="Effects\TransitionInEffect.cs" />
     <Compile Include="Effects\TransitionOutEffect.cs" />
-    <Compile Include="Elements\Background.cs" />
-    <Compile Include="Elements\Conveyor\ConveyorBase.cs" />
-    <Compile Include="Elements\Conveyor\NoteColumn.cs" />
-    <Compile Include="Elements\Conveyor\OpponentConveyor.cs" />
-    <Compile Include="Elements\Conveyor\PlayerConveyor.cs" />
-    <Compile Include="Elements\Conveyor\ViewRange.cs" />
+    <Compile Include="Elements\Conductor.cs" />
+    <Compile Include="Elements\Image.cs" />
     <Compile Include="FnfText.cs" />
+    <Compile Include="GamePaths.cs" />
     <Compile Include="SharedGameSystems.cs" />
     <Compile Include="IntroText.cs" />
     <Compile Include="Music.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Skins\CharacterSkin.cs" />
     <Compile Include="Skins\ControlsSkin.cs" />
     <Compile Include="Skins\NotesSkin.cs" />
-    <Compile Include="Elements\VolumeControl.cs" />
+    <Compile Include="VolumeControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fnf.Framework\Fnf.Framework.csproj">

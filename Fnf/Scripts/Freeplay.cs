@@ -25,7 +25,7 @@ namespace Fnf
         int score, smoothedScore;
 
         Random random = new Random();
-        CharacterIcon icon = new CharacterIcon("Assets/Icons/bf");
+        CharacterIcon icon = new CharacterIcon($"{GamePaths.Icons}/bf");
 
         Panel panel;
 
@@ -34,7 +34,7 @@ namespace Fnf
 
         public Freeplay()
         {
-            bg = Texture.GenerateFromPath("Assets/Shared/menuDesat.png", out _);
+            bg = Texture.GenerateFromPath($"{GamePaths.MainMenu}/menuDesat.png");
 
             songText = new FnfText();
             songText.localScale = new Vector2(1.2f);
@@ -45,7 +45,6 @@ namespace Fnf
             panel = new Panel();
             panel.color = new Color(0, 0, 0, 195);
             panel.height = 85;
-            panel.localPosition = Window.GridSize.ToVector2() / 2;
 
             font = new Font("Assets/Fonts/vcr");
             atlas = new FontAtlas(font, 120, 3, 3, 0, FontAtlas.UpperCase + FontAtlas.Numbers + "()<>:.% ");
@@ -139,7 +138,7 @@ namespace Fnf
             {
                 float forward = 55; // Amount to move each half screen height
 
-                float y = (Window.GridSize.height / 2) - (i * 160) + smoothedPositionOffset;
+                float y = - (i * 160) + smoothedPositionOffset;
                 float xoffset = -forward * (y - Window.GridSize.height / 2) * 2 / Window.GridSize.height;
 
                 songText.text = songs[i];

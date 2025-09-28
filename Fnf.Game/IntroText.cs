@@ -26,7 +26,7 @@ namespace Fnf.Game
         public IntroText()
         {
             fnfText = new FnfText();
-            allRandomLines = File.ReadAllLines("Assets/IntroText.txt");
+            allRandomLines = File.ReadAllLines($"{GamePaths.Shared}/IntroText.txt");
             for (int i = 0; i < allRandomLines.Length; i++) notUsed.Add(i);
         }
 

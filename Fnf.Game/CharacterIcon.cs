@@ -3,7 +3,7 @@ using Fnf.Framework;
 
 namespace Fnf.Game
 {
-    public class CharacterIcon : MovableObject, IRenderable
+    public class CharacterIcon : GameObject, IRenderable
     {
         public bool isRenderable { get; set; } = true;
         public bool isNormal = true;
@@ -15,7 +15,8 @@ namespace Fnf.Game
 
         public CharacterIcon(string name)
         {
-            texture = Texture.GenerateFromPath(name + ".png", out Size dim);
+            texture = Texture.GenerateFromPath(name + ".png");
+            Size dim = Texture.GetTextureSize(texture);
             size = new Vector2(dim.width / 2, dim.height);
             topRight = size / 2;
         }

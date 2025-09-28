@@ -123,19 +123,10 @@ namespace Fnf.Game
         public Framework.Size textureSize;
         public int texture;
 
-        public Atlas(string atlasName, bool loadTexture = true)
+        public Atlas(string atlasName)
         {
-            texture = OpenGL.NULL;
-
-            using (Bitmap bitmap = new Bitmap(atlasName + ".png"))
-            {
-                textureSize = new Framework.Size(bitmap.Width, bitmap.Height);
-
-                if (loadTexture)
-                {
-                    texture = Texture.GenerateFromBitmap(bitmap);
-                }
-            }
+            texture = Texture.GenerateFromPath(atlasName + ".png", false);
+            textureSize = Texture.GetTextureSize(texture);
 
             List<SubTexture> SubTexturesList = new List<SubTexture>(0);
 

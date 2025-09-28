@@ -1,0 +1,17 @@
+[Note] // TODO: Offset may be added later
+"@\Default" "purple"
+"@\Default" "blue"
+"@\Default" "green"
+"@\Default" "red"
+
+[Hold]
+"@\Default" "purple hold piece"
+"@\Default" "blue hold piece"
+"@\Default" "green hold piece"
+"@\Default" "red hold piece"
+
+[End]
+"@\Default" "pruple end hold"
+"@\Default" "blue hold end"
+"@\Default" "green hold end"
+"@\Default" "red hold end"

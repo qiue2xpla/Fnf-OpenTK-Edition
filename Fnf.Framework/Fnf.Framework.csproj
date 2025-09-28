@@ -31,7 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=3.3.3.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
@@ -53,8 +54,11 @@
     <Compile Include="Audio\Bass Wrapper\Enums\BASSMode.cs" />
     <Compile Include="Audio\Bass Wrapper\Enums\BASSSync.cs" />
     <Compile Include="Audio\VolumeLevel.cs" />
-    <Compile Include="MathFunctions.cs" />
-    <Compile Include="RNG.cs" />
+    <Compile Include="Math\Matrix3x3.cs" />
+    <Compile Include="Math\Vector3.cs" />
+    <Compile Include="Math\MathUtility.cs" />
+    <Compile Include="Systems\RNG.cs" />
+    <Compile Include="Systems\StringUtility.cs" />
     <Compile Include="Systems\Anchor.cs" />
     <Compile Include="UI\InputField.cs" />
     <Compile Include="UI\Panel.cs" />
@@ -102,7 +106,7 @@
     <Compile Include="Units\Size.cs" />
     <Compile Include="Units\Vector2.cs" />
     <Compile Include="Systems\UI.cs" />
-    <Compile Include="Systems\MovableObject.cs" />
+    <Compile Include="Systems\GameObject.cs" />
     <Compile Include="Systems\Input.cs" />
     <Compile Include="Systems\FunctionInvoker.cs" />
     <Compile Include="Graphics\OpenGL\Objects\Texture.cs" />
@@ -115,7 +119,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Graphics\Gizmos.cs" />
-    <Content Include="icon.ico" />
     <None Include="Resources\round.frag" />
     <None Include="Resources\round.vert" />
     <None Include="Resources\defaultFont.frag" />
@@ -129,8 +132,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SimplleNetwork\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

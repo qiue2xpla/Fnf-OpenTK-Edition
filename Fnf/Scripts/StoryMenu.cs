@@ -36,10 +36,10 @@ namespace Fnf
 			SetupTexts();
 			SetupDifficulty();
 			SetupWeeks();
-            ttex = Texture.GenerateFromPath("Assets/Shared/Menu_Tracks.png", out tsize);
-
-			TextureAtlas.LoadAtlas("menugf", "Assets/Menu/Characters/Menu_GF");
-            TextureAtlas.LoadAtlas("menubf", "Assets/Menu/Characters/Menu_BF");
+            ttex = Texture.GenerateFromPath($"{GamePaths.StoryMenu}/Menu_Tracks.png");
+			tsize = Texture.GetTextureSize(ttex);
+			TextureAtlas.LoadAtlas("menugf", $"{GamePaths.StoryMenu}/Characters/Menu_GF");
+            TextureAtlas.LoadAtlas("menubf", $"{GamePaths.StoryMenu}/Characters/Menu_BF");
 
             Animation gfidle = TextureAtlas.GetAnimation("menugf", "M GF Idle");
 			gfidle.looped = true;
@@ -69,23 +69,27 @@ namespace Fnf
 			bf.Update();
 			SharedGameSystems.VolumeControl.Update();
 
-			if(Input.GetKeyDown(Key.Escape)) Active = new MainMenu();
+			if (Input.GetKeyDown(Key.Escape)) Active = new MainMenu();
 
 			// Week selection
-			if (Input.GetAnyKeysDown(Key.W, Key.Up))   selectedWeek = MathFunctions.WrapClamp(selectedWeek - 1, options.Length - 1, 0);
-            if (Input.GetAnyKeysDown(Key.S, Key.Down)) selectedWeek = MathFunctions.WrapClamp(selectedWeek + 1, options.Length - 1, 0);
+			if (Input.GetAnyKeysDown(Key.W, Key.Up)) selectedWeek = MathUtility.WrapClamp(selectedWeek - 1, options.Length - 1, 0);
+			if (Input.GetAnyKeysDown(Key.S, Key.Down)) selectedWeek = MathUtility.WrapClamp(selectedWeek + 1, options.Length - 1, 0);
+			if (Input.GetKeyDown(Key.Enter))
+			{
+				Active = new PlayMode($"Week{selectedWeek + 1}", options[selectedWeek].difficulties[selectedDifficulty], options[selectedWeek].tracks.Split('\n'));
+			}
 
             // Difficulty selection
             if (Input.GetAnyKeysDown(Key.D, Key.Right))
             {
-                selectedDifficulty = MathFunctions.WrapClamp(selectedDifficulty + 1, options[selectedWeek].difficulties.Length - 1, 0);
+                selectedDifficulty = MathUtility.WrapClamp(selectedDifficulty + 1, options[selectedWeek].difficulties.Length - 1, 0);
                 rightArrow.play("pressed");
 				rightArrowCooldown = 0.1f;
                 fallingValue = .1f;
             }
             if (Input.GetAnyKeysDown(Key.A, Key.Left))
             {
-                selectedDifficulty = MathFunctions.WrapClamp(selectedDifficulty - 1, options[selectedWeek].difficulties.Length - 1, 0);
+                selectedDifficulty = MathUtility.WrapClamp(selectedDifficulty - 1, options[selectedWeek].difficulties.Length - 1, 0);
                 leftArrow.play("pressed");
                 leftArrowCooldown = 0.1f;
 				fallingValue = .1f;
@@ -113,8 +117,8 @@ namespace Fnf
                 leftArrow.play("idle");
             }
 
-            scrollLerp = MathFunctions.Lerp(scrollLerp, selectedWeek * 148, Time.deltaTime * 10);
-			fallingValue = MathFunctions.Clamp(fallingValue - Time.deltaTime, 1, 0);
+            scrollLerp = MathUtility.Lerp(scrollLerp, selectedWeek * 148, Time.deltaTime * 10);
+			fallingValue = MathUtility.Clamp(fallingValue - Time.deltaTime, 1, 0);
 
 			tracks.text = options[selectedWeek].tracks;
 			weekName.text = options[selectedWeek].weekName;
@@ -294,12 +298,14 @@ namespace Fnf
 		void SetupDifficulty()
 		{
 			difficulties = new();
-			List<string> diffsImagePaths = Directory.GetFileSystemEntries("Assets/Menu/Difficulties").ToList();
+			List<string> diffsImagePaths = Directory.GetFileSystemEntries($"{GamePaths.StoryMenu}/Difficulties").ToList();
 			for (int i = 0; i < diffsImagePaths.Count; i++)
 			{
 				string diffName = new FileInfo(diffsImagePaths[i]).Name;
 				diffName = diffName.Substring(0, diffName.Length - 4);
-				difficulties.Add(diffName, (Texture.GenerateFromPath(diffsImagePaths[i], out Size sizeout), sizeout));
+				int id = Texture.GenerateFromPath(diffsImagePaths[i]);
+				Size size = Texture.GetTextureSize(id);
+				difficulties.Add(diffName, (id, size));
 			}
 
             float maxDifficultyWidth = 0;
@@ -315,7 +321,7 @@ namespace Fnf
             leftArrow.localPosition = new(470 - maxDifficultyWidth, -165);
             rightArrow.localPosition = new(470 + maxDifficultyWidth, -165);
 
-            TextureAtlas.LoadAtlas("cmua", "Assets/campaign_menu_UI_assets");
+            TextureAtlas.LoadAtlas("cmua", $"{GamePaths.StoryMenu}/campaign_menu_UI_assets");
 
             leftArrow.add("idle", TextureAtlas.GetAnimation("cmua", "arrow left"));
             leftArrow.add("pressed", TextureAtlas.GetAnimation("cmua", "arrow push left"));
@@ -393,8 +399,10 @@ namespace Fnf
 		 
 		public WeekOption(string backgroundImageName, string weekImageName)
 		{
-			menuBackground = Texture.GenerateFromPath($"Assets/Menu/Backgrounds/{backgroundImageName}.png", out _);
-			weekImage = Texture.GenerateFromPath($"Assets/Menu/Weeks/{weekImageName}.png", out weekImageSize);
+			menuBackground = Texture.GenerateFromPath($"{GamePaths.StoryMenu}/Backgrounds/{backgroundImageName}.png");
+			weekImage = Texture.GenerateFromPath($"{GamePaths.StoryMenu}/Weeks/{weekImageName}.png");
+			weekImageSize = Texture.GetTextureSize(weekImage);
+			Texture.SetWrap(weekImage, WrapMode.Clamp, WrapMode.Clamp); // Not working
 		}
 	}
 }

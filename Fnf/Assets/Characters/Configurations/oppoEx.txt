@@ -1,0 +1,5 @@
+﻿idle OppositonExpunged OppoExpungedIdle 0 0
+left OppositonExpunged OppoExpungedLeft
+down OppositonExpunged OppoExpungedDown
+up OppositonExpunged OppoExpungedUp
+right OppositonExpunged OppoExpungedRight
