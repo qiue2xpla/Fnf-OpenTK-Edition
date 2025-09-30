@@ -73,7 +73,7 @@ namespace Fnf.Framework
             if (!isRenderable) return;
             if(IsOverGUI()) RaycastHit();
 
-            Gizmos.DrawRoundQuad(globalPosition, globalScale, width, height, globalRotation, 5, 1, color);
+            Gizmos.DrawRoundQuad(this, color, 5, 1);
 
             Vector2 cursor = new Vector2(0, height) / 2;
             cursor.y -= Padding;

@@ -12,7 +12,7 @@
             get
             {
                 if(parent == null) return localPosition;
-                return (parent.GetObjectWorldlTransformMatrix() * localPosition.ToHomogeneous()).ToEuclidean();
+                return (parent.WorldlTransformMatrix() * localPosition.ToHomogeneous()).ToEuclidean();
             }
             set
             {
@@ -42,10 +42,10 @@
             return Matrix3.Transform(localPosition, -MathUtility.ToRadian(localRotation), localScale);
         }
 
-        public Matrix3 GetObjectWorldlTransformMatrix()
+        public Matrix3 WorldlTransformMatrix()
         {
             if (parent == null) return GetObjectLocalTransformMatrix();
-            return parent.GetObjectWorldlTransformMatrix() * GetObjectLocalTransformMatrix();
+            return parent.WorldlTransformMatrix() * GetObjectLocalTransformMatrix();
         }
 
         public Matrix3 GetObjectLocalInverseTransformMatrix()

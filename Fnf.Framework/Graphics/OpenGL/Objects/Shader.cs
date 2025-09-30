@@ -85,6 +85,16 @@ namespace Fnf.Framework.Graphics
             GL.DeleteProgram(id);
         }
 
+        public static void Color(int id, string name, Color color)
+        {
+            GL.Uniform4(GL.GetUniformLocation(id, name), color.r, color.g, color.b, color.a);
+        }
+
+        public static void Color3(int id, string name, Color color)
+        {
+            GL.Uniform3(GL.GetUniformLocation(id, name), color.r, color.g, color.b);
+        }
+
         public static void Uniform1(int id, string name, int i1)
         {
             GL.Uniform1(GL.GetUniformLocation(id, name), i1);

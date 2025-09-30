@@ -2,9 +2,13 @@
 
 namespace Fnf.Framework.Graphics
 {
+    /// <summary>
+    /// Contains some helpfull drawing functions
+    /// </summary>
     public static class Gizmos
     {
-        private static int roundShader, vao;
+        private static int cubeVAO;
+        private static int roundShader;
 
         public static void DrawPoints(params Vector2[] points)
         {
@@ -32,58 +36,53 @@ namespace Fnf.Framework.Graphics
             OpenGL.EndDrawing();
         }
 
-        public static void DrawRoundQuad(Vector2 position, Vector2 scale, float width, float height, float rotation, float radius, float smoothness, Color color)
+        public static void DrawRoundQuad(GUI gui, Color color, float radius, float smoothness)
         {
-            Vector2 dim = new Vector2(width, height);
-            Vector2 idk = dim * scale / 2;
-            float ratioUI = idk.y / idk.x;
+            Vector2 size = new Vector2(gui.width, gui.height);
+
+            Matrix3 mat = Matrix3.Scale(Window.PixelToViewport(1, 1)) * gui.WorldlTransformMatrix() * Matrix3.Scale(size / 2);
 
             Shader.Use(roundShader);
 
-            // Vertex shader
-            Shader.Uniform2(roundShader, "position", Window.PixelToViewport(position));
-            Shader.Uniform2(roundShader, "size", Window.PixelToViewport(new Vector2(width, height) / 2) * scale);
-            Shader.Uniform1(roundShader, "rotation", -rotation / 180 * (float)Math.PI);
-            Shader.Uniform1(roundShader, "ratioGRID", Window.GridSize.slobe);
+            Shader.UniformMat(roundShader, "transform", mat);
 
-            // Fragment shader
-            Shader.Uniform4(roundShader, "col", color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f);
-            Shader.Uniform1(roundShader, "radius", 2 * radius / (ratioUI > 1 ? width : height));
-            Shader.Uniform1(roundShader, "ratioUI", height / width);
-            Shader.Uniform1(roundShader, "smoothness", 2 * smoothness / (ratioUI > 1 ? width : height));
+            Shader.Color(roundShader, "col", color);
+            Shader.Uniform2(roundShader, "rect", size);
+            Shader.Uniform1(roundShader, "radius", radius);
+            Shader.Uniform1(roundShader, "smoothness", smoothness);
 
-            VAO.Use(vao);
+            VAO.Use(cubeVAO);
 
             OpenGL.DrawArrays(DrawMode.Triangles, 6);
 
-            VAO.Use(-1);
+            VAO.Use(OpenGL.NULL);
             Shader.Use(OpenGL.NULL);
         }
 
-        internal static void LoadGizmoz()
+        static Gizmos()
         {
-            vao = VAO.GenerateVAO();
+            cubeVAO = VAO.GenerateVAO();
             int vbo = VBO.GenerateVBO();
 
             float[] data = new float[] {
-                 1,  1,  1,  1, 
-                -1,  1, -1,  1,
-                -1, -1, -1, -1,
-                -1, -1, -1, -1, 
-                 1, -1,  1, -1,
-                 1,  1,  1,  1 
+                 1,  1,
+                -1,  1,
+                -1, -1,
+                -1, -1,
+                 1, -1,
+                 1,  1,
             };
 
             VBO.Use(vbo);
             VBO.Resize(data.Length * sizeof(float));
             VBO.SetData(data);
 
-            VAO.Use(vao);
+            VAO.Use(cubeVAO);
 
-            VertexAttrib2f2f.UseAttrib();
+            VertexAttrib2f.UseAttrib();
 
-            VAO.Use(-1);
-            VBO.Use(-1);
+            VAO.Use(OpenGL.NULL);
+            VBO.Use(OpenGL.NULL);
 
             roundShader = Shader.GenerateShaderFromResource("round");
         }

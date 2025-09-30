@@ -71,6 +71,20 @@ namespace Fnf.Framework
         }
 
         /// <summary>
+        /// Displayed text font size
+        /// </summary>
+        public float fontSize
+        {
+            get => _fontSize;
+            set
+            {
+                if (value == _fontSize) return;
+                _fontSize = value;
+                mustReNewMesh = true;
+            }
+        }
+
+        /// <summary>
         /// How the text is aligned in the GUI
         /// </summary>
         public TextAlignment textAlignment
@@ -86,12 +100,7 @@ namespace Fnf.Framework
 
         // These variables doesn't require the mesh buffer to be remade
         // Mostly handled by the Text or the shader
-
-        /// <summary>
-        /// Displayed text font size
-        /// </summary>
-        public float fontSize = 18;
-
+         
         /// <summary>
         /// The display color of the text
         /// </summary>
@@ -108,6 +117,7 @@ namespace Fnf.Framework
         FontAtlas _atlas;
         bool _fitContent;
         string _text;
+        float _fontSize;
 
         float previousWidth, previousHeight;
         bool mustReNewBuffer = false;
@@ -140,6 +150,7 @@ namespace Fnf.Framework
         {
             _textAlignment = TextAlignment.Center;
             _text = "";
+            _fontSize = 18;
             
             if (defaultShader == 0)
             {
@@ -195,12 +206,12 @@ namespace Fnf.Framework
             }
 
             Shader.Use(shader);
-            Shader.Uniform3(shader, "textColor", color.r / 255f, color.g / 255f, color.b / 255f);
+            Shader.Color3(shader, "textColor", color);
             Shader.Uniform1(shader, "fontSize", fontSize);
 
             Shader.UniformMat(shader, "transform", 
                 Matrix3.Scale(Window.PixelToViewport(1, 1)) * 
-                GetObjectWorldlTransformMatrix() *
+                WorldlTransformMatrix() *
                 Matrix3.Scale(new Vector2(fontSize)));
 
 

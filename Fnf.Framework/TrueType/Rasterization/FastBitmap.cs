@@ -38,7 +38,7 @@ namespace Fnf.Framework.TrueType.Rasterization
 
         public void SetPixel(int x, int y, Color colour)
         {      
-            _bits[x + y * width] = colour.ToArgb();
+            _bits[x + y * width] = colour.ToArgbInt();
         }
 
         public Color GetPixel(int x, int y)

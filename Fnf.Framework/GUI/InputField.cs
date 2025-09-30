@@ -13,7 +13,7 @@ namespace Fnf.Framework
         public float cornerRadius = 5;
 
         public Color backgroundColor = Color.White;
-        public Color borderColor = new Color(190, 190, 190);
+        public Color borderColor = new Color(0.7f);
 
         float backSpaceTimer = 0;
 
@@ -73,22 +73,17 @@ namespace Fnf.Framework
             globalRotation = 0;
 
             Gizmos.DrawRoundQuad(
-                globalPosition,
-                globalScale,
-                width, height,
-                globalRotation,
+                this,
+                borderColor,
                 cornerRadius,
-                0,
-                borderColor);
+                0);
 
-            Gizmos.DrawRoundQuad(
-                globalPosition,
-                globalScale,
+            /*Gizmos.DrawRoundQuad(
+                WorldlTransformMatrix(),
                 width - 2, height - 2,
-                globalRotation,
                 cornerRadius,
                 borderSmoothness,
-                backgroundColor);
+                backgroundColor);*/
 
             textBox.width = width - cornerRadius * 2;
             textBox.height = height - cornerRadius * 2;

@@ -17,7 +17,7 @@ namespace Fnf
             Window.WindowSize = Window.GridSize * 0.9f;
             Window.Title = "Friday Night Funkin";
 
-            //SharedGameSystems.InitiateSystens();
+            SharedGameSystems.InitiateSystens();
 
             Window.Run();
         }

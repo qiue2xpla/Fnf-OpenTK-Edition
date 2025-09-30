@@ -90,7 +90,6 @@ namespace Fnf.Framework
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            Gizmos.LoadGizmoz();
             Script.StartScript();
             Time.Start();
         }

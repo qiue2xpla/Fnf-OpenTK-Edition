@@ -33,6 +33,14 @@ namespace Fnf.Framework
             return new Vector3(x, y, 1);
         }
 
+        public Vector2 Normalized()
+        {
+            float length = Length();
+            return this / length;
+        }
+
+        public float Length() => (float)Math.Sqrt(x * x + y * y);
+
         public override string ToString()
         {
             return $"({x}, {y})";

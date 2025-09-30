@@ -41,7 +41,7 @@ namespace Fnf.Game
 
             void Pixel2(float x, float y)
             {
-                OpenGL.Pixel2((GetObjectWorldlTransformMatrix() * new Vector3(x, y, 1)).ToEuclidean());
+                OpenGL.Pixel2((WorldlTransformMatrix() * new Vector3(x, y, 1)).ToEuclidean());
             }
         }
     }

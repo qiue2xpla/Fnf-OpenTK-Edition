@@ -261,7 +261,7 @@ namespace Fnf.Game
 
                     // We only need the rotation to be applied to the placement
                     Vector2 placement = (Matrix3.Rotation(-MathUtility.ToRadian(columns[note.column].globalRotation)) * new Vector3(0, notePlacement, 1)).ToEuclidean();
-                    Vector2 frame = (columns[note.column].GetObjectWorldlTransformMatrix() * noteFrame.verts[vertexIndex].ToHomogeneous()).ToEuclidean();
+                    Vector2 frame = (columns[note.column].WorldlTransformMatrix() * noteFrame.verts[vertexIndex].ToHomogeneous()).ToEuclidean();
         
                     OpenGL.Pixel2(placement + frame);
                 }

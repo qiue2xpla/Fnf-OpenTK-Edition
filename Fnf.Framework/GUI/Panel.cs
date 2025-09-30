@@ -15,7 +15,7 @@ namespace Fnf.Framework
             if (!isRenderable) return;
             if (isRaycastable && IsOverGUI()) RaycastHit();
 
-            Gizmos.DrawRoundQuad(globalPosition, globalScale, width, height, globalRotation, borderRadius, borderSmoothness, color);
+            Gizmos.DrawRoundQuad(this, color, borderRadius, borderSmoothness);
         }
     }
 }

@@ -54,6 +54,7 @@
     <Compile Include="Audio\Bass Wrapper\Enums\BASSMode.cs" />
     <Compile Include="Audio\Bass Wrapper\Enums\BASSSync.cs" />
     <Compile Include="Audio\VolumeLevel.cs" />
+    <Compile Include="Graphics\Vertex Attribute\VertexAttrib2f.cs" />
     <Compile Include="Math\Matrix3.cs" />
     <Compile Include="Math\Vector3.cs" />
     <Compile Include="Math\MathUtility.cs" />

@@ -59,7 +59,7 @@ namespace Fnf.Framework.TrueType.Rasterization
                 if (alpha < 0) alpha = 0;
                 if (alpha > 1) alpha = 1;
 
-                return new Color(255, 255, 255, (byte)(alpha * 255));
+                return new Color(1, alpha);
 
                 float map(float v, float in_min, float in_max, float out_min, float out_max)
                 {

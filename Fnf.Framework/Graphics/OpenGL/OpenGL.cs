@@ -16,8 +16,8 @@ namespace Fnf.Framework.Graphics
         public static void Color3(float r, float g, float b) => GL.Color3(r, g, b);
 
         public static void Color4(float r, float g, float b, float a) => GL.Color4(r, g, b, a);
-        public static void Color4(Color color) => GL.Color4(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f);
-        public static void Color4(Color color, float a) => GL.Color4(color.r / 255f, color.g / 255f, color.b / 255f, a);
+        public static void Color4(Color color) => GL.Color4(color.r, color.g, color.b, color.a);
+        public static void Color4(Color color, float a) => GL.Color4(color.r, color.g, color.b, a);
 
         public static void LineWidth(float width) => GL.LineWidth(width);
         public static void PointSize(float size) => GL.PointSize(size);

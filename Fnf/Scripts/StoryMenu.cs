@@ -277,7 +277,7 @@ namespace Fnf
 				height = 60,
 				width = 1000,
 				fontSize = 37,
-				color = new Color(178, 178, 178)
+				color = new Color(0.69f)
 			};
 
             tracks = new(atlas)
@@ -287,7 +287,7 @@ namespace Fnf
                 height = 400,
                 width = 1000,
                 fontSize = 32,
-                color = new Color(229, 87, 119),
+                color = new Color(0.89f, 0.34f, 0.46f),
                 localPosition = new Vector2(-470, -375)
             };
 

@@ -1,70 +1,37 @@
 ﻿[VertexShader]
 #version 330
 
-out vec2 coord;  
 layout (location = 0) in vec2 pos;
-layout (location = 1) in vec2 ucoord;
+out vec2 coord;  
 
-uniform vec2 position; 
-uniform vec2 size;
-uniform float rotation; 
-
-uniform float ratioGRID;
-
-vec2 rotate(vec2 inp)
-{
-	inp.x /= ratioGRID;
-	vec2 sn = inp * sin(rotation);
-	vec2 cn = inp * cos(rotation);
-	float x = cn.x - sn.y;
-	float y = sn.x + cn.y;
-	return vec2(x * ratioGRID, y);
-}
+uniform mat3 transform;
 
 void main() 
 { 
-	coord = ucoord; 
-	gl_Position = vec4(rotate(pos * size) + position, 0.0, 1.0);
+	coord = pos; 
+	gl_Position = vec4(transform * vec3(pos, 1), 1);
 }
 
 [FragmentShader]
 #version 330
 
-out vec4 color;
 in vec2 coord;
+out vec4 color;
 
 uniform vec4 col;
-uniform float ratioUI;
+uniform vec2 rect;
 uniform float radius;
 uniform float smoothness;
 
-vec2 fix(vec2 raw)
-{
-	if(ratioUI > 1) // tall
-	{
-		return vec2(raw.x, raw.y * ratioUI);
-	}
-	else
-	{
-		return vec2(raw.x / ratioUI, raw.y);
-	}
-}
-
-
 void main() 
 {
-	vec2 size = vec2(1 - radius);
+	float minValue = min(rect.x, rect.y);
 
-	if(ratioUI > 1) // tall
-	{
-		size.y = ratioUI - radius;
-	}
-	else // short
-	{
-		size.x = 1 / ratioUI - radius;
-	}
+	float radiusUV = 2 * radius / min(rect.x, rect.y);
+	vec2 rectUV = rect / minValue;
 
-	vec2 dist = max( abs(fix(coord)), size ) - size;
-	float alpha = 1 - smoothstep(radius - smoothness, radius, length(dist));
-	color = vec4(col.rgb, alpha * col.a);
+	vec2 size = vec2(rectUV - radiusUV);
+    vec2 dist = max(abs(coord * rectUV) - size, 0);
+
+    color = col * vec4(1, 1, 1, 1 - smoothstep(radiusUV - (smoothness / minValue), radiusUV, length(dist)));
 }
