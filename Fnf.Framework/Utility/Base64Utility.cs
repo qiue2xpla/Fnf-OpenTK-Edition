@@ -3,7 +3,7 @@ using System;
 
 namespace Fnf.Framework
 {
-    public static class Base64
+    public static class Base64Utility
     {
         public static string To(string text)
         {

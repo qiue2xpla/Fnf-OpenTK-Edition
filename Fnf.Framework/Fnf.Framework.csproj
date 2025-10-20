@@ -54,13 +54,30 @@
     <Compile Include="Audio\Bass Wrapper\Enums\BASSMode.cs" />
     <Compile Include="Audio\Bass Wrapper\Enums\BASSSync.cs" />
     <Compile Include="Audio\VolumeLevel.cs" />
+    <Compile Include="DataObjects\Matrix2.cs" />
+    <Compile Include="DataObjects\Matrix4.cs" />
+    <Compile Include="DataObjects\Quaternion.cs" />
+    <Compile Include="DataObjects\Vector4.cs" />
     <Compile Include="Graphics\Vertex Attribute\VertexAttrib2f.cs" />
-    <Compile Include="Math\Matrix3.cs" />
-    <Compile Include="Math\Vector3.cs" />
-    <Compile Include="Math\MathUtility.cs" />
-    <Compile Include="ResourceManager.cs" />
+    <Compile Include="GUI\Built In\TabView.cs" />
+    <Compile Include="DataObjects\Matrix3.cs" />
+    <Compile Include="DataObjects\Vector3.cs" />
+    <Compile Include="TrueType\Curve.cs" />
+    <Compile Include="TrueType\Glyph.cs" />
+    <Compile Include="TrueType\GlyphMetrics.cs" />
+    <Compile Include="TrueType\Parsing\GlyphData.cs" />
+    <Compile Include="TrueType\Parsing\GlyphPoint.cs" />
+    <Compile Include="TrueType\Parsing\Tables\Glyf.cs" />
+    <Compile Include="TrueType\Parsing\Tables\Head.cs" />
+    <Compile Include="TrueType\Parsing\Tables\Hhea.cs" />
+    <Compile Include="TrueType\Parsing\Tables\Hmtx.cs" />
+    <Compile Include="TrueType\Parsing\Tables\Loca.cs" />
+    <Compile Include="TrueType\Parsing\Tables\Maxp.cs" />
+    <Compile Include="TrueType\Parsing\Tables\Cmap.cs" />
+    <Compile Include="TrueType\Parsing\Tables\Name.cs" />
+    <Compile Include="Utility\MathUtility.cs" />
     <Compile Include="Systems\RNG.cs" />
-    <Compile Include="StringUtility.cs" />
+    <Compile Include="Utility\StringUtility.cs" />
     <Compile Include="Systems\Anchor.cs" />
     <Compile Include="GUI\InputField.cs" />
     <Compile Include="GUI\Panel.cs" />
@@ -70,43 +87,34 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Systems\ResourcesAccesser.cs" />
-    <Compile Include="Units\Base64.cs" />
-    <Compile Include="Units\Enums.cs" />
+    <Compile Include="Utility\Base64Utility.cs" />
+    <Compile Include="DataObjects\Enums.cs" />
     <Compile Include="Graphics\OpenGL\Objects\EBO.cs" />
     <Compile Include="Graphics\OpenGL\Objects\VBO.cs" />
     <Compile Include="Graphics\OpenGL\OpenGL.cs" />
     <Compile Include="Graphics\OpenGL\Scissor.cs" />
     <Compile Include="Graphics\OpenGL\Objects\Shader.cs" />
     <Compile Include="Graphics\OpenGL\Objects\VAO.cs" />
-    <Compile Include="Graphics\Vertex Attribute\VertexAttrib2f2f.cs" />
     <Compile Include="Interfaces\IUpdatable.cs" />
     <Compile Include="Interfaces\IRenderable.cs" />
     <Compile Include="Systems\Window.cs" />
-    <Compile Include="TrueType\Structs\Curve.cs" />
-    <Compile Include="TrueType\Rasterization\FastBitmap.cs" />
-    <Compile Include="TrueType\Rasterization\FontAtlas.cs" />
-    <Compile Include="TrueType\Rasterization\Rasterizer.cs" />
+    <Compile Include="TrueType\Rendering\FastBitmap.cs" />
+    <Compile Include="TrueType\Rendering\FontAtlas.cs" />
+    <Compile Include="TrueType\Rendering\Rasterizer.cs" />
     <Compile Include="TrueType\Font.cs" />
-    <Compile Include="TrueType\Structs\Glyph.cs" />
-    <Compile Include="TrueType\Structs\GlyphMetrics.cs" />
-    <Compile Include="TrueType\Reading and Parsing\MappingFormats\Format4.cs" />
-    <Compile Include="TrueType\Reading and Parsing\MappingFormats\IMappingFormat.cs" />
-    <Compile Include="TrueType\Reading and Parsing\FontParser.cs" />
-    <Compile Include="TrueType\Reading and Parsing\FontReader.cs" />
-    <Compile Include="TrueType\Structs\GlyphComponent.cs" />
-    <Compile Include="TrueType\Structs\GlyphData.cs" />
-    <Compile Include="TrueType\Structs\GlyphPoint.cs" />
-    <Compile Include="Units\Map.cs" />
-    <Compile Include="TrueType\Rasterization\Signed Distance Field\PriorityQueue.cs" />
-    <Compile Include="TrueType\Rasterization\Signed Distance Field\SDF.cs" />
-    <Compile Include="GUI\Controls\Button.cs" />
+    <Compile Include="TrueType\Parsing\FontParser.cs" />
+    <Compile Include="TrueType\Parsing\FontReader.cs" />
+    <Compile Include="DataObjects\Map.cs" />
+    <Compile Include="TrueType\Rendering\Signed Distance Field\PriorityQueue.cs" />
+    <Compile Include="TrueType\Rendering\Signed Distance Field\SDF.cs" />
+    <Compile Include="GUI\Built In\Button.cs" />
     <Compile Include="GUI\UICollection.cs" />
     <Compile Include="GUI\Text.cs" />
-    <Compile Include="Units\Color.cs" />
-    <Compile Include="Units\Point.cs" />
-    <Compile Include="Units\SizeF.cs" />
-    <Compile Include="Units\Size.cs" />
-    <Compile Include="Units\Vector2.cs" />
+    <Compile Include="DataObjects\Color.cs" />
+    <Compile Include="DataObjects\Point.cs" />
+    <Compile Include="DataObjects\SizeF.cs" />
+    <Compile Include="DataObjects\Size.cs" />
+    <Compile Include="DataObjects\Vector2.cs" />
     <Compile Include="GUI\GUI.cs" />
     <Compile Include="Systems\GameObject.cs" />
     <Compile Include="Systems\Input.cs" />
@@ -131,6 +139,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="TrueType\Parsing\Tables\Tables to be added\OS2\" />
+    <Folder Include="TrueType\Parsing\Tables\Tables to be added\post\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -31,7 +31,7 @@ namespace Fnf.Game
 
         public VolumeControl()
         {
-            Font font = new Font($"{GamePaths.Fonts}/vcr");
+            Font font = new Font($@"{GamePaths.Fonts}\vcr.ttf");
             FontAtlas atlas = new FontAtlas(font, 70, 0, 3, 0, "Volume");
 
             text = new Text(atlas);

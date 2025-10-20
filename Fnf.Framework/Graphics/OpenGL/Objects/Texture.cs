@@ -13,7 +13,7 @@ namespace Fnf.Framework.Graphics
 
         public static void Destroy(int id)
         {
-            if (id <= OpenGL.NULL) return;
+            if (id <= 0) return;
             if(LoadedTextures.ContainsValue(id))
             {
                 foreach (var item in LoadedTextures.Where(kvp => kvp.Value == id).ToList())
@@ -93,7 +93,7 @@ namespace Fnf.Framework.Graphics
             SetFilter(id, Filter.Linear, Filter.Linear);
             SetWrap(id, WrapMode.Repeat, WrapMode.Repeat);
 
-            GL.BindTexture(TextureTarget.Texture2D, OpenGL.NULL);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
             LoadedTextures.Add("Bitmap" + id + (optionalName == null ? "-" + optionalName : ""), id);
 
             return id;
@@ -104,7 +104,7 @@ namespace Fnf.Framework.Graphics
             Use(id);
             GL.GetTextureLevelParameter(id, 0, GetTextureParameter.TextureWidth, out int width);
             GL.GetTextureLevelParameter(id, 0, GetTextureParameter.TextureHeight, out int height);
-            Use(OpenGL.NULL);
+            Use(0);
             return new Size(width, height);
         }
 

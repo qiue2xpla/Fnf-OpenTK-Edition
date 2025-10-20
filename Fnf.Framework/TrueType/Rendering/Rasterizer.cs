@@ -7,17 +7,17 @@ namespace Fnf.Framework.TrueType.Rasterization
     {
         public static void RasterizeGlyph(FastBitmap bitmap, Glyph glyph, Point position, Size size, Color hitColor)
         {
-            GlyphMetrics metrics = glyph.Metrics;
+            GlyphMetrics metrics = glyph.metrics;
 
             Parallel.For(0, size.height, y =>
             {
                 float ry = map(y + 0.5f, size.height, 0, metrics.MinY, metrics.MaxY);
 
                 List<float> TotalRoots = new List<float>();
-                for (int i = 0; i < glyph.Curves.Length; i++)
+                for (int i = 0; i < glyph.curves.Length; i++)
                 {
-                    float p0 = glyph.Curves[i].p0.y - ry;
-                    float p2 = glyph.Curves[i].p2.y - ry;
+                    float p0 = glyph.curves[i].p0.y - ry;
+                    float p2 = glyph.curves[i].p2.y - ry;
 
                     if (p0 == p2) continue;
 
@@ -32,17 +32,17 @@ namespace Fnf.Framework.TrueType.Rasterization
                         if (p0 > 0 && p2 >= 0) continue; // Above The Line
                     }
 
-                    (float r0, float r1) = glyph.Curves[i].GetRoots(ry);
+                    (float r0, float r1) = glyph.curves[i].GetRoots(ry);
 
                     if (r0 >= 0 && r0 <= 1)
                     {
-                        TotalRoots.Add(glyph.Curves[i].LerpX(r0));
+                        TotalRoots.Add(glyph.curves[i].LerpX(r0));
                         continue;
                     }
 
                     if (r1 >= 0 && r1 <= 1)
                     {
-                        TotalRoots.Add(glyph.Curves[i].LerpX(r1));
+                        TotalRoots.Add(glyph.curves[i].LerpX(r1));
                         continue;
                     }
                 }

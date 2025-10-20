@@ -13,9 +13,9 @@ namespace Fnf.Framework.Graphics
             return GenerateShaderFromSource(Encoding.UTF8.GetString(ResourcesAccesser.GetResource<byte[]>(name)).TrimStart('\uFEFF') + "\r\n");
         }
 
-        public static int GenerateShaderFromFolder(string name)
+        public static int GenerateShaderFromFile(string name)
         {
-            return GenerateShaderFromSource(File.ReadAllText($"{name}/shader.glsl", Encoding.UTF8));
+            return GenerateShaderFromSource(File.ReadAllText($"{name}.glsl", Encoding.UTF8));
         }
 
         public static int GenerateShaderFromSource(string shaderSource)
@@ -75,9 +75,14 @@ namespace Fnf.Framework.Graphics
             }
         }
 
-        public static void Use(int id)
+        public static void Bind(int id)
         {
             GL.UseProgram(id);
+        }
+
+        public static int GetAttribPosition(int id, string name)
+        {
+            return GL.GetAttribLocation(id, name);
         }
 
         public static void DeleteShader(int id)
@@ -123,6 +128,10 @@ namespace Fnf.Framework.Graphics
         public static void UniformMat(int id, string name, Matrix3 mat)
         {
             GL.UniformMatrix3(GL.GetUniformLocation(id, name), 1, false, mat.ToColumnMajorFloatArray());
+        }
+        public static void UniformMat(int id, string name, Matrix4 mat)
+        {
+            GL.UniformMatrix4(GL.GetUniformLocation(id, name), 1, false, mat.ToColumnMajorFloatArray());
         }
     }
 }

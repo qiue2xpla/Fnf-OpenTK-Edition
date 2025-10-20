@@ -20,14 +20,44 @@ out vec4 color;
 
 uniform vec4 col;
 uniform vec2 rect;
-uniform float radius;
+uniform vec4 radius;
 uniform float smoothness;
 
 void main() 
 {
 	float minValue = min(rect.x, rect.y);
 
-	float radiusUV = 2 * radius / min(rect.x, rect.y);
+	float cornerBasedRadius = 0;
+
+	if(coord.x > 0)
+	{
+		if(coord.y > 0)
+		{
+			// Topright
+			cornerBasedRadius = radius.x;
+		}
+		else
+		{
+			// DownRight
+			cornerBasedRadius = radius.w;
+		}
+	}
+	else
+	{
+		if(coord.y > 0)
+		{
+			// Topleft
+			cornerBasedRadius = radius.y;
+		}
+		else
+		{
+			// Downleft
+			cornerBasedRadius = radius.z;
+		}
+	}
+
+
+	float radiusUV = 2 * cornerBasedRadius / minValue;
 	vec2 rectUV = rect / minValue;
 
 	vec2 size = vec2(rectUV - radiusUV);

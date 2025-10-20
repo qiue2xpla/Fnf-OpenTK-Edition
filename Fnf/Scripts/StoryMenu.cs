@@ -157,7 +157,7 @@ namespace Fnf
 			OpenGL.TextureCoord(1, 1);
 			OpenGL.Vertex2(1, bottom);
 			OpenGL.EndDrawing();
-			Texture.Use(OpenGL.NULL);
+			Texture.Use(0);
 
 			gf.Render();
 			bf.Render();
@@ -186,7 +186,7 @@ namespace Fnf
 			OpenGL.TextureCoord(1, 1);
 			OpenGL.Pixel2(w + xoff, -h + yoff);
 			OpenGL.EndDrawing();
-			Texture.Use(OpenGL.NULL);
+			Texture.Use(0);
 
 			tracks.Render();
 		}
@@ -216,7 +216,7 @@ namespace Fnf
 			OpenGL.TextureCoord(1, 1);
 			OpenGL.Pixel2(w + xoffset, -h + yoffset);
 			OpenGL.EndDrawing();
-			Texture.Use(OpenGL.NULL);
+			Texture.Use(0);
 
 			leftArrow.Render();
 			rightArrow.Render();
@@ -247,7 +247,7 @@ namespace Fnf
 				OpenGL.TextureCoord(1, 1);
 				OpenGL.Pixel2(w, -h + yoffset);
 				OpenGL.EndDrawing();
-				Texture.Use(OpenGL.NULL);
+				Texture.Use(0);
 
 				yoffset -= 148;
 			} 
@@ -256,7 +256,7 @@ namespace Fnf
 		void SetupTexts()
 		{
             // TODO: Fuck this font system. Make a new one bitch.
-            Font font = new("Assets/Fonts/vcr");
+            Font font = new Font("Assets/Fonts/vcr");
             FontAtlas atlas = new(font, 100, 3, 2, 0,
                 FontAtlas.UpperCase + FontAtlas.LowerCase +
                 FontAtlas.Numbers + FontAtlas.Ponctuals + FontAtlas.Space);

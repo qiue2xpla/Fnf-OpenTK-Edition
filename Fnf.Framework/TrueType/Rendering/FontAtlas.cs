@@ -19,7 +19,6 @@ namespace Fnf.Framework.TrueType.Rasterization
         public readonly Bitmap bitmap;
 
         public readonly string CharSet;
-        public readonly char MissingChar;
         public readonly bool IsSignedDistanceFeild;
         public readonly int Spread;
         public readonly int FontSize;
@@ -30,7 +29,6 @@ namespace Fnf.Framework.TrueType.Rasterization
         {
             // Load values
             IsSignedDistanceFeild = spread > 0;
-            MissingChar = font.MissingChar;
             FontSize = fontSize;
             Padding = padding;
             Spread = spread;
@@ -41,38 +39,38 @@ namespace Fnf.Framework.TrueType.Rasterization
             if (customCharSet == null)
             {
                 // Load all glyphs in font
-                glyphs = font.Glyphs.Values.OrderBy(glyph => glyph.Metrics.Height).Reverse().ToArray();
-                CharSet = new string(font.Glyphs.Keys.ToArray());
+                glyphs = font.glyphs.Values.OrderBy(glyph => glyph.metrics.Height).Reverse().ToArray();
+                CharSet = new string(font.glyphs.Keys.ToArray());
             }
             else
             {
                 // Load glyphs from charset
-                if(!customCharSet.Contains(font.MissingChar.ToString()))
+                /*if(!customCharSet.Contains(font.MissingChar.ToString()))
                 {
                     customCharSet += font.MissingChar;
-                }
+                }*/
 
                 CharSet = customCharSet;
 
                 glyphs = new Glyph[customCharSet.Length];
                 for (int i = 0; i < customCharSet.Length; i++)
                 {
-                    glyphs[i] = font.Glyphs[customCharSet[i]];
+                    glyphs[i] = font.glyphs[customCharSet[i]];
                 }
-                glyphs = glyphs.OrderBy(glyph => glyph.Metrics.Height).Reverse().ToArray();
+                glyphs = glyphs.OrderBy(glyph => glyph.metrics.Height).Reverse().ToArray();
             }
 
             // Cach
-            Size bitmapSize = new Size(GetOptimalBitmapWidth(font.Glyphs.Count, fontSize), 0);
+            Size bitmapSize = new Size(GetOptimalBitmapWidth(font.glyphs.Count, fontSize), 0);
             Point cursor = new Point(margin, margin + padding);
             int highestGlyphInRow = 0;
             
             // Start getting position data
             for (int i = 0; i < glyphs.Length; i++)
             {
-                float pixelsPerEm = (float)fontSize / glyphs[i].Metrics.UnitsPerEm;
-                int glyphWidth = (int)Math.Ceiling(glyphs[i].Metrics.Width * pixelsPerEm);
-                int glyphHeight = (int)Math.Ceiling(glyphs[i].Metrics.Height * pixelsPerEm);
+                float pixelsPerEm = (float)fontSize / glyphs[i].metrics.UnitsPerEm;
+                int glyphWidth = (int)Math.Ceiling(glyphs[i].metrics.Width * pixelsPerEm);
+                int glyphHeight = (int)Math.Ceiling(glyphs[i].metrics.Height * pixelsPerEm);
 
                 // If row cant take more glyphs go to a new line
                 if (cursor.x + 2*padding + margin + glyphWidth >= bitmapSize.width)
@@ -86,7 +84,7 @@ namespace Fnf.Framework.TrueType.Rasterization
 
                 cursor.x += padding;
 
-                subAtlasses.Add(glyphs[i].Character, new SubAtlas()
+                /*subAtlasses.Add(glyphs[i].Character, new SubAtlas()
                 {
                     glyphMetrics = glyphs[i].Metrics,
                     hasOutline = glyphs[i].Curves.Length != 0,
@@ -94,7 +92,7 @@ namespace Fnf.Framework.TrueType.Rasterization
                     y = cursor.y,
                     width = glyphWidth,
                     height = glyphHeight
-                });
+                });*/
 
                 cursor.x += glyphWidth + padding + margin;
             }
@@ -103,7 +101,7 @@ namespace Fnf.Framework.TrueType.Rasterization
 
             // Apply position data to bitmap
             FastBitmap fastBitmap = new FastBitmap(bitmapSize.width,bitmapSize.height);
-            Parallel.For(0, glyphs.Length, (i) =>
+            /*Parallel.For(0, glyphs.Length, (i) =>
             {
                 SubAtlas sub = subAtlasses[glyphs[i].Character];
                 Rasterizer.RasterizeGlyph(fastBitmap, glyphs[i], new Point(sub.x, sub.y), new Size(sub.width, sub.height), Color.White);
@@ -118,7 +116,7 @@ namespace Fnf.Framework.TrueType.Rasterization
                         sub.height + 2 * padding,
                         spread);
                 }
-            });
+            });*/
 
             bitmap = fastBitmap.bitmap;
             fastBitmap.Dispose();

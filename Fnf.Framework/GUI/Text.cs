@@ -155,29 +155,32 @@ namespace Fnf.Framework
             if (defaultShader == 0)
             {
                 defaultShader = Shader.GenerateShaderFromResource("defaultFont");
-                Shader.Use(defaultShader);
+                Shader.Bind(defaultShader);
                 Shader.Uniform1(defaultShader, "tex", 0);
-                Shader.Use(OpenGL.NULL);
+                Shader.Bind(0);
             }
 
             if (sdfShader == 0)
             {
                 sdfShader = Shader.GenerateShaderFromResource("sdfFont");
-                Shader.Use(sdfShader);
+                Shader.Bind(sdfShader);
                 Shader.Uniform1(sdfShader, "tex", 0);
-                Shader.Use(OpenGL.NULL);
+                Shader.Bind(0);
             }
 
             this.atlas = atlas;
             vbo = VBO.GenerateVBO();
-            vao = VAO.GenerateVAO();
+            vao = VAO.Generate();
 
-            VAO.Use(vao);
+            VAO.Bind(vao);
             VBO.Use(vbo);
             VBO.Resize(bufferSizeInChars * BytesPerChar);
-            VertexAttrib2f2f.UseAttrib();
-            VAO.Use(OpenGL.NULL);
-            VBO.Use(OpenGL.NULL);
+            VAO.VertexAttribPointer(0, 2, VAO.VertexAttribPointerType.Float, 4 * sizeof(float), 0);
+            VAO.VertexAttribPointer(1, 2, VAO.VertexAttribPointerType.Float, 4 * sizeof(float), 2 * sizeof(float));
+            VAO.EnableVertexAttribArray(0);
+            VAO.EnableVertexAttribArray(1);
+            VAO.Bind(0);
+            VBO.Use(0);
         }
 
         public void Render()
@@ -205,7 +208,7 @@ namespace Fnf.Framework
                 UpdateBuffer();
             }
 
-            Shader.Use(shader);
+            Shader.Bind(shader);
             Shader.Color3(shader, "textColor", color);
             Shader.Uniform1(shader, "fontSize", fontSize);
 
@@ -215,15 +218,15 @@ namespace Fnf.Framework
                 Matrix3.Scale(new Vector2(fontSize)));
 
 
-            VAO.Use(vao);
+            VAO.Bind(vao);
             Texture.Use(texture);
 
             OpenGL.DrawArrays(DrawMode.Triangles, displayedCharCount * 6);
 
-            Texture.Use(OpenGL.NULL);
-            VAO.Use(OpenGL.NULL);
+            Texture.Use(0);
+            VAO.Bind(0);
 
-            Shader.Use(OpenGL.NULL);
+            Shader.Bind(0);
         }
 
         public float GetLineWidth(string line)
@@ -264,14 +267,18 @@ namespace Fnf.Framework
 
             if (needsResizing)
             {
-                VAO.Use(vao);
+                VAO.Bind(vao);
 
                 VBO.Use(vbo);
                 VBO.Resize(bufferSizeInChars * BytesPerChar);
-                VertexAttrib2f2f.UseAttrib();
 
-                VAO.Use(-1);
-                VBO.Use(-1);
+                VAO.VertexAttribPointer(0, 2, VAO.VertexAttribPointerType.Float, 4 * sizeof(float), 0);
+                VAO.VertexAttribPointer(1, 2, VAO.VertexAttribPointerType.Float, 4 * sizeof(float), 2 * sizeof(float));
+                VAO.EnableVertexAttribArray(0);
+                VAO.EnableVertexAttribArray(1);
+
+                VAO.Bind(0);
+                VBO.Use(0);
             }
         }
 
@@ -279,7 +286,7 @@ namespace Fnf.Framework
         {
             VBO.Use(vbo);
             VBO.SetData(GetMeshInEM());
-            VBO.Use(OpenGL.NULL);
+            VBO.Use(0);
         }
 
         float[] GetMeshInEM()
@@ -313,10 +320,7 @@ namespace Fnf.Framework
                 {
                     char usable = character;
 
-                    if (!atlas.subAtlasses.ContainsKey(character))
-                    {
-                        usable = atlas.MissingChar;
-                    }
+                    if (!atlas.subAtlasses.ContainsKey(character)) usable = (char)0xFFFF;
 
                     SubAtlas sub = atlas.subAtlasses[usable];
                     GlyphMetrics mat = sub.glyphMetrics;
@@ -372,10 +376,10 @@ namespace Fnf.Framework
 
             foreach (char character in line)
             {
-                GlyphMetrics mat = atlas.subAtlasses[
-                    atlas.subAtlasses.ContainsKey(character) ? character : atlas.MissingChar].glyphMetrics;
+                //GlyphMetrics mat = atlas.subAtlasses[
+                    //atlas.subAtlasses.ContainsKey(character) ? character : atlas.MissingChar].glyphMetrics;
                 
-                lineWidth += (float)mat.AdvanceWidth / mat.UnitsPerEm;
+                //lineWidth += (float)mat.AdvanceWidth / mat.UnitsPerEm;
             }
 
             return lineWidth;

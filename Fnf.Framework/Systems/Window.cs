@@ -88,6 +88,7 @@ namespace Fnf.Framework
             GL.ClearColor(0f, 0f, 0f, 1f);
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
+            GL.Enable(EnableCap.DepthTest);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             Script.StartScript();
@@ -171,7 +172,7 @@ namespace Fnf.Framework
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             base.OnUpdateFrame(e);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GUI.StartRaycasting();
             Script.RenderScript();
             Context.SwapBuffers();

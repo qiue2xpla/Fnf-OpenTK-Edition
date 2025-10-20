@@ -5,7 +5,7 @@ namespace Fnf.Framework
     /// <summary>
     /// Basically a <seealso cref="GameObject"/> but with more features for advanced GUI behaviour
     /// </summary>
-    public abstract class GUI : GameObject
+    public class GUI : GameObject
     {
         // Some global tracking values TODO: rename them bitch
 
@@ -118,7 +118,7 @@ namespace Fnf.Framework
         /// <summary>
         /// Returns if the mouse is over the <seealso cref="GUI"/>
         /// </summary>
-        protected bool IsOverGUI()
+        public bool IsOverGUI()
         {
             var mat = GetObjectWorldInverseTransformMatrix();
             Vector2 mousePosition = (mat * Input.GetGridMousePosition().ToHomogeneous()).ToEuclidean() + new Vector2(width, height) / 2;

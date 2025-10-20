@@ -10,11 +10,13 @@ public class Editor : Script
     Text text;
     Button button;
 
+    TabView tabView;
+
     int count;
 
     void Start()
     {
-        Font font = new Font("arial");
+        Font font = new Font("arial.ttf");
         FontAtlas atlas = new FontAtlas(font, 120, 2, 2, 0, FontAtlas.Space+FontAtlas.UpperCase+FontAtlas.LowerCase+FontAtlas.Ponctuals+FontAtlas.Numbers);
         text = new Text(atlas);
 
@@ -31,6 +33,15 @@ public class Editor : Script
         button.smoothColor = true;
         button.OnClick += delegate { count++; };
 
+        tabView = new TabView(atlas);
+        tabView.width = 400 - 8;
+        tabView.height = Window.GridSize.height - 8;
+        tabView.localPosition.x = -Window.GridSize.width / 2 + 400 / 2;
+
+        tabView.items.Add(new TabViewItem("Stage", new Panel() { color =  Color.Red }));
+        tabView.items.Add(new TabViewItem("Chart", new Panel() { color = Color.Green }));
+        tabView.items.Add(new TabViewItem("Offset", new Panel() { color = Color.Blue }));
+
         stage = new StageContext("idk mane", "hard", new string[] { "Markov" });
     }
 
@@ -40,6 +51,8 @@ public class Editor : Script
         text.fontSize += Input.GetScrollWheelDelta();
 
         stage.Update();
+
+        tabView.Update();
     }
 
     void Render()
@@ -47,5 +60,7 @@ public class Editor : Script
         stage.Render();
         text.Render();
         button.Render();
+
+        tabView.Render();
     }
 }

@@ -49,7 +49,7 @@ namespace Fnf.Game
             if (remaining < 0) return;
             if (cooldown > 0) return;
 
-            Texture.Use(OpenGL.NULL);
+            Texture.Use(0);
 
             OpenGL.BeginDrawing(DrawMode.Quads);
 

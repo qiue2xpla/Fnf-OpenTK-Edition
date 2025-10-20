@@ -26,6 +26,7 @@ namespace Fnf.Framework
             return text;
         }
 
+        // TODO: Make the spaces not get deleted
         /// <summary>
         /// Splits sections and returns unsegmented data and removes comment lines
         /// </summary>

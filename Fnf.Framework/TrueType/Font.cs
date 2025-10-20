@@ -1,57 +1,86 @@
-﻿using System.Collections.Generic;
+﻿using Fnf.Framework.TrueType.Parsing.Tables;
+using Fnf.Framework.TrueType.Parsing;
+using System.Collections.Generic;
 
 namespace Fnf.Framework.TrueType
 {
     /// <summary>
-    /// Loads glyphs from a truetype font
+    /// Represents a truetype font file's data
     /// </summary>
     public sealed class Font
     {
-        public Dictionary<char, Glyph> Glyphs => referance.Glyphs;
-        public char MissingChar => referance.MissingChar;
+        // Cache
+        private static Dictionary<string, Font> loadedFonts;
 
-        FontBase referance;
+        // Tables
+        public Cmap cmap;
+        public Glyf glyf;
+        public Head head;
+        public Hhea hhea;
+        public Hmtx hmtx;
+        public Loca loca;
+        public Maxp maxp;
+        public Name name;
 
-        public Font(string fontName)
+        // Font data
+        public Dictionary<char, Glyph> glyphs;
+
+        public Font(string fontName, bool lookInWindowsFonts = true)
         {
-            // Cache
-            // Make sure a pool for fonts exits
-            ResourceManager.MakeNewPool<string,FontBase>("Fonts");
+            if (loadedFonts == null) loadedFonts = new Dictionary<string, Font>();
+            string uniqueFontIdentifier = "";
 
-            // Get a referance to the pool
-            var pool = ResourceManager.GetResourcePool<string, FontBase>("Fonts");
+            using (FontReader reader = new FontReader(fontName, lookInWindowsFonts))
+            using (FontParser parser = new FontParser(reader))
+            {
+                name = parser.GetNameTable();
 
-            // Chech if the font is already cached
-            if (pool.entries.ContainsKey(fontName))
-            {
-                // Use the already existing one
-                referance = pool.entries[fontName];
-            }
-            else
-            {
-                // Make a new one
-                using (FontReader reader = new FontReader(fontName))
-                using (FontParser parser = new FontParser(reader))
+                uniqueFontIdentifier = GetUniqueFontIdentifier();
+                if (loadedFonts.ContainsKey(uniqueFontIdentifier))
                 {
-                    referance = new FontBase()
-                    {
-                        MissingChar = parser.MissingChar,
-                        Glyphs = parser.GetGlyphs()
-                    };
-                    pool.entries.Add(fontName, referance);
+                    // Use the existing one
+                    Font font = loadedFonts[uniqueFontIdentifier];
+
+                    head = font.head;
+                    maxp = font.maxp;
+                    cmap = font.cmap;
+                    hhea = font.hhea;
+                    glyf = font.glyf;
+                    hmtx = font.hmtx;
+                    loca = font.loca;
+                    glyphs = font.glyphs;
+
+                    return;
                 }
+
+                // Independent tables
+                head = parser.GetHeaderTable();
+                maxp = parser.GetMaximumProfile();
+                cmap = parser.GetCharacterMapping();
+                hhea = parser.GetHorizontalHeaderTable();
+
+                // Dependent tables
+                hmtx = parser.GetHorizontalMetricsTable(hhea, maxp);
+                loca = parser.GetLocationTable(maxp, head);
+                glyf = parser.GetGlyphTable(cmap, loca);
             }
+
+            // Cache the font if new
+            loadedFonts.Add(uniqueFontIdentifier, this);
+
+            glyphs = glyf.GetGlyphs(head, hmtx);
         }
-    }
 
-    class FontBase
-    {
-        public Dictionary<char, Glyph> Glyphs;
-        public char MissingChar; // TODO: Move the missing glyph to the top of the dictionary
-
-        public override string ToString()
+        /// <summary>
+        /// Returns a string that's unique to the font
+        /// </summary>
+        string GetUniqueFontIdentifier()
         {
-            return $"{Glyphs.Count} Glyphs";
+            string fontName = name.fullFontName ?? "null";
+            string fontFamily = name.fontFamily ?? "null";
+            string fontSubFamily = name.fontSubFamily ?? "null";
+            string version = name.version ?? "null";
+            return $"{fontName}:{fontFamily}:{fontSubFamily}:{version}";
         }
     }
 }

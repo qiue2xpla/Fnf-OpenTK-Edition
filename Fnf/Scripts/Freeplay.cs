@@ -132,7 +132,7 @@ namespace Fnf
 
             OpenGL.EndDrawing();
 
-            Texture.Use(OpenGL.NULL);
+            Texture.Use(0);
 
             for (int i = 0; i < songs.Length; i++)
             {

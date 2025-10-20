@@ -37,7 +37,7 @@ namespace Fnf.Game
             Pixel2( wv.x, -wv.y);
 
             OpenGL.EndDrawing();
-            Texture.Use(OpenGL.NULL);
+            Texture.Use(0);
 
             void Pixel2(float x, float y)
             {

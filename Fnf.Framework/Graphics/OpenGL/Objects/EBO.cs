@@ -5,12 +5,12 @@ namespace Fnf.Framework.Graphics
 {
     public static class EBO
     {
-        public static int GenerateEBO()
+        public static int Generate()
         {
             return GL.GenBuffer();
         }
 
-        public static int GenerateEBO(int uintCount)
+        public static int Generate(int uintCount)
         {
             int id = GL.GenBuffer();
             Use(id);

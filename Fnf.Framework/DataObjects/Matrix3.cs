@@ -4,7 +4,7 @@ using System;
 namespace Fnf.Framework
 {
     /// <summary>
-    /// 3 by 3 matrix grid. Also has lots of helpfull functions. Mainly used to work with <seealso cref="Vector2"/>
+    /// A simple 3 by 3 matrix grid
     /// </summary>
     public struct Matrix3
     {
@@ -30,6 +30,9 @@ namespace Fnf.Framework
             set => (r1.z, r2.z, r3.z) = (value.x, value.y, value.z);
         }
 
+        /// <summary>
+        /// Used to send the matrix data using a uniform to a shader
+        /// </summary>
         public float[] ToColumnMajorFloatArray()
         {
             return new float[] {
@@ -104,7 +107,7 @@ namespace Fnf.Framework
             };
         }
 
-        // Some operators to make life easier
+        // Some operators to make life simple
         public static Vector3 operator *(Matrix3 matrix, Vector3 vector)
         {
             return matrix.c1 * vector.x + 

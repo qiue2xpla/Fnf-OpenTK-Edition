@@ -4,11 +4,13 @@ namespace Fnf.Framework.Graphics
 {
     public static class OpenGL
     {
-        public const int NULL = 0;
-
         public static void DrawArrays(DrawMode mode, int dataStrideCount)
         {
             GL.DrawArrays((PrimitiveType)mode, 0, dataStrideCount);
+        }
+        public static void DrawElements(DrawMode mode, int indiciesCount)
+        {
+            GL.DrawElements((PrimitiveType)mode, indiciesCount, DrawElementsType.UnsignedInt, 0);
         }
         public static void BeginDrawing(DrawMode mode) => GL.Begin((PrimitiveType)mode);
         public static void EndDrawing() => GL.End();

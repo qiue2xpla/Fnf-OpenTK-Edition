@@ -42,7 +42,7 @@ namespace Fnf.Game
 
             OpenGL.EndDrawing();
 
-            Texture.Use(OpenGL.NULL);
+            Texture.Use(0);
         }
     }
 }

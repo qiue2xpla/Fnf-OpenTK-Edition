@@ -100,7 +100,7 @@ namespace Fnf.Game
             }
             OpenGL.EndDrawing();
 
-            Texture.Use(OpenGL.NULL);
+            Texture.Use(0);
         }
 
         public static (Vector2 min, Vector2 max) GetMinMax(Frame frame, Vector2 offset, Vector2 pos, Vector2 size, float rot)
