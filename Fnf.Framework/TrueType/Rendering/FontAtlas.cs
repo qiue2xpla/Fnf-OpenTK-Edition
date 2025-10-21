@@ -1,144 +1,139 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Drawing;
 using System.Linq;
 using System;
-using System.IO;
+
+using OpenTK.Graphics.OpenGL;
+using Fnf.Framework.TrueType.Rendering;
 
 namespace Fnf.Framework.TrueType.Rasterization
 {
     public class FontAtlas
     {
-        public const string UpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        public const string LowerCase = "abcdefghijklmnopqrstuvwxyz";
-        public const string Numbers = "1234567890";
-        public const string Ponctuals = "!@#$%^&*()_+=-~`'[]{}/\\.,><?:|";
-        public const string Space = " ";
+        public Dictionary<char,SubAtlas> subAtlasses = new Dictionary<char, SubAtlas>();
+        public Map<float> map;
 
-        public readonly Dictionary<char,SubAtlas> subAtlasses = new Dictionary<char, SubAtlas>();
-        public readonly Bitmap bitmap;
+        public string charSet;
+        public int fontSize;
+        public int padding;
+        public int margin;
+        public int spread;
+        public bool isSDF;
 
-        public readonly string CharSet;
-        public readonly bool IsSignedDistanceFeild;
-        public readonly int Spread;
-        public readonly int FontSize;
-        public readonly int Padding; // The distance between the char and its border used for sdf
-        public readonly int Margin; // The minimum distance between all borders
-
+        /// <summary>
+        /// Generates a font atlas with the givven font
+        /// </summary>
+        /// <param name="font">The font for generating the atlas</param>
+        /// <param name="fontSize">The font size in the atlas</param>
+        /// <param name="padding">The spacing between the glyph and border</param>
+        /// <param name="margin">The spacing between glyphs border</param>
+        /// <param name="spread">The signed distance spread (0 for none)</param>
+        /// <param name="customCharSet">The chars to include in the atlas (null for all chars in font)</param>
         public FontAtlas(Font font, int fontSize, int padding, int margin, int spread, string customCharSet = null) 
         {
-            // Load values
-            IsSignedDistanceFeild = spread > 0;
-            FontSize = fontSize;
-            Padding = padding;
-            Spread = spread;
-            Margin = margin;
+            // Set some variables
+            this.fontSize = fontSize;
+            this.padding = padding;
+            this.spread = spread;
+            this.margin = margin;
+            isSDF = spread > 0;
 
-            // Load glyphs
+            // Load the glyphs
             Glyph[] glyphs;
+            IEnumerable<Glyph> enumerableGlyphs;
             if (customCharSet == null)
             {
-                // Load all glyphs in font
-                glyphs = font.glyphs.Values.OrderBy(glyph => glyph.metrics.Height).Reverse().ToArray();
-                CharSet = new string(font.glyphs.Keys.ToArray());
+                enumerableGlyphs = font.glyphs.Values;
+                charSet = new string(font.glyphs.Keys.ToArray());
             }
             else
             {
-                // Load glyphs from charset
-                /*if(!customCharSet.Contains(font.MissingChar.ToString()))
-                {
-                    customCharSet += font.MissingChar;
-                }*/
-
-                CharSet = customCharSet;
-
-                glyphs = new Glyph[customCharSet.Length];
-                for (int i = 0; i < customCharSet.Length; i++)
-                {
-                    glyphs[i] = font.glyphs[customCharSet[i]];
-                }
-                glyphs = glyphs.OrderBy(glyph => glyph.metrics.Height).Reverse().ToArray();
+                if (!customCharSet.Contains("\uFFFF")) customCharSet += (char)0xFFFF;
+                enumerableGlyphs = font.glyphs.Values.Where((glyph) => customCharSet.Contains(glyph.unicode));
+                charSet = customCharSet;
             }
+            glyphs = enumerableGlyphs.OrderBy(glyph => glyph.metrics.bounds.size.height).Reverse().ToArray();
 
-            // Cach
-            Size bitmapSize = new Size(GetOptimalBitmapWidth(font.glyphs.Count, fontSize), 0);
-            Point cursor = new Point(margin, margin + padding);
-            int highestGlyphInRow = 0;
-            
-            // Start getting position data
+            // Start making the atlas
+            Size mapSize = new Size(GetOptimalBitmapWidth(glyphs.Length, fontSize), 0);
+            Point pointer = new Point(margin + padding, margin + padding);
+            int tallestGlyphInRow = 0;
+            int minMapWidth = 0;
+
+            // Calculate glyph layout
             for (int i = 0; i < glyphs.Length; i++)
             {
                 float pixelsPerEm = (float)fontSize / glyphs[i].metrics.UnitsPerEm;
-                int glyphWidth = (int)Math.Ceiling(glyphs[i].metrics.Width * pixelsPerEm);
-                int glyphHeight = (int)Math.Ceiling(glyphs[i].metrics.Height * pixelsPerEm);
+                int glyphWidth = (int)Math.Ceiling(glyphs[i].metrics.bounds.size.width * pixelsPerEm);
+                int glyphHeight = (int)Math.Ceiling(glyphs[i].metrics.bounds.size.height * pixelsPerEm);
 
-                // If row cant take more glyphs go to a new line
-                if (cursor.x + 2*padding + margin + glyphWidth >= bitmapSize.width)
+                // If the row can't take more glyphs the go to the next row
+                if (pointer.x + padding + margin + glyphWidth > mapSize.width)
                 {
-                    cursor.x = margin;
-                    cursor.y += highestGlyphInRow + 2*padding + margin;
-                    highestGlyphInRow = 0;
+                    if (2 * (margin + padding) + glyphWidth > mapSize.width) throw new Exception($"Someting went wrong with the atlas width '{mapSize.width}'");
+
+                    minMapWidth = Math.Max(pointer.x - padding, minMapWidth);
+                    pointer.x = margin + padding;
+                    pointer.y += tallestGlyphInRow + 2 * padding + margin;
+                    tallestGlyphInRow = 0;
                 }
 
-                highestGlyphInRow = Math.Max(highestGlyphInRow, glyphHeight);
+                subAtlasses.Add(glyphs[i].unicode, new SubAtlas(pointer.x, pointer.y, glyphWidth, glyphHeight, glyphs[i].curves.Length != 0));
 
-                cursor.x += padding;
-
-                /*subAtlasses.Add(glyphs[i].Character, new SubAtlas()
-                {
-                    glyphMetrics = glyphs[i].Metrics,
-                    hasOutline = glyphs[i].Curves.Length != 0,
-                    x = cursor.x,
-                    y = cursor.y,
-                    width = glyphWidth,
-                    height = glyphHeight
-                });*/
-
-                cursor.x += glyphWidth + padding + margin;
+                tallestGlyphInRow = Math.Max(tallestGlyphInRow, glyphHeight);
+                if (glyphs[i].curves.Length != 0) pointer.x += glyphWidth + 2 * padding + margin;
             }
 
-            bitmapSize.height += cursor.y + highestGlyphInRow + padding + margin;
+            mapSize.width = minMapWidth;
+            mapSize.height = pointer.y + tallestGlyphInRow + padding + margin;
 
-            // Apply position data to bitmap
-            FastBitmap fastBitmap = new FastBitmap(bitmapSize.width,bitmapSize.height);
-            /*Parallel.For(0, glyphs.Length, (i) =>
+            // Apply layout to map
+            map = new Map<float>(mapSize.width, mapSize.height);
+            Parallel.For(0, glyphs.Length, RenderGlyph);
+
+            void RenderGlyph(int index)
             {
-                SubAtlas sub = subAtlasses[glyphs[i].Character];
-                Rasterizer.RasterizeGlyph(fastBitmap, glyphs[i], new Point(sub.x, sub.y), new Size(sub.width, sub.height), Color.White);
+                Glyph glyph = glyphs[index];
+                SubAtlas sub = subAtlasses[glyph.unicode];
 
-                // Apply sdf
-                if (IsSignedDistanceFeild)
-                {
-                    SDF.ApplyToSection(fastBitmap,
-                        sub.x - padding,
-                        sub.y - padding,
-                        sub.width + 2 * padding,
-                        sub.height + 2 * padding,
-                        spread);
-                }
-            });*/
-
-            bitmap = fastBitmap.bitmap;
-            fastBitmap.Dispose();
+                GlyphRenderer.Render(map, glyph, new Rectangle(new Point(sub.x, sub.y), new Size(sub.width, sub.height)));
+                //if (isSDF) SDF.ApplyToSection(map, sub.x - padding, sub.y - padding, sub.width + 2 * padding, sub.height + 2 * padding, spread); 
+            }
         }
 
-        public void CachAtlas(string cachName)
+        /// <summary>
+        /// Returns a custom charset with easier access
+        /// </summary>
+        /// <param name="charSets">A string of first char of each set( Lowercase, Uppercase, Numbers, Punctuation, Space )</param>
+        public static string GetCustomCharset(string charSets)
         {
-            throw new NotImplementedException();
+            charSets = charSets.ToUpper();
 
-            if(!File.Exists($"Cach/{cachName}.png"))
+            string result = string.Empty;
+            for (int i = 0; i < charSets.Length; i++)
             {
-                // TODO: Add cache
+                switch(charSets[i])
+                {
+                    case 'P': result += "!@#$%^&*()_+=-~`'[]{}/\\.,><?:|"; break;
+                    case 'U': result += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; break;
+                    case 'L': result += "abcdefghijklmnopqrstuvwxyz"; break;
+                    case 'N': result += "0123456789"; break;
+                    case 'S': result += " "; break;
+                }
             }
+            return result;
         }
 
+        /// <summary>
+        /// Returns a side of a square that is optimal for fitting all glyphs in it
+        /// </summary>
         int GetOptimalBitmapWidth(int glyphCount, int fontSize)
         {
-            // Tries to give a value to make the atlas square
-            return (int)(Math.Sqrt(glyphCount) * fontSize * 0.7f);
+            return (int)(Math.Sqrt(glyphCount) * fontSize);
         }
     }
 
+    // The size expands in the +x -y direction
     public struct SubAtlas
     {
         public int x;
@@ -146,6 +141,14 @@ namespace Fnf.Framework.TrueType.Rasterization
         public int width;
         public int height;
         public bool hasOutline;
-        public GlyphMetrics glyphMetrics;
+
+        public SubAtlas(int x, int y, int width, int height, bool hasOutline)
+        {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.hasOutline = hasOutline;
+        }
     }
 }

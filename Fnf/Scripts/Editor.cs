@@ -17,7 +17,7 @@ public class Editor : Script
     void Start()
     {
         Font font = new Font("arial.ttf");
-        FontAtlas atlas = new FontAtlas(font, 120, 2, 2, 0, FontAtlas.Space+FontAtlas.UpperCase+FontAtlas.LowerCase+FontAtlas.Ponctuals+FontAtlas.Numbers);
+        FontAtlas atlas = new FontAtlas(font, 120, 2, 2, 0, FontAtlas.GetCustomCharset("PULNS"));
         text = new Text(atlas);
 
         text.width = 1000;

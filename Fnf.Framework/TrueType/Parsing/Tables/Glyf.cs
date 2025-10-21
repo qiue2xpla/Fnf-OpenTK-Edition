@@ -62,7 +62,7 @@ namespace Fnf.Framework.TrueType.Parsing.Tables
             var newGlyphs = new Dictionary<char, Glyph>();
             foreach (var pair in glyphs)
             {
-                newGlyphs.Add(pair.Key, new Glyph(pair.Value, head, hmtx));
+                newGlyphs.Add(pair.Key, new Glyph(pair.Value, pair.Key, head, hmtx));
             }
 
             return newGlyphs;

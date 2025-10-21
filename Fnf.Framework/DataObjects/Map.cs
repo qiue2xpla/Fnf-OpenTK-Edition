@@ -1,4 +1,9 @@
-﻿namespace Fnf.Framework
+﻿using Fnf.Framework.TrueType.Rasterization;
+using OpenTK.Graphics.OpenGL;
+using System;
+using System.Drawing;
+
+namespace Fnf.Framework
 {
     /// <summary>
     /// A grid of data that can be anything
@@ -29,5 +34,24 @@
             size = values.Length;
             for (int i = 0; i < size; i++) values[i] = defaultValue;
         }
+
+        public Bitmap ToBitmap(ColorCalculation<T> action)
+        {
+            FastBitmap fastBitmap = new FastBitmap(width, height);
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    fastBitmap.SetPixel(x, y, action.Invoke(this[x,y]));
+                }
+            }
+
+            Bitmap result = fastBitmap.bitmap;
+            fastBitmap.Dispose();
+            return result;
+        }
+
+        public delegate Color ColorCalculation<Targ>(Targ a);
     }
 }

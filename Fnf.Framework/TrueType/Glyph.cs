@@ -7,21 +7,20 @@ namespace Fnf.Framework.TrueType
 {
     public struct Glyph
     {
+        public char unicode;
         public Curve[] curves;
         public GlyphMetrics metrics;
 
-        public Glyph(GlyphData glyph, Head head, Hmtx hmtx)
+        public Glyph(GlyphData glyph, char unicode, Head head, Hmtx hmtx)
         {
+            this.unicode = unicode;
             curves = GetCurves(glyph.points, glyph.countourEndPoints);
             metrics = new GlyphMetrics()
             {
                 UnitsPerEm = head.unitsPerEm,
                 AdvanceWidth = hmtx.advanceWidth[glyph.glyphIndex],
                 LeftSideBearing = hmtx.leftSideBearing[glyph.glyphIndex],
-                MinX = glyph.xMin,
-                MaxX = glyph.xMax,
-                MinY = glyph.yMin,
-                MaxY = glyph.yMax
+                bounds = new Rectangle(glyph.xMin, glyph.xMax, glyph.yMax, glyph.yMin)
             };
         }
 
@@ -110,29 +109,17 @@ namespace Fnf.Framework.TrueType
                 result.Add(contour[i]);
 
                 // If the next point is the same type then add a mid point
-                if (i + 1 < contour.Length && contour[i].onCurve == contour[i + 1].onCurve)
+                int next = (i + 1) % contour.Length;
+                if (contour[i].onCurve == contour[next].onCurve)
                 {
                     result.Add(new GlyphPoint()
                     {
-                        x = (int)((contour[i].x + contour[i + 1].x) / 2f),
-                        y = (int)((contour[i].y + contour[i + 1].y) / 2f),
+                        x = (int)((contour[i].x + contour[next].x) / 2f),
+                        y = (int)((contour[i].y + contour[next].y) / 2f),
                         onCurve = !contour[i].onCurve
                     });
                 }
             }
-
-            // Handle first and last points
-            if (!result[0].onCurve && !result[result.Count - 1].onCurve)
-            {
-                // Incert mid point
-                result.Add(new GlyphPoint()
-                {
-                    x = (int)((result[0].x + result[result.Count - 1].x) / 2f),
-                    y = (int)((result[0].y + result[result.Count - 1].y) / 2f),
-                    onCurve = true
-                });
-            }
-
             return result.ToArray();
         }
     }

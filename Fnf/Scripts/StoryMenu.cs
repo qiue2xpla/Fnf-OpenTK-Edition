@@ -257,9 +257,7 @@ namespace Fnf
 		{
             // TODO: Fuck this font system. Make a new one bitch.
             Font font = new Font("Assets/Fonts/vcr");
-            FontAtlas atlas = new(font, 100, 3, 2, 0,
-                FontAtlas.UpperCase + FontAtlas.LowerCase +
-                FontAtlas.Numbers + FontAtlas.Ponctuals + FontAtlas.Space);
+            FontAtlas atlas = new(font, 100, 3, 2, 0, FontAtlas.GetCustomCharset("ULPNS"));
 
             weekScore = new(atlas)
             {

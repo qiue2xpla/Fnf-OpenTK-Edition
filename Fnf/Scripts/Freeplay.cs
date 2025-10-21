@@ -47,7 +47,7 @@ namespace Fnf
             panel.height = 85;
 
             font = new Font("Assets/Fonts/vcr");
-            atlas = new FontAtlas(font, 120, 3, 3, 0, FontAtlas.UpperCase + FontAtlas.Numbers + "()<>:.% ");
+            atlas = new FontAtlas(font, 120, 3, 3, 0, FontAtlas.GetCustomCharset("UN") + "()<>:.% ");
 
             difficultyText = new Text(atlas);
             difficultyText.fontSize = 30;

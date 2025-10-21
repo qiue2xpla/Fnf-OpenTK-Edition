@@ -59,14 +59,14 @@ namespace Fnf.Framework
             get => _atlas;
             set
             {
-                if (value == _atlas) return;
-                _atlas = value;
-                mustReNewMesh = true;
-                mustReNewBuffer = true;
-                Texture.Destroy(texture);
-                texture = Texture.GenerateFromBitmap(value.bitmap, "FontAtlas");
-                atlasSize = new Vector2(value.bitmap.Width, value.bitmap.Height);
-                shader = (value?.IsSignedDistanceFeild??false) ? sdfShader : defaultShader; 
+                //if (value == _atlas) return;
+                //_atlas = value;
+                //mustReNewMesh = true;
+                //mustReNewBuffer = true;
+                //Texture.Destroy(texture);
+                //texture = Texture.GenerateFromBitmap(value.bitmap, "FontAtlas");
+                //atlasSize = new Vector2(value.bitmap.Width, value.bitmap.Height);
+                //shader = (value?.IsSignedDistanceFeild??false) ? sdfShader : defaultShader; 
             }
         }
 
@@ -323,11 +323,11 @@ namespace Fnf.Framework
                     if (!atlas.subAtlasses.ContainsKey(character)) usable = (char)0xFFFF;
 
                     SubAtlas sub = atlas.subAtlasses[usable];
-                    GlyphMetrics mat = sub.glyphMetrics;
+                    //GlyphMetrics mat = sub.glyphMetrics;
 
                     if (sub.hasOutline)
                     {
-                        displayedCharCount++;
+                        displayedCharCount++;/*
 
                         // Load texture data
                         float Left = (float)(sub.x - atlas.Padding) / atlasSize.x;
@@ -357,11 +357,11 @@ namespace Fnf.Framework
                             buffer.Add(y + cursor.y + yOffset);
                             buffer.Add(tx);
                             buffer.Add(ty);
-                        }
+                        }*/
                     }
 
                     // Add horizontal advance to cursor
-                    cursor.x += (float)mat.AdvanceWidth / mat.UnitsPerEm;
+                    //cursor.x += (float)mat.AdvanceWidth / mat.UnitsPerEm;
                 }
 
                 cursor.y -= 1;

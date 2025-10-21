@@ -57,6 +57,7 @@
     <Compile Include="DataObjects\Matrix2.cs" />
     <Compile Include="DataObjects\Matrix4.cs" />
     <Compile Include="DataObjects\Quaternion.cs" />
+    <Compile Include="DataObjects\Rectangle.cs" />
     <Compile Include="DataObjects\Vector4.cs" />
     <Compile Include="Graphics\Vertex Attribute\VertexAttrib2f.cs" />
     <Compile Include="GUI\Built In\TabView.cs" />
@@ -100,7 +101,7 @@
     <Compile Include="Systems\Window.cs" />
     <Compile Include="TrueType\Rendering\FastBitmap.cs" />
     <Compile Include="TrueType\Rendering\FontAtlas.cs" />
-    <Compile Include="TrueType\Rendering\Rasterizer.cs" />
+    <Compile Include="TrueType\Rendering\GlyphRenderer.cs" />
     <Compile Include="TrueType\Font.cs" />
     <Compile Include="TrueType\Parsing\FontParser.cs" />
     <Compile Include="TrueType\Parsing\FontReader.cs" />

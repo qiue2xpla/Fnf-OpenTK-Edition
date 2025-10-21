@@ -31,11 +31,14 @@ namespace Fnf.Framework
         /// <summary>
         /// Converts from degrees unit to radian units, the start point is the right, normal trigonometry
         /// </summary>
-        /// <param name="degree"></param>
-        /// <returns></returns>
         public static float ToRadian(float degree)
         {
             return (float)(degree / 180 * Math.PI);
+        }
+
+        public static float Map(float x, float in_min, float in_max, float out_min, float out_max)
+        {
+            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
         }
     }
 }

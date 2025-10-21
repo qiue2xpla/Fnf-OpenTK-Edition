@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Fnf.Framework.TrueType.Rasterization
+namespace Fnf.Framework.TrueType.Rendering
 {
-    public static class Rasterizer
+    public static class GlyphRenderer
     {
-        public static void RasterizeGlyph(FastBitmap bitmap, Glyph glyph, Point position, Size size, Color hitColor)
+        public static void Render(Map<float> map, Glyph glyph, Rectangle rect)
         {
-            GlyphMetrics metrics = glyph.metrics;
+            Rectangle glyphBounds = glyph.metrics.bounds;
 
-            Parallel.For(0, size.height, y =>
+            Parallel.For(0, rect.size.height, RenderLine);
+
+            void RenderLine(int y)
             {
-                float ry = map(y + 0.5f, size.height, 0, metrics.MinY, metrics.MaxY);
+                float ry = MathUtility.Map(y + 0.5f, 0, rect.size.height - 1, glyphBounds.top, glyphBounds.bottom);
 
                 List<float> TotalRoots = new List<float>();
                 for (int i = 0; i < glyph.curves.Length; i++)
@@ -47,21 +49,18 @@ namespace Fnf.Framework.TrueType.Rasterization
                     }
                 }
 
-                for (int x = 0; x < size.width; x++)
+                TotalRoots.Sort();
+
+                for (int x = 0; x < rect.size.width; x++)
                 {
-                    float rx = map(x + 0.5f, 0, size.width, metrics.MinX, metrics.MaxX);
-               
+                    float rx = MathUtility.Map(x + 0.5f, 0, rect.size.width - 1, glyphBounds.left, glyphBounds.right);
+
                     int times = 0;
-                    for (int i = 0; i < TotalRoots.Count; i++) if (TotalRoots[i] > rx) times++;
+                    for (int i = 0; i < TotalRoots.Count; i++) if (TotalRoots[i] < rx) times++;
 
                     bool isInside = times % 2 != 0;
-                    if(isInside) bitmap.SetPixel(position.x + x, position.y + y, hitColor);
+                    map[rect.position.x + x, rect.position.y + y] = isInside ? 1 : 0;
                 }
-            });
-
-            float map(float x, float in_min, float in_max, float out_min, float out_max)
-            {
-                return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
             }
         }
     }
