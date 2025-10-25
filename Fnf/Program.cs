@@ -14,12 +14,6 @@ namespace Fnf
     {
         static void Main()
         {
-            Font font = new Font("arial.ttf", true);
-            FontAtlas atlas = new FontAtlas(font, 2000, 3, 3, 0, FontAtlas.GetCustomCharset("ULPNS"));
-
-            atlas.map.ToBitmap((f) => new Color(1,1,1,f)).Save(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\\Woah.png", System.Drawing.Imaging.ImageFormat.Png);
-           
-
             Script.AssignStartupScript<Editor>();
             ClipsManager.AppVolume = 0.1f;
 

@@ -13,7 +13,7 @@ namespace Fnf.Framework
         public readonly int width;
         public readonly int height;
         public readonly int size;
-        T[] values;
+        public readonly T[] values;
 
         public T this[int x, int y]
         {

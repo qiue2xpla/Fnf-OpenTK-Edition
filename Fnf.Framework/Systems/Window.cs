@@ -88,7 +88,7 @@ namespace Fnf.Framework
             GL.ClearColor(0f, 0f, 0f, 1f);
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
-            GL.Enable(EnableCap.DepthTest);
+           // GL.Enable(EnableCap.DepthTest);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             Script.StartScript();

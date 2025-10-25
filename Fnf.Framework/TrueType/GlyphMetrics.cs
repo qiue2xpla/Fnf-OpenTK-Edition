@@ -1,5 +1,6 @@
 ﻿namespace Fnf.Framework.TrueType
 {
+    // The bounds expand on the (+, +)
     public struct GlyphMetrics
     {
         public int UnitsPerEm;

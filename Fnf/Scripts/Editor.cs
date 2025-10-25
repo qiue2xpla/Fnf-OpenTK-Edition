@@ -1,6 +1,6 @@
-﻿using Fnf.Framework;
+﻿using Fnf.Framework.TrueType.Rendering;
 using Fnf.Framework.TrueType;
-using Fnf.Framework.TrueType.Rasterization;
+using Fnf.Framework;
 using Fnf.Game;
 using System;
 
@@ -18,11 +18,8 @@ public class Editor : Script
     {
         Font font = new Font("arial.ttf");
         FontAtlas atlas = new FontAtlas(font, 120, 2, 2, 0, FontAtlas.GetCustomCharset("PULNS"));
-        text = new Text(atlas);
 
-        text.width = 1000;
-        text.height = 600;
-        text.textAlignment = TextAlignment.Top;
+        text = new Text(atlas) { width = 1000, height = 600, textAlignment = TextAlignment.Top };
 
         button = new Button(atlas);
         button.overlayText.text = "Click me!";

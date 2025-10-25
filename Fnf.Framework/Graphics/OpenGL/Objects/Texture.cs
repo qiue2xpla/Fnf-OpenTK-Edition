@@ -99,6 +99,20 @@ namespace Fnf.Framework.Graphics
             return id;
         }
 
+        public static int GenerateOneComponentTexture(Map<float> map)
+        {
+            int texture = GL.GenTexture();
+
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.R32f, map.width, map.height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Red, PixelType.Float, map.values);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            SetWrap(texture, WrapMode.ClampToEdge, WrapMode.ClampToEdge);
+            SetFilter(texture, Filter.Linear, Filter.Linear);
+
+            return texture;
+        }
+
         public static Size GetTextureSize(int id)
         {
             Use(id);

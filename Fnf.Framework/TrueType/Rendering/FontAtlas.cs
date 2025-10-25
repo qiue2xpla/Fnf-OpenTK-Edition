@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System;
-
+﻿using Fnf.Framework.TrueType.Parsing;
 using OpenTK.Graphics.OpenGL;
-using Fnf.Framework.TrueType.Rendering;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Fnf.Framework.TrueType.Rasterization
+namespace Fnf.Framework.TrueType.Rendering
 {
     public class FontAtlas
     {
@@ -55,7 +54,7 @@ namespace Fnf.Framework.TrueType.Rasterization
             glyphs = enumerableGlyphs.OrderBy(glyph => glyph.metrics.bounds.size.height).Reverse().ToArray();
 
             // Start making the atlas
-            Size mapSize = new Size(GetOptimalBitmapWidth(glyphs.Length, fontSize), 0);
+            Size mapSize = new Size((int)(Math.Sqrt(glyphs.Length) * fontSize), 0);
             Point pointer = new Point(margin + padding, margin + padding);
             int tallestGlyphInRow = 0;
             int minMapWidth = 0;
@@ -77,7 +76,7 @@ namespace Fnf.Framework.TrueType.Rasterization
                     tallestGlyphInRow = 0;
                 }
 
-                subAtlasses.Add(glyphs[i].unicode, new SubAtlas(pointer.x, pointer.y, glyphWidth, glyphHeight, glyphs[i].curves.Length != 0));
+                subAtlasses.Add(glyphs[i].unicode, new SubAtlas(pointer.x, pointer.y, glyphWidth, glyphHeight, glyphs[i].curves.Length != 0, glyphs[i].metrics));
 
                 if (glyphs[i].curves.Length != 0) pointer.x += glyphWidth + 2 * padding + margin;
                 tallestGlyphInRow = Math.Max(tallestGlyphInRow, glyphHeight);
@@ -123,14 +122,6 @@ namespace Fnf.Framework.TrueType.Rasterization
             }
             return result;
         }
-
-        /// <summary>
-        /// Returns a side of a square that is optimal for fitting all glyphs in it
-        /// </summary>
-        int GetOptimalBitmapWidth(int glyphCount, int fontSize)
-        {
-            return (int)(Math.Sqrt(glyphCount) * fontSize);
-        }
     }
 
     // The size expands in the +x -y direction
@@ -141,14 +132,16 @@ namespace Fnf.Framework.TrueType.Rasterization
         public int width;
         public int height;
         public bool hasOutline;
+        public GlyphMetrics metrics;
 
-        public SubAtlas(int x, int y, int width, int height, bool hasOutline)
+        public SubAtlas(int x, int y, int width, int height, bool hasOutline, GlyphMetrics metrics)
         {
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
             this.hasOutline = hasOutline;
+            this.metrics = metrics;
         }
     }
 }

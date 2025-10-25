@@ -1,5 +1,5 @@
 ﻿using Fnf.Framework.Graphics;
-using Fnf.Framework.TrueType.Rasterization;
+using Fnf.Framework.TrueType.Rendering;
 using System;
 using System.Net;
 

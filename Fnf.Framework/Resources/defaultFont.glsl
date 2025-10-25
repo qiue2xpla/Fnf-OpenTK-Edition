@@ -26,7 +26,7 @@ uniform vec3 textColor;
 
 float Pixel(float x, float y)
 {
-	return texture(tex, texCoord + vec2(x,y)).a;
+	return texture(tex, texCoord + vec2(x,y)).r;
 }
 
 float Sample(float sampleArea, int sampleCount)

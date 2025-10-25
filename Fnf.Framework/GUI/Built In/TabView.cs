@@ -1,4 +1,4 @@
-﻿using Fnf.Framework.TrueType.Rasterization;
+﻿using Fnf.Framework.TrueType.Rendering;
 using Fnf.Framework.Graphics;
 using Fnf.Framework;
 using System.Collections.ObjectModel;

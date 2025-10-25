@@ -1,18 +1,34 @@
-﻿using Fnf.Framework.TrueType.Rasterization;
+﻿using Fnf.Framework.TrueType.Rendering;
 using Fnf.Framework.TrueType;
 using Fnf.Framework.Graphics;
+
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using OpenTK.Graphics.ES11;
 
 namespace Fnf.Framework
 {
     /// <summary>
-    /// Used to display text on the screen with ease
+    /// Built-in class for handling text rendering
     /// </summary>
     public class Text : GUI, IRenderable
     {
-        // These variables require the mesh buffer to be remade
+        #region Instant effect
+
+        /// <summary>
+        /// Gets or sets the renderable state of the text
+        /// </summary>
+        public bool isRenderable { get; set; } = true;
+
+        /// <summary>
+        /// The display color of the text
+        /// </summary>
+        public Color color = Color.White; // TODO: Add fore and back colors
+
+        #endregion
+
+        #region Needs processing
 
         /// <summary>
         /// The text that is displayed
@@ -22,7 +38,7 @@ namespace Fnf.Framework
             get => _text;
             set
             {
-                if(value == null)
+                if (value == null)
                 {
                     _text = "";
                 }
@@ -30,48 +46,49 @@ namespace Fnf.Framework
                 {
                     if (value == _text) return;
                     _text = value;
-                    if(fitContent) width = GetLinesWidths().Max();
-                    mustReNewBuffer = true;
-                    mustReNewMesh = true;
+                    mustReSize = true;
+                    mustReMesh = true;
+
+                    if (fitContent)
+                    {
+                        float[] widths = GetLinesWidths();
+                        width = widths.Max();
+                        height = widths.Length * fontSize; // + line spacing * (widths.Length - 1)
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Make the GUI width fit the text
+        /// The font atlas used for rendering
         /// </summary>
-        public bool fitContent
+        public FontAtlas fontAtlas
         {
-            get => _fitContent;
+            get => _fontAtlas;
             set
             {
-                if (value == _fitContent) return;
-                _fitContent = value;
-                mustReNewMesh = true;
+                if (value != _fontAtlas) ReplaceAtlas(value);
             }
         }
 
         /// <summary>
-        /// The atlas that the text uses
+        /// Indicates how the text is aligned in the GUI
         /// </summary>
-        public FontAtlas atlas
+        public TextAlignment textAlignment
         {
-            get => _atlas;
+            get => _textAlignment;
             set
             {
-                //if (value == _atlas) return;
-                //_atlas = value;
-                //mustReNewMesh = true;
-                //mustReNewBuffer = true;
-                //Texture.Destroy(texture);
-                //texture = Texture.GenerateFromBitmap(value.bitmap, "FontAtlas");
-                //atlasSize = new Vector2(value.bitmap.Width, value.bitmap.Height);
-                //shader = (value?.IsSignedDistanceFeild??false) ? sdfShader : defaultShader; 
+                if (value != _textAlignment)
+                {
+                    _textAlignment = value;
+                    mustReMesh = true;
+                }
             }
         }
 
         /// <summary>
-        /// Displayed text font size
+        /// Displayed text size
         /// </summary>
         public float fontSize
         {
@@ -80,54 +97,43 @@ namespace Fnf.Framework
             {
                 if (value == _fontSize) return;
                 _fontSize = value;
-                mustReNewMesh = true;
+                mustReMesh = true;
             }
         }
 
         /// <summary>
-        /// How the text is aligned in the GUI
+        /// Makes the GUI size fit the text automaticaly
         /// </summary>
-        public TextAlignment textAlignment
+        public bool fitContent
         {
-            get => _textAlignment;
+            get => _fitContent;
             set
             {
-                if (value == _textAlignment) return;
-                _textAlignment = value;
-                mustReNewMesh = true;
+                if (value != _fitContent)
+                {
+                    _fitContent = value;
+                    mustReMesh = true;
+                }
             }
         }
 
-        // These variables doesn't require the mesh buffer to be remade
-        // Mostly handled by the Text or the shader
-         
-        /// <summary>
-        /// The display color of the text
-        /// </summary>
-        public Color color = Color.White; // TODO: Add fore and back colors
+        #endregion
 
-        /// <summary>
-        /// Gets or sets the renderable state of the text
-        /// </summary>
-        public bool isRenderable { get; set; } = true;
-
-        // Private variables
-
-        TextAlignment _textAlignment;
-        FontAtlas _atlas;
+        FontAtlas _fontAtlas;
+        TextAlignment _textAlignment = TextAlignment.Center;
         bool _fitContent;
-        string _text;
-        float _fontSize;
+        string _text = "";
+        float _fontSize = 18;
 
+        bool mustReSize = true, mustReMesh = true;
         float previousWidth, previousHeight;
-        bool mustReNewBuffer = false;
-        bool mustReNewMesh = false;
-        int displayedCharCount = 0; // TODO: Non character triangles may be added later, so this isn't reliable
-        int bufferSizeInChars = 50;
+        static int defaultShader, sdfShader;
         int vbo, vao, shader, texture;
         Vector2 atlasSize;
 
-        static int defaultShader, sdfShader; // More than one shader copy is not needed
+        public int displayedCharCount = 0;
+        public int maximumDisplayedCharCount { get; private set; } = 0; 
+        int bufferSizeInChars = 50;
 
         // Constant variables
 
@@ -146,29 +152,13 @@ namespace Fnf.Framework
         /// </summary>
         const int BytesPerChar = AttributesPerVertex * VerticesPerChar * sizeof(float); // 4 ( xyuv )
 
-        public Text(FontAtlas atlas = null)
+        public Text(FontAtlas fontAtlas = null)
         {
-            _textAlignment = TextAlignment.Center;
-            _text = "";
-            _fontSize = 18;
-            
-            if (defaultShader == 0)
-            {
-                defaultShader = Shader.GenerateShaderFromResource("defaultFont");
-                Shader.Bind(defaultShader);
-                Shader.Uniform1(defaultShader, "tex", 0);
-                Shader.Bind(0);
-            }
+            if (defaultShader == 0) defaultShader = Shader.GenerateShaderFromResource("defaultFont");
+            if (sdfShader == 0) sdfShader = Shader.GenerateShaderFromResource("sdfFont");
 
-            if (sdfShader == 0)
-            {
-                sdfShader = Shader.GenerateShaderFromResource("sdfFont");
-                Shader.Bind(sdfShader);
-                Shader.Uniform1(sdfShader, "tex", 0);
-                Shader.Bind(0);
-            }
+            this.fontAtlas = fontAtlas;
 
-            this.atlas = atlas;
             vbo = VBO.GenerateVBO();
             vao = VAO.Generate();
 
@@ -187,24 +177,24 @@ namespace Fnf.Framework
         {
             if (!isRenderable) return;
             if (isRaycastable && IsOverGUI()) RaycastHit();
-            if (atlas == null) return;
+            if (fontAtlas == null) return;
 
             if (previousWidth != width || previousHeight != height)
             {
                 previousWidth = width;
                 previousHeight = height;
-                mustReNewMesh = true;
+                mustReMesh = true;
             }
 
-            if (mustReNewBuffer)
+            if (mustReSize)
             {
-                mustReNewBuffer = false;
+                mustReSize = false;
                 ResizeBuffer();
             }
 
-            if (mustReNewMesh)
+            if (mustReMesh)
             {
-                mustReNewMesh = false;
+                mustReMesh = false;
                 UpdateBuffer();
             }
 
@@ -212,8 +202,8 @@ namespace Fnf.Framework
             Shader.Color3(shader, "textColor", color);
             Shader.Uniform1(shader, "fontSize", fontSize);
 
-            Shader.UniformMat(shader, "transform", 
-                Matrix3.Scale(Window.PixelToViewport(1, 1)) * 
+            Shader.UniformMat(shader, "transform",
+                Matrix3.Scale(Window.PixelToViewport(1, 1)) *
                 WorldlTransformMatrix() *
                 Matrix3.Scale(new Vector2(fontSize)));
 
@@ -227,6 +217,30 @@ namespace Fnf.Framework
             VAO.Bind(0);
 
             Shader.Bind(0);
+        }
+
+        void ReplaceAtlas(FontAtlas atlas)
+        {
+            _fontAtlas = atlas;
+            mustReSize = true;
+            mustReMesh = true;
+            atlasSize = new Vector2(atlas.map.width, atlas.map.height);
+            shader = (atlas?.isSDF ?? false) ? sdfShader : defaultShader;
+            Texture.Destroy(texture);
+            texture = Texture.GenerateOneComponentTexture(atlas.map);
+        }
+
+        float GetLineWithInEM(string line)
+        {
+            float lineWidth = 0;
+
+            foreach (char character in line)
+            {
+                GlyphMetrics mat = fontAtlas.subAtlasses[fontAtlas.subAtlasses.ContainsKey(character) ? character : (char)0xFFFF].metrics;
+                lineWidth += (float)mat.AdvanceWidth / mat.UnitsPerEm;
+            }
+
+            return lineWidth;
         }
 
         public float GetLineWidth(string line)
@@ -292,7 +306,7 @@ namespace Fnf.Framework
         float[] GetMeshInEM()
         {
             displayedCharCount = 0;
-            if (atlas == null) return new float[0];
+            if (fontAtlas == null) return new float[0];
 
             List<float> buffer = new List<float>();
             string[] lines = SegmentIntoLines(_text);
@@ -313,35 +327,35 @@ namespace Fnf.Framework
                 {
                     case 0b00: cursor.x = -width / (2 * fontSize); break;           // Left
                     case 0b01: cursor.x = -lineWidth / 2; break;                    // Center
-                    case 0b10: cursor.x = width / (2 * fontSize) -lineWidth; break; // Right
+                    case 0b10: cursor.x = width / (2 * fontSize) - lineWidth; break; // Right
                 }
 
                 foreach (char character in line)
                 {
                     char usable = character;
 
-                    if (!atlas.subAtlasses.ContainsKey(character)) usable = (char)0xFFFF;
+                    if (!fontAtlas.subAtlasses.ContainsKey(character)) usable = (char)0xFFFF;
 
-                    SubAtlas sub = atlas.subAtlasses[usable];
-                    //GlyphMetrics mat = sub.glyphMetrics;
+                    SubAtlas sub = fontAtlas.subAtlasses[usable];
+                    GlyphMetrics mat = sub.metrics;
 
                     if (sub.hasOutline)
                     {
-                        displayedCharCount++;/*
+                        displayedCharCount++;
 
                         // Load texture data
-                        float Left = (float)(sub.x - atlas.Padding) / atlasSize.x;
-                        float Right = (float)(sub.x + sub.width + atlas.Padding) / atlasSize.x;
-                        float Top = (float)(sub.y - atlas.Padding) / atlasSize.y;
-                        float Bottom = (float)(sub.y + sub.height + atlas.Padding) / atlasSize.y;
+                        float Left = (float)(sub.x - fontAtlas.padding) / atlasSize.x;
+                        float Right = (float)(sub.x + sub.width + fontAtlas.padding) / atlasSize.x;
+                        float Top = (float)(sub.y - fontAtlas.padding) / atlasSize.y;
+                        float Bottom = (float)(sub.y + sub.height + fontAtlas.padding) / atlasSize.y;
 
                         // Load character shape data
                         float em = mat.UnitsPerEm;
-                        float fs = atlas.FontSize;
-                        float glyphWidth = mat.Width / em + atlas.Padding * 2 / fs;
-                        float glyphHeight = mat.Height / em + atlas.Padding * 2 / fs;
-                        float xOffset = mat.LeftSideBearing / em - atlas.Padding / fs;
-                        float yOffset = mat.MinY / em + atlas.Padding / fs;
+                        float fs = fontAtlas.fontSize;
+                        float glyphWidth = mat.bounds.size.width/ em + fontAtlas.padding * 2 / fs;
+                        float glyphHeight = mat.bounds.size.height / em + fontAtlas.padding * 2 / fs;
+                        float xOffset = mat.LeftSideBearing / em - fontAtlas.padding / fs;
+                        float yOffset = mat.bounds.bottom / em + fontAtlas.padding / fs;
 
                         // Add vertex data to the buffer
                         add(glyphWidth, glyphHeight, Right, Top); // Topright  vertex
@@ -357,11 +371,11 @@ namespace Fnf.Framework
                             buffer.Add(y + cursor.y + yOffset);
                             buffer.Add(tx);
                             buffer.Add(ty);
-                        }*/
+                        }
                     }
 
                     // Add horizontal advance to cursor
-                    //cursor.x += (float)mat.AdvanceWidth / mat.UnitsPerEm;
+                    cursor.x += (float)mat.AdvanceWidth / mat.UnitsPerEm;
                 }
 
                 cursor.y -= 1;
@@ -370,20 +384,7 @@ namespace Fnf.Framework
             return buffer.ToArray();
         }
 
-        float GetLineWithInEM(string line)
-        {
-            float lineWidth = 0;
-
-            foreach (char character in line)
-            {
-                //GlyphMetrics mat = atlas.subAtlasses[
-                    //atlas.subAtlasses.ContainsKey(character) ? character : atlas.MissingChar].glyphMetrics;
-                
-                //lineWidth += (float)mat.AdvanceWidth / mat.UnitsPerEm;
-            }
-
-            return lineWidth;
-        }
+        
 
         string[] SegmentIntoLines(string text)
         {
