@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace Fnf.Framework.TrueType.Parsing.Tables
 {
@@ -14,14 +15,16 @@ namespace Fnf.Framework.TrueType.Parsing.Tables
         public Cmap(FontParser parser)
         {
             var formats = GetFormats(parser.reader, parser.tableOffsets["cmap"]);
-            if (formats.ContainsKey((0, 3))) characterToGlyphIndex = GetFormat4Mapping(parser.reader, formats[(0, 3)]);
-            else if (formats.ContainsKey((1, 0))) characterToGlyphIndex = GetFormat0Mapping(parser.reader, formats[(1, 0)]);
+            
+            if (formats.ContainsKey(4)) characterToGlyphIndex = GetFormat4Mapping(parser.reader, formats[4]);
+            else if (formats.ContainsKey(40)) characterToGlyphIndex = GetFormat4Mapping(parser.reader, formats[40]);
+            else if (formats.ContainsKey(10)) characterToGlyphIndex = GetFormat0Mapping(parser.reader, formats[10]);
             else if (characterToGlyphIndex == null) throw new Exception("Font doesn't contain a supported mapping format");
         }
 
-        Dictionary<(int platID, int encodingID), uint> GetFormats(FontReader reader, uint cmapOffset)
+        Dictionary<int, uint> GetFormats(FontReader reader, uint cmapOffset)
         {
-            var formats = new Dictionary<(int, int), uint>();
+            var formats = new Dictionary<int, uint>();
             reader.GoTo(cmapOffset);
             reader.Skip(sizeof(ushort)); // version (always 0)
             int numTables = reader.ReadUInt16();
@@ -30,7 +33,14 @@ namespace Fnf.Framework.TrueType.Parsing.Tables
                 int platformID = reader.ReadUInt16();
                 int platformSpecificID = reader.ReadUInt16();
                 uint offset = reader.ReadUInt32(); // Offset from cmap start not file
-                formats.Add((platformID, platformSpecificID), offset + cmapOffset);
+
+                uint finalOffset = offset + cmapOffset;
+                switch(platformID * 10 + platformSpecificID)
+                {
+                    case 31: formats.Add(4, finalOffset); break;
+                    case 3: formats.Add(40, finalOffset); break;
+                    case 10: formats.Add(0, finalOffset); break;
+                }
             }
             return formats;
         }
@@ -87,30 +97,28 @@ namespace Fnf.Framework.TrueType.Parsing.Tables
 
                     if (idRangeOffset[seg] == 0)
                     {
-                        glyphIndex = (code + idDelta[seg]) % 0xFFFF;
+                        glyphIndex = (code + idDelta[seg]) % 65536;
                     }
                     else
                     {
-                        reader.GoTo(idRangeOffset[seg] + 2 * (code - startCount[seg]) + idRangeStart);
+                        reader.GoTo(idRangeOffset[seg] + 2 * (code - startCount[seg]) + idRangeStart + seg * 2);
                         glyphIndex = reader.ReadUInt16();
 
                         // If code is 0 that means there is no glyph
                         if (glyphIndex != 0)
                         {
-                            glyphIndex = (glyphIndex + idDelta[seg]) % 0xFFFF;
+                            glyphIndex = (glyphIndex + idDelta[seg]) % 65536;
                         }
                     }
 
-                    if(glyphIndex != 0)
-                    {
-                        result.Add((char)code, glyphIndex);
-                    }
+                    if (glyphIndex < 0) glyphIndex += 65536;
+                    if (glyphIndex != 0) result.Add((char)code, glyphIndex);
                 }
             }
 
-            if (result.ContainsKey((char)0xFFFF))
+            if (result.ContainsKey((char)ushort.MaxValue))
             {
-                if (result[(char)0xFFFF] != 0)
+                if (result[(char)ushort.MaxValue] != 0)
                 {
                     result.Remove((char)0xFFFF);
                     result.Add((char)0xFFFF, 0);
@@ -118,7 +126,7 @@ namespace Fnf.Framework.TrueType.Parsing.Tables
             }
             else
             {
-                result.Add((char)0xFFFF, 0);
+                result.Add((char)ushort.MaxValue, 0);
             }
 
             return result;

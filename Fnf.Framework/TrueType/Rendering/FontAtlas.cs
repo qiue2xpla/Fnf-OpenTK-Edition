@@ -72,7 +72,6 @@ namespace Fnf.Framework.TrueType.Rasterization
                 {
                     if (2 * (margin + padding) + glyphWidth > mapSize.width) throw new Exception($"Someting went wrong with the atlas width '{mapSize.width}'");
 
-                    minMapWidth = Math.Max(pointer.x - padding, minMapWidth);
                     pointer.x = margin + padding;
                     pointer.y += tallestGlyphInRow + 2 * padding + margin;
                     tallestGlyphInRow = 0;
@@ -80,8 +79,9 @@ namespace Fnf.Framework.TrueType.Rasterization
 
                 subAtlasses.Add(glyphs[i].unicode, new SubAtlas(pointer.x, pointer.y, glyphWidth, glyphHeight, glyphs[i].curves.Length != 0));
 
-                tallestGlyphInRow = Math.Max(tallestGlyphInRow, glyphHeight);
                 if (glyphs[i].curves.Length != 0) pointer.x += glyphWidth + 2 * padding + margin;
+                tallestGlyphInRow = Math.Max(tallestGlyphInRow, glyphHeight);
+                minMapWidth = Math.Max(pointer.x - padding, minMapWidth);
             }
 
             mapSize.width = minMapWidth;
