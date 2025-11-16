@@ -108,6 +108,15 @@ namespace Fnf.Framework
         }
 
         // Some operators to make life simple
+
+        /// <summary>
+        /// Converts the Vector2 to Vector3 and back to Vector2
+        /// </summary>
+        public static Vector2 operator *(Matrix3 matrix, Vector2 vector)
+        {
+            return (matrix * vector.ToHomogeneous()).ToEuclidean();
+        }
+
         public static Vector3 operator *(Matrix3 matrix, Vector3 vector)
         {
             return matrix.c1 * vector.x + 

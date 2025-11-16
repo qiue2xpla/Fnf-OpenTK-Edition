@@ -176,7 +176,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (isRaycastable && IsOverGUI()) RaycastHit();
+            if (isRaycastable && IsMouseOverGUI()) RaycastHit();
             if (fontAtlas == null) return;
 
             if (previousWidth != width || previousHeight != height)

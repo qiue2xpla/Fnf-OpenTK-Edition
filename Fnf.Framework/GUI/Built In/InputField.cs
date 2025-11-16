@@ -68,7 +68,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (IsOverGUI()) RaycastHit();
+            if (IsMouseOverGUI()) RaycastHit();
 
             globalRotation = 0;
 

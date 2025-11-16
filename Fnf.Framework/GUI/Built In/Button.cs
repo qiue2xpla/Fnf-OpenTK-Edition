@@ -42,7 +42,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (IsOverGUI()) RaycastHit();
+            if (IsMouseOverGUI()) RaycastHit();
             if(smoothColor) current = Color.Lerp(current, target, Time.deltaTime * 20);
 
             Gizmos.DrawRoundQuad(this, current, cornerRadius, borderSmoothness);

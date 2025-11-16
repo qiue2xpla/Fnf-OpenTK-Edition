@@ -1,23 +1,16 @@
-﻿namespace Fnf.Framework
+﻿using System.Collections.Generic;
+
+namespace Fnf.Framework
 {
-    /// <summary>
-    /// An object that has a powerfull coodinate system <br/>
-    /// Global values are values that the object would have it a parent was not assigned <br/>
-    /// Local values are the main used values and they are based on the parent if present
-    /// </summary>
     public class GameObject
     {
         public Vector2 globalPosition
         {
-            get
-            {
-                if(parent == null) return localPosition;
-                return (parent.WorldlTransformMatrix() * localPosition.ToHomogeneous()).ToEuclidean();
-            }
+            get => parent == null ? localPosition : parent.WorldlTransformMatrix() * localPosition;
             set
             {
                 if (parent == null) localPosition = value;
-                else localPosition = (parent.GetObjectWorldInverseTransformMatrix() * value.ToHomogeneous()).ToEuclidean();
+                else localPosition = parent.WorldInverseTransformMatrix() * value;
             }
         }
         public Vector2 globalScale
@@ -31,32 +24,60 @@
             set => localRotation = value - (parent == null ? 0 : parent.globalRotation);
         }
 
+        public GameObject parent
+        {
+            get => _parent;
+            set
+            {
+                if (_parent != null)
+                {
+                    _parent._children.Remove(this);
+                    _parent.children = _parent._children.ToArray();
+                }
+
+                if (value != null && !value._children.Contains(this))
+                {
+                    value._children.Add(this);
+                    value.children = value._children.ToArray();
+                }
+
+                _parent = value;
+            }
+        }
+        public GameObject[] children { get; private set; }
+
         public Vector2 localPosition = Vector2.Zero;
         public Vector2 localScale = Vector2.One;
         public float localRotation = 0;
+        private List<GameObject> _children;
+        private GameObject _parent;
 
-        public GameObject parent;
+        public GameObject()
+        {
+            _children = new List<GameObject>();
+            children = new GameObject[0];
+        }
 
-        public Matrix3 GetObjectLocalTransformMatrix()
+        public Matrix3 LocalTransformMatrix()
         {
             return Matrix3.Transform(localPosition, -MathUtility.ToRadian(localRotation), localScale);
         }
 
         public Matrix3 WorldlTransformMatrix()
         {
-            if (parent == null) return GetObjectLocalTransformMatrix();
-            return parent.WorldlTransformMatrix() * GetObjectLocalTransformMatrix();
+            if (parent == null) return LocalTransformMatrix();
+            return parent.WorldlTransformMatrix() * LocalTransformMatrix();
         }
 
-        public Matrix3 GetObjectLocalInverseTransformMatrix()
+        public Matrix3 LocalInverseTransformMatrix()
         {
             return Matrix3.InverseTransform(localPosition, -MathUtility.ToRadian(localRotation), localScale);
         }
 
-        public Matrix3 GetObjectWorldInverseTransformMatrix()
+        public Matrix3 WorldInverseTransformMatrix()
         {
-            if (parent == null) return GetObjectLocalInverseTransformMatrix();
-            return parent.GetObjectWorldInverseTransformMatrix() * GetObjectLocalInverseTransformMatrix();
+            if (parent == null) return LocalInverseTransformMatrix();
+            return parent.WorldInverseTransformMatrix() * LocalInverseTransformMatrix();
         }
     }
 }

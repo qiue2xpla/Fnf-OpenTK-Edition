@@ -70,9 +70,11 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestingScript.cs" />
     <Content Include="Assets\Notes\Configurations\Notes\default.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="TestGUI.cs" />
     <Compile Include="Scripts\Editor.cs" />
     <Compile Include="Scripts\Freeplay.cs" />
     <Compile Include="Scripts\MainMenu.cs" />

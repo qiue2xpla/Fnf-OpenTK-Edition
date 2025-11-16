@@ -1,0 +1,12 @@
+﻿Function invoking tree
+
+Update:
+	Time
+	Input
+	Gui events
+	Gui reycast data reset
+	Window hanndles
+	Script
+
+Render:
+	Script

@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System;
+using OpenTK.Platform.Windows;
 
 namespace Fnf.Framework
 {
@@ -54,6 +55,16 @@ namespace Fnf.Framework
             {
                 _window.WindowBorder = value ? WindowBorder.Hidden : WindowBorder.Resizable;
                 _window.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
+            }
+        }
+
+        public static int Fps
+        {
+            get => (int)_window.TargetUpdateFrequency;
+            set
+            {
+                _window.TargetUpdateFrequency = value;
+                _window.TargetRenderFrequency = value;
             }
         }
 
@@ -143,7 +154,7 @@ namespace Fnf.Framework
             if (Input.AllowUnfocusedInput || Focused)
             {
                 Input.Update();
-                GUI.StartInvokingEvents();
+                GUI.InvokeEvents();
             }
 
             if (Input.GetKeyDown(Key.F11))
@@ -173,7 +184,6 @@ namespace Fnf.Framework
         {
             base.OnUpdateFrame(e);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GUI.StartRaycasting();
             Script.RenderScript();
             Context.SwapBuffers();
         }

@@ -13,7 +13,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (isRaycastable && IsOverGUI()) RaycastHit();
+            if (isRaycastable && IsMouseOverGUI()) RaycastHit();
 
             Gizmos.DrawRoundQuad(this, color, borderRadius, borderSmoothness);
         }

@@ -81,7 +81,7 @@ namespace Fnf.Framework
                 tabTitle.height = item.size.y - padding * 2;
                 tabTitle.localPosition = item.pos;
 
-                if (tabTitle.IsOverGUI())
+                if (tabTitle.IsMouseOverGUI())
                 {
                     if(Input.GetButton(MouseButton.Left))
                     {
@@ -125,7 +125,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if (IsOverGUI()) RaycastHit();
+            if (IsMouseOverGUI()) RaycastHit();
 
             // Background
             Gizmos.DrawRoundQuad(this, backgroundColor, cornerRadius, borderSmoothness);

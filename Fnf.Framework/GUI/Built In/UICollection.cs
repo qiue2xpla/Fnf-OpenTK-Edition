@@ -71,7 +71,7 @@ namespace Fnf.Framework
         public void Render()
         {
             if (!isRenderable) return;
-            if(IsOverGUI()) RaycastHit();
+            if(IsMouseOverGUI()) RaycastHit();
 
             Gizmos.DrawRoundQuad(this, color, 5, 1);
 
@@ -98,7 +98,7 @@ namespace Fnf.Framework
 
         protected override void OnMouseDrag(MouseButton button)
         {
-            if(movable) globalPosition += Input.GetGridMouseDelta();
+            if(movable) globalPosition += Input.GetGridMousePosition();
         }
     }
 }

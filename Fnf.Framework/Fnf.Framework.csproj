@@ -80,8 +80,8 @@
     <Compile Include="Systems\RNG.cs" />
     <Compile Include="Utility\StringUtility.cs" />
     <Compile Include="Systems\Anchor.cs" />
-    <Compile Include="GUI\InputField.cs" />
-    <Compile Include="GUI\Panel.cs" />
+    <Compile Include="GUI\Built In\InputField.cs" />
+    <Compile Include="GUI\Built In\Panel.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -109,8 +109,8 @@
     <Compile Include="TrueType\Rendering\Signed Distance Field\PriorityQueue.cs" />
     <Compile Include="TrueType\Rendering\Signed Distance Field\SDF.cs" />
     <Compile Include="GUI\Built In\Button.cs" />
-    <Compile Include="GUI\UICollection.cs" />
-    <Compile Include="GUI\Text.cs" />
+    <Compile Include="GUI\Built In\UICollection.cs" />
+    <Compile Include="GUI\Built In\Text.cs" />
     <Compile Include="DataObjects\Color.cs" />
     <Compile Include="DataObjects\Point.cs" />
     <Compile Include="DataObjects\SizeF.cs" />
@@ -130,6 +130,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Graphics\Gizmos.cs" />
+    <Content Include="Tree.txt" />
     <None Include="Resources\round.glsl" />
     <None Include="Resources\defaultFont.glsl" />
     <None Include="Resources\sdfFont.glsl" />

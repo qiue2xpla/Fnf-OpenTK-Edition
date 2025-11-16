@@ -11,6 +11,7 @@ public class Editor : Script
     Button button;
 
     TabView tabView;
+    TestGUI testGUI;
 
     int count;
 
@@ -40,6 +41,8 @@ public class Editor : Script
         tabView.items.Add(new TabViewItem("Offset", new Panel() { color = Color.Blue }));
 
         stage = new StageContext("idk mane", "hard", new string[] { "Markov" });
+
+        testGUI = new TestGUI(atlas);
     }
 
     void Update()
@@ -59,5 +62,6 @@ public class Editor : Script
         button.Render();
 
         tabView.Render();
+        testGUI.Render();
     }
 }
