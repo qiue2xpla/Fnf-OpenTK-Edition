@@ -3,39 +3,67 @@ using Fnf.Framework;
 
 public class TestingScript : Script
 {
-    GUI root;
+    Color[] idk = new Color[20];
+    int index;
 
-    GUI child1;
-    GUI child2;
-    GUI child3;
+    GUI root;
 
     public TestingScript()
     {
-        root = new GUI();
-        child1 = new GUI();
-        child2 = new GUI();
-        child3 = new GUI();
+        for (int i = 0; i < idk.Length; i++)
+        {
+            idk[i] = RandomColor();
+        }
 
-        child1.parent = root;
-        child2.parent = root;
-        child3.parent = root;
+        root = new GUI()
+        {
+            gap = 5,
+            padding = (5, 5, 5, 5),
+            layoutMode = LayoutMode.HorizontalFlow,
+            horizontalSizeMode = SizeMode.Auto,
+            verticalSizeMode = SizeMode.Auto,
+            verticalAlignment = VerticalAlignment.Top,
+            horizontalAlignment = HorizontalAlignment.Left,
+        };
 
-        root.layoutMode = LayoutMode.HorizontalFlow;
-        root.horizontalSizeMode = SizeMode.Fixed;
-        root.verticalSizeMode = SizeMode.Auto;
-        root.width = 600;
-        root.gap = 5;
-        root.padding = (5, 5, 5, 5);
+        GUI child1 = new GUI()
+        {
+            parent = root,
+            width = 100,
+            height = 100,
+            verticalAlignment = VerticalAlignment.Top
+        };
 
-        child1.width = 100;
-        child1.height = 100;
+        GUI child2 = new GUI()
+        {
+            parent = root,
+            width = 200,
+            height = 200,
+            layoutMode = LayoutMode.VerticalFlow,
+            gap = 5
+        };
 
-        child2.horizontalSizeMode = SizeMode.Flexible;
-        child2.verticalSizeMode = SizeMode.Flexible;
 
-        child3.width = 70;
-        child3.height = 50;
-        child3.verticalAlignment = VerticalAlignment.Center;
+        GUI item1 = new GUI()
+        {
+            parent = child2,
+            horizontalSizeMode = SizeMode.Flexible,
+            verticalSizeMode = SizeMode.Flexible,
+        };
+
+        GUI item2 = new GUI()
+        {
+            parent = child2,
+            horizontalSizeMode = SizeMode.Flexible,
+            verticalSizeMode = SizeMode.Flexible,
+        };
+
+        GUI item3 = new GUI()
+        {
+            parent = child2,
+            horizontalSizeMode = SizeMode.Flexible,
+            verticalSizeMode = SizeMode.Flexible,
+        };
     }
 
     void Update()
@@ -54,9 +82,29 @@ public class TestingScript : Script
 
     void Render()
     {
-        Gizmos.DrawRoundQuad(root, Color.Red, 4, 0);
-        Gizmos.DrawRoundQuad(child1, Color.White, 4, 0);
-        Gizmos.DrawRoundQuad(child2, Color.Blue, 4, 0);
-        Gizmos.DrawRoundQuad(child3, Color.Green, 4, 0);
+        float roundness = 3;
+
+        index = 0;
+
+        Draw(root);
+
+        void Draw(GUI gui)
+        {
+            Gizmos.DrawRoundQuad(gui, idk[index], roundness, 0);
+            index++;
+
+            for (int i = 0; i < gui.children.Length; i++)
+            {
+                GUI child = gui.children[i] as GUI;
+                Draw(child);
+            }
+        }
+    }
+
+    Color RandomColor()
+    {
+        int dep = 10;
+        return new Color(random(dep), random(dep), random(dep));
+        float random(int depth) => (float)RNG.Next(0, depth) / (depth - 1);
     }
 }

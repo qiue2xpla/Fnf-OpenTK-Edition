@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Graphics.ES11;
+using System;
 
 namespace Fnf.Framework
 {
@@ -32,220 +33,220 @@ namespace Fnf.Framework
                 case LayoutMode.Grid: throw new NotImplementedException();
                 case LayoutMode.HorizontalFlow: case LayoutMode.VerticalFlow:
                 {
-                    // Handle width
-                    switch(horizontalSizeMode)
+                    // ---------------Handle width and height---------------
+                    bool autoWidth = horizontalSizeMode == SizeMode.Auto;
+                    bool autoHeight = verticalSizeMode == SizeMode.Auto;
+                    bool horizontalFlow = layoutMode == LayoutMode.HorizontalFlow;
+
+                    if (autoWidth || autoHeight)
                     {
-                        case SizeMode.Flexible:
-                        {
-                            if (parent == null) width = Window.GridSize.width;
-                            break;
-                        }
+                        // Reset width and height
+                        if (autoWidth) width = 0;
+                        if (autoHeight) height = 0;
 
-                        case SizeMode.Auto:
+                        for (int i = 0; i < children.Length; i++)
                         {
-                            width = 0;
+                            GUI child = children[i] as GUI;
 
-                            // Loop for each child and add its width if in HorizontalFlow or use the maximum width in VerticalFlow.
-                            for (int i = 0; i < children.Length; i++)
+                            if (autoWidth)
                             {
-                                GUI child = children[i] as GUI;
-
-                                if (child.horizontalSizeMode == SizeMode.Fixed || child.horizontalSizeMode == SizeMode.Auto)
+                                if (child.horizontalSizeMode == SizeMode.Flexible && horizontalFlow)
                                 {
-                                    // Get the child width with both left and right margins
+                                    throw new InvalidLayoutException("'Auto' parent cannot contain a 'Flexible' child");
+                                }
+
+                                if (child.horizontalSizeMode != SizeMode.Flexible)
+                                {
                                     float childWidth = child.width + child.margin.left + child.margin.right;
-
-                                    if (layoutMode == LayoutMode.HorizontalFlow)
-                                    {
-                                        width += childWidth;
-                                    }
-                                    else
-                                    {
-                                        width = Math.Max(width, childWidth);
-                                    }
-                                }
-                                else
-                                {
-                                    if (layoutMode == LayoutMode.HorizontalFlow)
-                                    {
-                                        throw new InvalidLayoutException("'Auto' parent cannot contain a 'Flexible' child");
-                                    }
+                                    width = horizontalFlow ? width + childWidth : Math.Max(width, childWidth);
                                 }
                             }
 
-                            // Add gap to width
-                            if (layoutMode == LayoutMode.HorizontalFlow)
+                            if (autoHeight)
                             {
-                                width += gap * Math.Max(children.Length - 1, 0);
-                            }
-
-                            // Add padding
-                            width += padding.left + padding.right;
-
-                            break;
-                        }
-                    }
-
-                    // Handle height
-                    switch(verticalSizeMode)
-                    {
-                        case SizeMode.Flexible:
-                        {
-                            if (parent == null) height = Window.GridSize.height;
-                            break;
-                        }
-
-                        case SizeMode.Auto:
-                        {
-                            // Reset height
-                            height = 0;
-
-                            // Loop children
-                            for (int i = 0; i < children.Length; i++)
-                            {
-                                GUI child = children[i] as GUI;
-
-                                if (child.verticalSizeMode == SizeMode.Fixed || child.verticalSizeMode == SizeMode.Auto)
+                                if (child.verticalSizeMode == SizeMode.Flexible && !horizontalFlow)
                                 {
-                                    // Get child height with top and bottom margin
+                                    throw new InvalidLayoutException("'Auto' parent cannot contain a 'Flexible' child");
+                                }
+
+                                if (child.verticalSizeMode != SizeMode.Flexible)
+                                {
                                     float childHeight = child.height + child.margin.top + child.margin.bottom;
-
-                                    if (layoutMode == LayoutMode.HorizontalFlow)
-                                    {
-                                        height = Math.Max(height, childHeight);
-                                    }
-                                    else
-                                    {
-                                        height += childHeight;
-                                    }
-                                }
-                                else
-                                {
-                                    if (layoutMode == LayoutMode.VerticalFlow)
-                                    {
-                                        throw new InvalidLayoutException("'Auto' parent cannot contain a 'Flexible' child");
-                                    }
+                                    height = horizontalFlow ? Math.Max(height, childHeight) : height += childHeight;
                                 }
                             }
+                        }
 
-                            // Add gap to height
-                            if (layoutMode == LayoutMode.VerticalFlow)
+                        // Add gap
+                        if (layoutMode == LayoutMode.HorizontalFlow && autoWidth)
+                        {
+                            width += gap * Math.Max(children.Length - 1, 0);
+                        }
+
+                        if (layoutMode == LayoutMode.VerticalFlow && autoHeight)
+                        {
+                            height += gap * Math.Max(children.Length - 1, 0);
+                        }
+
+                        // Add padding
+                        if (autoWidth) width += padding.left + padding.right;
+                        if (autoHeight) height += padding.top + padding.bottom;
+                    }
+
+                    if (verticalSizeMode == SizeMode.Flexible && parent == null)
+                    {
+                        height = Window.GridSize.height;
+                    }
+
+                    if (horizontalSizeMode == SizeMode.Flexible && parent == null)
+                    {
+                        width = Window.GridSize.width;
+                    }
+
+                    // ---------------Handle SizeMode.Flexible children---------------
+                    float totalHorizontalScalingUnits = 0;
+                    float totalVerticalScalingUnits = 0;
+                    float remainingWidth = width;
+                    float remainingHeight = height;
+
+                    // Remove the padding 
+                    remainingWidth -= padding.left + padding.right;
+                    remainingHeight -= padding.top + padding.bottom;
+
+                    for (int i = 0; i < children.Length; i++)
+                    {
+                        GUI child = children[i] as GUI;
+
+                        if (horizontalFlow)
+                        {
+                            if (child.horizontalSizeMode == SizeMode.Flexible)
                             {
-                                height += gap * Math.Max(children.Length - 1, 0);
+                                totalHorizontalScalingUnits += child.scaleFactor;
+                            }
+                            else
+                            {
+                                remainingWidth -= child.width + child.margin.left + child.margin.right;
+                            }
+                        }
+                        else
+                        {
+                            if (child.verticalSizeMode == SizeMode.Flexible)
+                            {
+                                totalVerticalScalingUnits += child.scaleFactor;
+                            }
+                            else
+                            {
+                                remainingHeight -= child.height + child.margin.top + child.margin.bottom;
+                            }
+                        }
+                    }
+
+                    // Remove gaps
+                    float totalGap = gap * Math.Max(children.Length - 1, 0);
+                    if (horizontalFlow)
+                    {
+                        remainingWidth -= totalGap;
+                    }
+                    else
+                    {
+                        remainingHeight -= totalGap;
+                    }
+
+                    float widthPerUnit = 0;
+                    float heightPerUnit = 0;
+
+                    if (totalHorizontalScalingUnits > 0) widthPerUnit = remainingWidth / totalHorizontalScalingUnits;
+                    if (totalVerticalScalingUnits > 0) heightPerUnit = remainingHeight / totalVerticalScalingUnits;
+
+                    for (int i = 0; i < children.Length; i++)
+                    {
+                        GUI child = children[i] as GUI;
+
+                        if (child.horizontalSizeMode == SizeMode.Flexible)
+                        {
+                            if(horizontalFlow)
+                            {
+                                float available = child.scaleFactor * widthPerUnit;
+                                child.width = Math.Max(0, available - child.margin.left - child.margin.right);
+                            }
+                            else
+                            {
+                                child.width = remainingWidth;
+                            }
+                        }
+
+                        if (child.verticalSizeMode == SizeMode.Flexible)
+                        {
+                            if (horizontalFlow)
+                            {
+                                child.height = remainingHeight;
+                            }
+                            else
+                            {
+                                float available = child.scaleFactor * heightPerUnit;
+                                child.height = Math.Max(0, available - child.margin.top - child.margin.bottom);
+                            }
+                        }
+                    }
+
+                    // ---------------Handle Position---------------
+                    Vector2 pointer = new Vector2(padding.left, -padding.top); // TopLeft origin
+                    Vector2 offset = new Vector2(-width/2, height/2);
+                    for (int i = 0; i < children.Length; i++)
+                    {
+                        GUI child = children[i] as GUI;
+
+                        float childWidth = child.width + child.margin.left + child.margin.right;
+                        float childHeight = child.height + child.margin.top + child.margin.bottom;
+
+                        if (horizontalFlow)
+                        {
+                            child.localPosition.x = offset.x + pointer.x + childWidth/2;
+
+                            switch (child.verticalAlignment)
+                            {
+                                case VerticalAlignment.Top: child.localPosition.y = offset.y - childHeight/2 - padding.top; break;
+                                case VerticalAlignment.Center: child.localPosition.y = 0; break;
+                                case VerticalAlignment.Bottom: child.localPosition.y = -offset.y + childHeight/2 + padding.bottom; break;
                             }
 
-                            // Add padding
-                            height += padding.top + padding.bottom;
+                            pointer.x += childWidth + gap;
+                        }
+                        else
+                        {
+                            child.localPosition.y = offset.y + pointer.y - childHeight/2;
 
-                            break;
+                            switch (child.horizontalAlignment)
+                            {
+                                case HorizontalAlignment.Left: child.localPosition.x = offset.x + padding.left + childWidth / 2; break;
+                                case HorizontalAlignment.Center: child.localPosition.x = 0; break;
+                                case HorizontalAlignment.Right: child.localPosition.x = -offset.x - padding.right - childWidth/ 2; break;
+                            }
+
+                            pointer.y -= childHeight + gap;
                         }
                     }
 
-                    // Allocate j to Flexible children
-
-                    float remainingWidth = width - padding.left - padding.right;
-                    float totalHUnits = 0;
-
-                    for (int i = 0; i < children.Length; i++)
+                    if(parent == null)
                     {
-                        GUI child = children[i] as GUI;
-
-                        if (child.horizontalSizeMode != SizeMode.Flexible)
+                        switch(horizontalAlignment)
                         {
-                            float childWidth = child.width + child.margin.left + child.margin.right;
-
-                            remainingWidth -= childWidth;
-
-                            totalHUnits = child.scaleFactor;
+                            case HorizontalAlignment.Left: localPosition.x = -Window.GridSize.width / 2 + width / 2 + margin.left; break;
+                            case HorizontalAlignment.Center: localPosition.x = 0; break;
+                            case HorizontalAlignment.Right: localPosition.x = Window.GridSize.width / 2 - width / 2 - margin.right; break;
                         }
-                    }
 
-                    remainingWidth -= gap * Math.Max(children.Length - 1, 0);
-
-                    float widthPerUnit = remainingWidth / totalHUnits;
-
-                    for (int i = 0; i < children.Length; i++)
-                    {
-                        GUI child = children[i] as GUI;
-
-                        if (child.horizontalSizeMode == SizeMode.Flexible)
+                        switch (verticalAlignment)
                         {
-                            child.width = child.scaleFactor * widthPerUnit - child.margin.left - child.margin.right;
-                        }
-                    }
-
-                    // Allocate width to Flexible children
-
-                    float remainingWidth = width - padding.left - padding.right;
-                    float totalHUnits = 0;
-
-                    for (int i = 0; i < children.Length; i++)
-                    {
-                        GUI child = children[i] as GUI;
-
-                        if (child.horizontalSizeMode != SizeMode.Flexible)
-                        {
-                            float childWidth = child.width + child.margin.left + child.margin.right;
-
-                            remainingWidth -= childWidth;
-
-                            totalHUnits = child.scaleFactor;
-                        }
-                    }
-
-                    remainingWidth -= gap * Math.Max(children.Length - 1, 0);
-
-                    float widthPerUnit = remainingWidth / totalHUnits;
-
-                    for (int i = 0; i < children.Length; i++)
-                    {
-                        GUI child = children[i] as GUI;
-
-                        if (child.horizontalSizeMode == SizeMode.Flexible)
-                        {
-                            child.width = child.scaleFactor * widthPerUnit - child.margin.left - child.margin.right;
+                            case VerticalAlignment.Top: localPosition.y = Window.GridSize.height / 2 - height / 2 - margin.top; break;
+                            case VerticalAlignment.Center: localPosition.x = 0; break;
+                            case VerticalAlignment.Bottom: localPosition.x = -Window.GridSize.height / 2 + height / 2 + margin.bottom; break;
                         }
                     }
 
                     break;
                 }
             }
-            /*
-            
-
-
-            // Handle horizontal positioning
-            if (containerType == ContainerType.HorizontalFlow)
-            {
-                float pointer = padding.left;
-                for (int i = 0; i < children.Length; i++)
-                {
-                    GUI child = children[i] as GUI;
-                    child.localPosition.x = -width / 2 + pointer + child.width / 2;
-
-                    switch(child.verticalAlignment)
-                    {
-                        case VerticalAlignment.Top: child.localPosition.y = height / 2 - child.height / 2 - padding.top; break;
-                        case VerticalAlignment.Center: child.localPosition.y = 0; break;
-                        case VerticalAlignment.Bottom: child.localPosition.y = -height / 2 + padding.bottom; break;
-                    }
-
-                    pointer += child.width + gap;
-                }
-            }
-
-            // Handle vertical positioning
-            if (containerType == ContainerType.VerticalFlow)
-            {
-                float pointer = padding.top;
-                for (int i = 0; i < children.Length; i++)
-                {
-                    GUI child = children[i] as GUI;
-                    child.localPosition.x = -width / 2 + child.width / 2;
-                    child.localPosition.y = height / 2 - pointer - child.height / 2;
-                    pointer += child.width;
-                }
-            }*/
         }
 
 
