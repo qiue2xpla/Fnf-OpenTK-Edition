@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Text;
+using System;
 
 namespace Fnf.Framework
 {
@@ -29,6 +29,39 @@ namespace Fnf.Framework
             {
                 if (parent == null) localPosition = value;
                 else localPosition = (parent.worldInverse * value.ExtendW(1)).DropW();
+            }
+        }
+
+        public Vector3 localScale
+        {
+            get => _localScale;
+            set
+            {
+                if (_localScale == value) return;
+                _localScale = value; 
+                MarkDirty();
+            }
+        }
+
+        public Vector3 globalScale
+        {
+            get
+            {
+                if (parent == null) return _localScale;
+                return _localScale * parent.globalScale;
+            }
+            set
+            {
+                if (parent == null) localScale = value;
+                else
+                {
+                    Vector3 parentScale = parent.globalScale;
+                    localScale = new Vector3(
+                        value.x / Math.Max(parentScale.x, 0.00001f),
+                        value.y / Math.Max(parentScale.y, 0.00001f),
+                        value.z / Math.Max(parentScale.z, 0.00001f));
+                      
+                }
             }
         }
 
@@ -91,25 +124,23 @@ namespace Fnf.Framework
 
 
 
-        public Vector2 globalScale
-        {
-            get => localScale * (parent == null ? Vector2.One : parent.globalScale);
-            set => localScale = value / (parent == null ? Vector2.One : parent.globalScale);
-        }
+        
+
+        
+
         public float globalRotation
         {
             get => localRotation + (parent == null ? 0 : parent.globalRotation);
             set => localRotation = value - (parent == null ? 0 : parent.globalRotation);
         }
 
-        public Vector3 localScale;
         public Vector3 localEuler;
 
         
 
 
         // Cache
-        Vector3 _localPosition;
+        Vector3 _localPosition, _localScale;
         Matrix4 local, localInverse; bool localDirty;
         Matrix4 world, worldInverse; bool worldDirty;
         List<GameObject> _children;
