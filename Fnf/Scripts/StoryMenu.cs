@@ -289,8 +289,11 @@ namespace Fnf
                 localPosition = new Vector2(-470, -375)
             };
 
-            Anchor.PositionUILocaly(weekName, AnchorType.TopRight, new Vector2(15, 0));
-            Anchor.PositionUILocaly(weekScore, AnchorType.TopLeft, new Vector2(15, 0));
+			weekName.padding.right = 15;
+			weekScore.padding.left = 15;
+
+			weekName.UpdateLayout();
+			weekScore.UpdateLayout();
         }
 
 		void SetupDifficulty()

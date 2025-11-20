@@ -41,5 +41,7 @@ namespace Fnf.Framework
                 a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
                 a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w);
         }
+
+        public static Quaternion Idendity = new Quaternion(1, 0, 0, 0);
     }
 }

@@ -60,7 +60,7 @@
     <Compile Include="DataObjects\Rectangle.cs" />
     <Compile Include="DataObjects\Vector4.cs" />
     <Compile Include="Graphics\Vertex Attribute\VertexAttrib2f.cs" />
-    <Compile Include="GUI\Built In\TabView.cs" />
+    <Compile Include="GUI\TabView.cs" />
     <Compile Include="DataObjects\Matrix3.cs" />
     <Compile Include="DataObjects\Vector3.cs" />
     <Compile Include="TrueType\Curve.cs" />
@@ -79,9 +79,8 @@
     <Compile Include="Utility\MathUtility.cs" />
     <Compile Include="Systems\RNG.cs" />
     <Compile Include="Utility\StringUtility.cs" />
-    <Compile Include="Systems\Anchor.cs" />
-    <Compile Include="GUI\Built In\InputField.cs" />
-    <Compile Include="GUI\Built In\Panel.cs" />
+    <Compile Include="GUI\InputField.cs" />
+    <Compile Include="GUI\Panel.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -108,15 +107,14 @@
     <Compile Include="DataObjects\Map.cs" />
     <Compile Include="TrueType\Rendering\Signed Distance Field\PriorityQueue.cs" />
     <Compile Include="TrueType\Rendering\Signed Distance Field\SDF.cs" />
-    <Compile Include="GUI\Built In\Button.cs" />
-    <Compile Include="GUI\Built In\UICollection.cs" />
-    <Compile Include="GUI\Built In\Text.cs" />
+    <Compile Include="GUI\Button.cs" />
+    <Compile Include="GUI\Text.cs" />
     <Compile Include="DataObjects\Color.cs" />
     <Compile Include="DataObjects\Point.cs" />
     <Compile Include="DataObjects\SizeF.cs" />
     <Compile Include="DataObjects\Size.cs" />
     <Compile Include="DataObjects\Vector2.cs" />
-    <Compile Include="GUI\GUI.cs" />
+    <Compile Include="Systems\GUI.cs" />
     <Compile Include="Systems\GameObject.cs" />
     <Compile Include="Systems\Input.cs" />
     <Compile Include="Systems\FunctionInvoker.cs" />

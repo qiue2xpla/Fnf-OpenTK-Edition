@@ -62,18 +62,18 @@ namespace Fnf.Framework
         /// <summary>
         /// Returns a matrix that applies transformation by the given arguments
         /// </summary>
-        /*public static Matrix3 Transform(Vector2 position, float rotationInRadian, Vector2 scale) // M = T * R * S
+        public static Matrix4 Transform(Vector3 position, Vector3 radianRotation, Vector3 scale) 
         {
-            return Translation(position) * Rotation(rotationInRadian) * Scale(scale);
-        }*/
+            return Translation(position) * Rotation(radianRotation) * Scale(scale); // M = T * R * S
+        }
 
         /// <summary>
         /// Returns a matrix that inverses a transformation by the given arguments
         /// </summary>
-        /*public static Matrix3 InverseTransform(Vector2 pos, float rotationInRadian, Vector2 scale) // M^-1 = S^-1 * R^-1 * T^-1
+        public static Matrix4 InverseTransform(Vector3 pos, Vector3 radianRotation, Vector3 scale) 
         {
-            return Scale(Vector2.One / scale) * Rotation(-rotationInRadian) * Translation(Vector2.NegativeOne * pos);
-        }*/
+            return Scale(Vector3.One / scale) * Rotation(-radianRotation) * Translation(-pos); // M^-1 = S^-1 * R^-1 * T^-1
+        }
 
         /// <summary>
         /// Returns a matrix that translates by the given <seealso cref="Vector3"/>
@@ -101,6 +101,12 @@ namespace Fnf.Framework
                 r3 = new Vector4(0      , 0      , scale.z, 0),
                 r4 = new Vector4(0      , 0      , 0      , 1)
             };
+        }
+
+        public static Matrix4 Rotation(Vector3 radianRotation)
+        {
+            // R = Rz * Ry * Rx
+            return RotateZ(radianRotation.z) * RotateY(radianRotation.y) * RotateX(radianRotation.z);
         }
 
         public static Matrix4 RotateX(float radianAngle)
@@ -141,6 +147,7 @@ namespace Fnf.Framework
                 r4 = new Vector4(0  , 0   , 0, 1)
             };
         }
+
 
         public static Matrix4 NewChatGPTPerspectiveFieldOfView(float fovy, float aspect, float zNear, float zFar)
         {

@@ -8,6 +8,8 @@ namespace Fnf.Framework
     /// </summary>
     public class GUI : GameObject
     {
+        // Layout
+
         public (float top, float right, float bottom, float left) padding;
         public (float top, float right, float bottom, float left) margin;
         public float scaleFactor = 1;
@@ -19,6 +21,20 @@ namespace Fnf.Framework
         public SizeMode verticalSizeMode = SizeMode.Fixed;
         public VerticalAlignment verticalAlignment = VerticalAlignment.Center;
         public HorizontalAlignment horizontalAlignment = HorizontalAlignment.Center;
+
+        // Interaction
+
+        /// <summary>
+        /// Is the current <seealso cref="GUI"/> selected
+        /// </summary>
+        public bool isSelected => selectedGUI == this;
+
+        /// <summary>
+        /// Is the <seealso cref="GUI"/> interactable 
+        /// </summary>
+        public bool isRaycastable = true;
+
+        // Functions 
 
         /// <summary>
         /// Updates the layout of the GUI and its children
@@ -249,58 +265,11 @@ namespace Fnf.Framework
             }
         }
 
+        public virtual void Raycast()
+        {
+            for (int i = 0; i < children.Length; i++) (children[i] as GUI).Raycast();
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // Some global tracking values
-
-        /// <summary>
-        /// Is the current <seealso cref="GUI"/> selected
-        /// </summary>
-        public bool isSelected => selectedGUI == this;
-
-        public bool isRaycastable = true;
-
-
-    
         /// <summary>
         /// Indicate that this GUI is the top GUI
         /// </summary>
@@ -312,12 +281,54 @@ namespace Fnf.Framework
         /// <summary>
         /// Returns if the mouse is over this <seealso cref="GUI"/>
         /// </summary>
-        public bool IsMouseOverGUI()
+        protected bool IsMouseOverGUI()
         {
-            return IsMouseOverGUI(globalPosition, globalScale, globalRotation, width, height);
+            return IsMouseOverArea(globalPosition, globalScale, globalRotation, width, height);
         }
 
-        
+        #region Events
+
+        /// <summary>
+        /// Invoked when the mouse is ontop of the <seealso cref="GUI"/>
+        /// </summary>
+        protected virtual void OnMouseHover() { }
+
+        /// <summary>
+        /// Invoked when the mouse is moving over the <seealso cref="GUI"/>
+        /// </summary>
+        protected virtual void OnMouseMove() { }
+
+        /// <summary>
+        /// Invoked when the mouse is holding a button
+        /// </summary>
+        protected virtual void OnMouse(MouseButton button) { }
+
+        /// <summary>
+        /// Invoked when the mouse is holding a button and moving
+        /// </summary>
+        protected virtual void OnMouseDrag(MouseButton button) { }
+
+        /// <summary>
+        /// Invoked when a mouse button is pressed
+        /// </summary>
+        protected virtual void OnMouseDown(MouseButton button) { }
+
+        /// <summary>
+        /// Invoked when a mouse button is released
+        /// </summary>
+        protected virtual void OnMouseUp(MouseButton button) { }
+
+        /// <summary>
+        /// Invoked when the mouse enters
+        /// </summary>
+        protected virtual void OnMouseEnter() { }
+
+        /// <summary>
+        /// Invoked when the mouse leaves
+        /// </summary>
+        protected virtual void OnMouseLeave() { }
+
+        #endregion
 
         #region Static
 
@@ -415,58 +426,13 @@ namespace Fnf.Framework
         }
 
         /// <summary>
-        /// Returns if the mouse is over the given <seealso cref="GUI"/> data
+        /// Returns if the mouse is over the given area
         /// </summary>
-        public static bool IsMouseOverGUI(Vector2 pos, Vector2 size, float rotation, float width, float height)
+        public static bool IsMouseOverArea(Vector2 pos, Vector2 size, float rotation, float width, float height)
         {
-            float hw = width / 2, hh = height / 2;
             Vector2 mp = Matrix3.InverseTransform(pos, -MathUtility.ToRadian(rotation), size) * Input.GetGridMousePosition();
-            return Math.Abs(mp.x) <= hw && Math.Abs(mp.y) <= hh;
+            return Math.Abs(mp.x) <= width / 2 && Math.Abs(mp.y) <= height / 2;
         }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        /// Invoked when the mouse is ontop of the <seealso cref="GUI"/>
-        /// </summary>
-        protected virtual void OnMouseHover() { }
-
-        /// <summary>
-        /// Invoked when the mouse is moving over the <seealso cref="GUI"/>
-        /// </summary>
-        protected virtual void OnMouseMove() { }
-
-        /// <summary>
-        /// Invoked when the mouse is holding a button
-        /// </summary>
-        protected virtual void OnMouse(MouseButton button) { }
-        
-        /// <summary>
-        /// Invoked when the mouse is holding a button and moving
-        /// </summary>
-        protected virtual void OnMouseDrag(MouseButton button) { }
-
-        /// <summary>
-        /// Invoked when a mouse button is pressed
-        /// </summary>
-        protected virtual void OnMouseDown(MouseButton button) { }
-
-        /// <summary>
-        /// Invoked when a mouse button is released
-        /// </summary>
-        protected virtual void OnMouseUp(MouseButton button) { }
-
-        /// <summary>
-        /// Invoked when the mouse enters
-        /// </summary>
-        protected virtual void OnMouseEnter() { }
-
-        /// <summary>
-        /// Invoked when the mouse leaves
-        /// </summary>
-        protected virtual void OnMouseLeave() { }
 
         #endregion
     }

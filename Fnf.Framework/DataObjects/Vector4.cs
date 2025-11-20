@@ -22,13 +22,7 @@ namespace Fnf.Framework
             this.w = w;
         }
 
-        public static float DotProduct(Vector4 a, Vector4 b)
-        {
-            Vector4 v = a * b;
-            return v.x + v.y + v.z + v.w;
-        }
-
-        public Vector3 ToEuclidean()
+        public Vector3 DropW()
         {
             return new Vector3(x, y, z);
         }
@@ -36,6 +30,12 @@ namespace Fnf.Framework
         public override string ToString()
         {
             return $"({x}, {y}, {z}, {w})";
+        }
+
+        public static float DotProduct(Vector4 a, Vector4 b)
+        {
+            Vector4 v = a * b;
+            return v.x + v.y + v.z + v.w;
         }
 
         public static Vector4 operator *(Vector4 vector, float value)
