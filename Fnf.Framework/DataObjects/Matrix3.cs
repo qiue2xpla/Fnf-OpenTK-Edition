@@ -114,7 +114,9 @@ namespace Fnf.Framework
         /// </summary>
         public static Vector2 operator *(Matrix3 matrix, Vector2 vector)
         {
-            return (matrix * vector.ToHomogeneous()).ToEuclidean();
+            return new Vector2(
+                matrix.c1.x * vector.x + matrix.c2.x * vector.y + matrix.c3.x,
+                matrix.c1.y * vector.x + matrix.c2.y * vector.y + matrix.c3.y);
         }
 
         public static Vector3 operator *(Matrix3 matrix, Vector3 vector)

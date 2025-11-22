@@ -70,7 +70,7 @@ namespace Fnf.Framework
             if (!isRenderable) return;
             if (IsMouseOverGUI()) RaycastHit();
 
-            globalRotation = 0;
+            globalRotation = Vector3.Zero;
 
             Gizmos.DrawRoundQuad(
                 this,

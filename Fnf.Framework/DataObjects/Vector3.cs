@@ -47,6 +47,11 @@ namespace Fnf.Framework
             return $"({x}, {y}, {z})";
         }
 
+        public static Vector3 Max(Vector3 a, Vector3 b)
+        {
+            return new Vector3(Math.Max(a.x, b.x), Math.Max(a.y, b.y), Math.Max(a.z, b.z));
+        }
+
         public static float DotProduct(Vector3 vector1, Vector3 vector2)
         {
             Vector3 v = vector1 * vector2;

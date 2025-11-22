@@ -62,17 +62,33 @@ namespace Fnf.Framework
         /// <summary>
         /// Returns a matrix that applies transformation by the given arguments
         /// </summary>
-        public static Matrix4 Transform(Vector3 position, Vector3 radianRotation, Vector3 scale) 
+        public static Matrix4 TransformTRS(Vector3 position, Vector3 radianRotation, Vector3 scale) 
         {
-            return Translation(position) * Rotation(radianRotation) * Scale(scale); // M = T * R * S
+            return Translation(position) * Rotation(radianRotation) * Scale(scale);
+        }
+
+        /// <summary>
+        /// Returns a matrix that applies transformation by the given arguments
+        /// </summary>
+        public static Matrix4 TransformTRS(Vector3 position, Quaternion quaternion, Vector3 scale)
+        {
+            return Translation(position) * Rotation(quaternion) * Scale(scale);
         }
 
         /// <summary>
         /// Returns a matrix that inverses a transformation by the given arguments
         /// </summary>
-        public static Matrix4 InverseTransform(Vector3 pos, Vector3 radianRotation, Vector3 scale) 
+        public static Matrix4 InverseTransformTRS(Vector3 pos, Vector3 radianRotation, Vector3 scale) 
         {
-            return Scale(Vector3.One / scale) * Rotation(-radianRotation) * Translation(-pos); // M^-1 = S^-1 * R^-1 * T^-1
+            return Scale(Vector3.One / scale) * Rotation(-radianRotation) * Translation(-pos);
+        }
+
+        /// <summary>
+        /// Returns a matrix that inverses a transformation by the given arguments
+        /// </summary>
+        public static Matrix4 InverseTransformTRS(Vector3 pos, Quaternion quaternion, Vector3 scale)
+        {
+            return Scale(Vector3.One / scale) * Rotation(Quaternion.Inverse(quaternion)) * Translation(-pos);
         }
 
         /// <summary>
@@ -100,6 +116,33 @@ namespace Fnf.Framework
                 r2 = new Vector4(0      , scale.y, 0      , 0),
                 r3 = new Vector4(0      , 0      , scale.z, 0),
                 r4 = new Vector4(0      , 0      , 0      , 1)
+            };
+        }
+
+        public static Matrix4 Rotation(Quaternion quaternion)
+        {
+            public static Matrix4 FromQuaternion(Quaternion q)
+        {
+            float x = q.x, y = q.y, z = q.z, w = q.w;
+
+            float xx = x * x;
+            float yy = y * y;
+            float zz = z * z;
+
+            float xy = x * y;
+            float xz = x * z;
+            float yz = y * z;
+
+            float wx = w * x;
+            float wy = w * y;
+            float wz = w * z;
+
+            return new Matrix4()
+            {
+                r1 = new Vector4(1 - 2 * (yy + zz), 2 * (xy - wz), 2 * (xz + wy), 0),
+                r2 = new Vector4(2 * (xy + wz), 1 - 2 * (xx + zz), 2 * (yz - wx), 0),
+                r3 = new Vector4(2 * (xz - wy), 2 * (yz + wx), 1 - 2 * (xx + yy), 0),
+                r4 = new Vector4(0, 0, 0, 1)
             };
         }
 
@@ -184,6 +227,14 @@ namespace Fnf.Framework
                    matrix.c2 * vector.y + 
                    matrix.c3 * vector.z +
                    matrix.c4 * vector.w;
+        }
+
+        public static Vector3 operator *(Matrix4 matrix, Vector3 vector)
+        {
+            return new Vector3(
+                matrix.c1.x * vector.x + matrix.c2.x * vector.y + matrix.c3.x * vector.z + matrix.c4.x,
+                matrix.c1.y * vector.x + matrix.c2.y * vector.y + matrix.c3.y * vector.z + matrix.c4.y,
+                matrix.c1.z * vector.x + matrix.c2.z * vector.y + matrix.c3.z * vector.z + matrix.c4.z);
         }
 
         public static Matrix4 operator *(Matrix4 m1, Matrix4 m2)

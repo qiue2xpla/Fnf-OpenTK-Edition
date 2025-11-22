@@ -202,11 +202,11 @@ namespace Fnf.Framework
             Shader.Color3(shader, "textColor", color);
             Shader.Uniform1(shader, "fontSize", fontSize);
 
-            Shader.UniformMat(shader, "transform",
+            /*Shader.UniformMat(shader, "transform",
                 Matrix3.Scale(Window.PixelToViewport(1, 1)) *
-                WorldlTransformMatrix() *
+                worldMatrix *
                 Matrix3.Scale(new Vector2(fontSize)));
-
+            */
 
             VAO.Bind(vao);
             Texture.Use(texture);

@@ -72,7 +72,7 @@ namespace Fnf.Framework
         {
             contentArea.width = width - cornerRadius * 2;
             contentArea.height = height - fontSize*2 - cornerRadius;
-            contentArea.localPosition.y = -fontSize + cornerRadius / 2;
+            contentArea.localPosition += Vector3.UnitY * (-fontSize + cornerRadius / 2);
 
             for (int i = 0; i < items.Count; i++)
             {
@@ -113,9 +113,9 @@ namespace Fnf.Framework
                     item.content.parent = contentArea;
                     item.content.width = contentArea.width;
                     item.content.height = contentArea.height;
-                    item.content.localPosition = Vector2.Zero;
-                    item.content.localRotation = 0;
-                    item.content.localScale = Vector2.One;
+                    item.content.localPosition = Vector3.Zero;
+                    item.content.localRotation = Vector3.Zero;
+                    item.content.localScale = Vector3.One;
 
                     if (item.content is IUpdatable updatable) updatable.Update();
                 }
@@ -189,7 +189,7 @@ namespace Fnf.Framework
 
         // Used for rendering
         internal Color color;
-        internal Vector2 pos;
+        internal Vector3 pos;
         internal Vector2 size;
 
         public TabViewItem(string title, GUI content)
